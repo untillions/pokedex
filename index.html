@@ -1494,6 +1494,9 @@
 				}
 				updateFilterUI();
 				renderGrid();
+				if (window.innerWidth > 600) {
+				    searchInput.focus();
+				}
 			});
 		});
 
@@ -1607,13 +1610,19 @@
                     localStorage.setItem('gridSaveState', JSON.stringify(clickedStates));
                     updateProgress();
                     updateFilterProgressBar();
+					if (window.innerWidth > 600) {
+				    	searchInput.focus();
+					}
                 });
 
                 grid.appendChild(container);
             });
             updateProgress();
             updateFilterProgressBar();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+			if (window.innerWidth > 600) {
+				searchInput.focus();
+			}
         }
 
         // Clear All Logic
@@ -1624,6 +1633,9 @@
                 updateProgress();
                 updateFilterProgressBar();
                 renderGrid();
+				if (window.innerWidth > 600) {
+					searchInput.focus();
+				}
             }
         });
 
@@ -1646,6 +1658,9 @@
                     }
                     autoList.style.display = 'none';
                     searchInput.value = '';
+					if (window.innerWidth > 600) {
+				    	searchInput.focus();
+					}
                 };
                 autoList.appendChild(div);
             });
