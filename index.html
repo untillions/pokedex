@@ -576,7 +576,11 @@
 				height: auto !important;
 				box-sizing: border-box !important;
 			}
-		
+
+			.container {
+				scroll-margin-top: 230px !important;
+			}
+			
 			/* Target the inner wrapper to ensure it doesn't stay a 'row' */
 			.header-main-row, 
 			#top-bar > div:first-child {
@@ -1652,7 +1656,7 @@
                 div.onclick = () => {
                     const target = document.getElementById(`item-${match.id}`);
                     if (target) {
-                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         target.classList.add('highlight-flash');
                         setTimeout(() => target.classList.remove('highlight-flash'), 2000);
                     }
