@@ -1495,7 +1495,6 @@
 				}
 				updateFilterUI();
 				renderGrid();
-				searchInput.focus();
 			});
 		});
 
@@ -1609,7 +1608,6 @@
                     localStorage.setItem('gridSaveState', JSON.stringify(clickedStates));
                     updateProgress();
                     updateFilterProgressBar();
-                    searchInput.focus();
                 });
 
                 grid.appendChild(container);
@@ -1617,7 +1615,6 @@
             updateProgress();
             updateFilterProgressBar();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            searchInput.focus();
         }
 
         // Clear All Logic
@@ -1628,7 +1625,6 @@
                 updateProgress();
                 updateFilterProgressBar();
                 renderGrid();
-                searchInput.focus();
             }
         });
 
@@ -1651,7 +1647,6 @@
                     }
                     autoList.style.display = 'none';
                     searchInput.value = '';
-                    searchInput.focus();
                 };
                 autoList.appendChild(div);
             });
