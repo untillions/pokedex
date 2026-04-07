@@ -1468,7 +1468,7 @@
 			btn.dataset.type = 'pokemon-type';
 			btn.dataset.value = type;
 		
-			const icon = `<img src="types/${type}.png" alt="">`;
+			const icon = `<img src="types/${type.toLowerCase()}.png" alt="">`;
 			btn.innerHTML = `${icon}${type}`;
 		
 			typeContainer.appendChild(btn);
