@@ -732,25 +732,43 @@
 				margin-left: -5px;
 			}
 		
-			.filter-btn {
-				display: inline-flex !important; /* Changed from inline-block or inline-flex */
+			#type-filters .filter-btn {
+				display: inline-flex !important;
 				align-items: center !important;
-				justify-content: center !important; /* Forces the icon to the dead center */
-				padding: 0 !important; /* Removes side padding that might be uneven */
-				font-size: 0 !important;
+				justify-content: center !important;
+				padding: 0 !important;
+				font-size: 0 !important; /* Hides text for types */
 				gap: 0;
-				width: 44px !important; /* Ensures a perfect circle/square */
+				width: 44px !important;
 				height: 44px !important;
 				border-radius: 50% !important;
-				overflow: hidden; /* Clips any text overflow */
+				overflow: hidden;
 			}
-		
-			.filter-btn img {
-				margin: 0 !important; /* Removes any desktop margins pushing it to the left */
-				padding: 0;
+			
+			#type-filters .filter-btn img {
+				margin: 0 !important;
 				width: 24px !important;
 				height: 24px !important;
-				display: block;
+			}
+			
+			#caught-filters .filter-btn,
+			#region-filters .filter-btn {
+				display: inline-flex !important;
+				align-items: center !important;
+				justify-content: center !important;
+				padding: 8px 12px !important; /* Room for text */
+				font-size: 10pt !important; /* Brings text back */
+				width: auto !important; /* Allow width to expand for text */
+				height: 40px !important;
+				border-radius: 20px !important; /* Pill shape */
+				gap: 8px !important; /* Space between icon and text */
+			}
+			
+			#caught-filters .filter-btn img,
+			#region-filters .filter-btn img {
+				width: 20px !important;
+				height: 20px !important;
+				margin: 0 !important;
 			}
 		
 			/* 5. GRID & CARD REDESIGN */
@@ -878,10 +896,10 @@
 					</div>
 				</div>
 				<div class="header-actions-row">
-					<button id="clear-all-btn">Clear All</button>
 					<button id="filter-toggle-btn" onclick="document.getElementById('filter-container').classList.toggle('active')">
 						<img src="icons/location.png" style="width:16px; height:16px;"> Show/Hide Filters
 					</button>
+					<button id="clear-all-btn">Clear All</button>
 				</div>
 			</div>
 		</div>
