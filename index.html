@@ -596,7 +596,7 @@
 		
 			/* 2. LOGO FIX */
 			.main-logo {
-				max-height: 50px !important;
+				max-height: 75px !important;
 				margin: 0 auto !important;
 				display: block !important;
 			}
@@ -665,14 +665,28 @@
 				display: block !important;
 			}
 		
-			/* 5. BUTTON WIDTH */
-			#clear-all-btn {
-				width: auto !important;
-				margin: -8px 0px 0px 0px !important;
-				font-size: 10pt;
+			.header-actions-row {
+				display: flex !important;
+				flex-direction: row !important;
+				justify-content: center !important;
+				align-items: center !important;
+				gap: 10px !important;
+				width: 100% !important;
+				margin-top: 5px !important;
 			}
 		
-			/* HIDE FILTER PROGRESS COMPLETELY */
+			#clear-all-btn, 
+			#filter-toggle-btn {
+				flex: 1 !important; /* Forces them to be equal width */
+				width: auto !important; /* Prevents them from getting too wide */
+				margin: -10px 0px 5px 0px !important; /* Remove individual margins that cause misalignment */
+				height: 40px !important; /* Ensure they are the same height */
+				font-size: 10pt !important;
+				font-weight: bold;
+				white-space: nowrap !important; /* Prevents text from wrapping to 2 lines */
+				cursor: pointer;
+			}
+		
 			#filter-progress-section {
 				display: none !important;
 			}
@@ -683,14 +697,10 @@
 				justify-content: center;
 				gap: 8px;
 				width: 50%;
-				margin: 10px 0px 2px 0px;
 				padding: 8px;
 				background: #eee;
 				border: 1px solid var(--border-color);
 				border-radius: 8px;
-				font-weight: bold;
-				font-size: 10pt;
-				cursor: pointer;
 			}
 
     		/* 4. FILTER BUTTONS: Icon Only */			
@@ -867,13 +877,15 @@
 						</div>
 					</div>
 				</div>
-				<button id="clear-all-btn">Clear All</button>
+				<div class="header-actions-row">
+					<button id="clear-all-btn">Clear All</button>
+					<button id="filter-toggle-btn" onclick="document.getElementById('filter-container').classList.toggle('active')">
+						<img src="icons/location.png" style="width:16px; height:16px;"> Show/Hide Filters
+					</button>
+				</div>
 			</div>
 		</div>
 		
-		<button id="filter-toggle-btn" onclick="document.getElementById('filter-container').classList.toggle('active')">
-			<img src="icons/location.png" style="width:16px; height:16px;"> Show/Hide Filters
-		</button>
 		<div id="filter-container">
 			<div class="filter-group" id="caught-filters">
 				<button class="filter-btn type-caught" data-type="status" data-value="caught">
