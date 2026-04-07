@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokémon Sword Tracker</title>
-	<link rel="icon" type="image/png" href="ball.png">
+	<link rel="icon" type="image/png" href="icons/ball.png">
     <style>
         :root {
             --bg-color: #f4f7f6;
@@ -835,7 +835,7 @@
     <header id="top-bar">
 		<div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
 			<div class="header-left">
-				<img src="logo.png" alt="Logo" class="main-logo">
+				<img src="icons/logo.png" alt="Logo" class="main-logo">
 			</div>
 			
 			<div id="search-container">
@@ -845,7 +845,7 @@
 			
 			<div class="header-right">
 				<div class="counter-group">
-					<img src="ball.png" alt="Caught" class="ball-icon">
+					<img src="icons/ball.png" alt="Caught" class="ball-icon">
 					<div class="counter-text-wrapper">
 						<div class="progress-label">Pokémon caught</div> 
 						<div class="progress-container" style="overflow: visible; margin-bottom: 20px;">
@@ -869,23 +869,23 @@
 		</div>
 		
 		<button id="filter-toggle-btn" onclick="document.getElementById('filter-container').classList.toggle('active')">
-			<img src="location.png" style="width:16px; height:16px;"> Show/Hide Filters
+			<img src="icons/location.png" style="width:16px; height:16px;"> Show/Hide Filters
 		</button>
 		<div id="filter-container">
 			<div class="filter-group" id="caught-filters">
 				<button class="filter-btn type-caught" data-type="status" data-value="caught">
-					<img src="ball.png" alt="">Caught
+					<img src="icons/ball.png" alt="">Caught
 				</button>
 				<button class="filter-btn type-uncaught" data-type="status" data-value="uncaught">
-					<img src="ball2.png" alt="">Not Caught
+					<img src="icons/ball2.png" alt="">Not Caught
 				</button>
 			</div>
 			<div class="filter-group" id="region-filters">
 				<button class="filter-btn type-alola" data-type="region" data-value="Alola">
-					<img src="location.png" alt="">Alola
+					<img src="icons/location.png" alt="">Alola
 				</button>
 				<button class="filter-btn type-galar" data-type="region" data-value="Galar">
-					<img src="location.png" alt="">Galar
+					<img src="icons/location.png" alt="">Galar
 				</button>
 			</div>
 			<div class="filter-group" id="type-filters">
@@ -1579,7 +1579,7 @@
                     : `<span>${item.location}</span>`;
 
                 container.innerHTML = `
-                    <img src="ball.png" class="card-ball-icon" alt="Caught">
+                    <img src="icons/ball.png" class="card-ball-icon" alt="Caught">
 					<div class="item-number">#${item.id}</div>
 					<div class="image-center-wrapper">
                         <img class="main-img" src="pokemon/${item.name.toLowerCase()}.gif" alt="${item.name}">
