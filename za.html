@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Legends Z-A Tracker</title>
+	<link rel="icon" type="image/png" href="icons/ball.png">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #d0d0d0;
+            --selected-bg: #e8f4fd;
+            --selected-border: #2196f3;
+            --text-main: #333;
+            --text-muted: #777;
+            --link-color: #2196f3;
+        }
+
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+		#top-bar {
+			position: sticky;
+			top: 0;
+			z-index: 2000;
+			width: 100%;
+			height: auto !important;
+			min-height: 120px;
+			background: var(--card-bg);
+			border-bottom: 1px solid var(--border-color);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-top: -10px;
+			padding: 5px 20px 5px 0px; /* this was -5 bottom */
+			box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+			box-sizing: border-box;
+			flex-direction: column;
+		}
+		
+		.header-main-row {
+			display: flex;
+			width: 100%;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		
+		.header-left {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			width: 200px;
+			margin-left: 20px;
+		}
+		
+		.main-logo {
+			max-height: 90px;
+			width: auto;
+		}
+		
+		.logo-text {
+			font-size: 18px;
+			font-weight: bold;
+			color: var(--text-main);
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			line-height: 1;
+			margin-top: 2px;
+		}
+		
+		#search-container {
+			flex: 0 1 400px;
+			position: relative;
+			display: flex;
+			margin-bottom: 0;
+		}
+		
+		.header-right {
+			display: flex;
+			align-items: center;
+			gap: 20px;
+		}
+		
+		.ball-icon {
+			width: 60px;
+			height: 60px;
+			margin-bottom: 15px;
+		}
+		
+		.counter-group {
+			display: flex;
+			height: auto !important;
+			align-items: center;
+			gap: 15px;
+			width: 400px;
+			margin-top: 15px;
+			justify-content: flex-start;
+		}
+		
+		.counter-text-wrapper {
+			display: flex;
+			flex-direction: column;
+			line-height: 1.2;
+			min-width: 100px;
+			flex-grow: 1;
+
+		}
+		
+		.total-label {
+			font-size: 14px;
+			color: var(--text-muted);
+			font-weight: normal;
+		}
+		
+		#clear-all-btn {
+			padding: 8px 16px;
+			background: #ff4444;
+			color: white;
+			border: none;
+			border-radius: 8px;
+			font-size: 10pt;
+			border: 1px solid #a10000;
+			cursor: pointer;
+			font-weight: bold;
+		}
+		
+		#clear-all-btn:hover {
+			background: #cc0000;
+		}		
+		
+		.progress-container {
+			flex-grow: 1;
+			height: 12px;
+			background-color: #eee;
+			border-radius: 10px;
+			border: 1px solid var(--border-color);
+			position: relative;
+			margin: 0px 15px 25px 15px; 
+			overflow: visible;
+		}
+
+		.progress-label {
+			font-size: 11px;
+			font-weight: bold;
+			color: var(--text-muted);
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			margin-bottom: 4px;
+			text-align: left;
+		}
+		
+		#progress-bar {
+			height: 100%;
+			width: 0%;
+			background-color: #cc0000;
+			border-radius: 10px;
+			transition: width 0.3s ease;
+		}
+		
+		#caught-label {
+			position: absolute;
+			top: 16px;
+			z-index: 20;
+			color: #cc0000;
+			transform: translateX(-50%);
+			white-space: nowrap;
+		}
+		
+		#total-label {
+			position: absolute;
+			top: 16px;
+			right: 0; 
+			transform: translateX(50%);
+			z-index: 10;
+		}
+		
+		#filter-progress-bar {
+			height: 100%;
+			width: 0%;
+			background-color: #777;
+			border-radius: 10px;
+			transition: width 0.3s ease, background-color 0.3s ease;
+		}
+		
+		#filter-caught-label {
+			position: absolute;
+			top: 16px;
+			z-index: 20;
+			color: 000;
+			transform: translateX(-50%);
+			white-space: nowrap;
+		}
+		
+		#filter-total-label {
+			position: absolute;
+			top: 16px;
+			right: 0; 
+			transform: translateX(50%);
+			z-index: 10;
+		}
+		
+		#filter-container {
+			display: grid;
+			grid-template-columns: auto auto 1fr;
+			gap: 40px;
+			width: 85%;
+			margin-left: auto;
+			margin-right: auto;
+			padding: 10px 0;
+			border-top: 1px solid var(--border-color);
+			align-items: start;
+		}
+		
+		.filter-group {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+		
+		#type-filters {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 6px;
+			align-content: flex-start;
+		}
+		
+		.filter-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			padding: 6px 12px;
+			border-radius: 20px;
+			border: 2px solid #ccc;
+			background: white;
+			cursor: pointer;
+			font-size: 12px;
+			font-weight: 600;
+			transition: all 0.2s ease;
+			text-align: center;
+			white-space: nowrap;
+		}
+		
+		.filter-btn img {
+			width: 18px;
+			height: 18px;
+			object-fit: contain;
+		}
+		
+		.filter-btn:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		.type-bug { background: #DBE0B4; color: #5E6910; border-color: #5E6910; }
+		.type-dark { background: #CCC5C5; color: #403233; border-color: #403233; }
+		.type-dragon { background: #C6CBF5; color: #343E92; border-color: #343E92; }
+		.type-electric { background: #FDEAAC; color: #A37D00; border-color: #A37D00; }
+		.type-fairy { background: #FAD0FA; color: #9B499B; border-color: #9B499B; }
+		.type-fighting { background: #FFD5AC; color: #A65300; border-color: #A65300; }
+		.type-fire { background: #F7B9B9; color: #961A1B; border-color: #961A1B; }
+		.type-flying { background: #D6E8FA; color: #54789B; border-color: #54789B; }
+		.type-ghost { background: #D0C1D0; color: #492A49; border-color: #492A49; }
+		.type-grass { background: #C0E0B9; color: #29691B; border-color: #29691B; }
+		.type-ground { background: #DBC6B7; color: #5E3515; border-color: #5E3515; }
+		.type-ice { background: #C0EFFB; color: #28869E; border-color: #28869E; }
+		.type-normal { background: #E0E0E0; color: #676967; border-color: #676967; }
+		.type-poison { background: #DBC1EE; color: #5E2A84; border-color: #5E2A84; }
+		.type-psychic { background: #FAC1D3; color: #9B2A4F; border-color: #9B2A4F; }
+		.type-rock { background: #E5E3D6; color: #726E54; border-color: #726E54; }
+		.type-steel { background: #CBE0E8; color: #3E6978; border-color: #3E6978; }
+		.type-water { background: #B9D5FA; color: #1B539B; border-color: #1B539B; }
+
+		.type-caught { background: white; color: black; border-color: gray; }
+		.type-uncaught { background: white; color: black; border-color: gray; }
+		.type-alpha { background: #f6d6d5; color: black; border-color: #d0302f; }
+		.type-nonalpha { background: white; color: black; border-color: gray; }
+		
+		.filter-btn.active.type-bug { background: #91A119; color: white; border-color: #5E6910; }
+		.filter-btn.active.type-dark { background: #624D4E; color: white; border-color: #403233; }
+		.filter-btn.active.type-dragon { background: #5060E1; color: white; border-color: #343E92; }
+		.filter-btn.active.type-electric { background: #FAC000; color: #333; border-color: #A37D00; }
+		.filter-btn.active.type-fairy { background: #EF70EF; color: white; border-color: #9B499B; }
+		.filter-btn.active.type-fighting { background: #FF8000; color: white; border-color: #A65300; }
+		.filter-btn.active.type-fire { background: #E62829; color: white; border-color: #961A1B; }
+		.filter-btn.active.type-flying { background: #81B9EF; color: white; border-color: #54789B; }
+		.filter-btn.active.type-ghost { background: #704170; color: white; border-color: #492A49; }
+		.filter-btn.active.type-grass { background: #3FA129; color: white; border-color: #29691B; }
+		.filter-btn.active.type-ground { background: #915121; color: white; border-color: #5E3515; }
+		.filter-btn.active.type-ice { background: #3DCEF3; color: #333; border-color: #28869E; }
+		.filter-btn.active.type-normal { background: #9FA19F; color: white; border-color: #676967; }
+		.filter-btn.active.type-poison { background: #9141CB; color: white; border-color: #5E2A84; }
+		.filter-btn.active.type-psychic { background: #EF4179; color: white; border-color: #9B2A4F; }
+		.filter-btn.active.type-rock { background: #AFA981; color: white; border-color: #726E54; }
+		.filter-btn.active.type-steel { background: #60A1B8; color: white; border-color: #3E6978; }
+		.filter-btn.active.type-water { background: #2980EF; color: white; border-color: #1B539B; }	
+		
+		.filter-btn.active.type-caught { background: lightgray; color: black; border-color: gray; }
+		.filter-btn.active.type-uncaught { background: lightgray; color: black; border-color: gray; }
+		.filter-btn.active.type-alpha { background: #ecacac; color: #333; border-color: #9c2423; }	
+		.filter-btn.active.type-nonalpha { background: lightgray; color: black; border-color: gray; }
+
+		body {
+			padding-top: 10px; 
+		}
+
+        #search-container {
+            position: sticky;
+            top: 10px;
+            z-index: 1000;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 0px;
+        }
+
+        #search-input {
+            width: 100%;
+            box-sizing: border-box !important;
+            padding: 10px 15px 10px 15px;
+            border-radius: 20px;
+            font-size: 11pt;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            outline: none;
+        }
+
+        #autocomplete-list {
+            background: white;
+            border: 1px solid var(--border-color);
+            max-height: 250px;
+            font-size: 11pt;
+            overflow-y: auto;
+            display: none;
+            position: absolute;
+            box-sizing: border-box !important;
+            width: 100% !important;
+            border-radius: 12px;
+            margin-top: 45px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .suggestion-item:hover { background-color: #f8f9fa; }
+
+        #main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 200px); 
+            gap: 15px;
+            margin-top: 10px;
+            justify-content: center;
+            width: 100%;
+            max-width: 1320px; 
+        }
+
+        .container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 200px;
+            height: 325px; 
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-sizing: border-box;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .container.clicked {
+            background-color: var(--selected-bg);
+            border-color: var(--selected-border);
+            border-width: 2px;
+        }
+        
+		.alpha-card {
+			background-color: #f6d6d5 !important; 
+			border-color: #d0302f !important;
+		}
+		
+		.container.alpha-card.clicked {
+			background-color: #ecacac !important;
+			border-color: #d0302f !important;
+		}
+		
+		.container.alpha-card.clicked .item-title,
+		.container.alpha-card.clicked .label,
+		.container.alpha-card.clicked .item-number {
+			color: #9c2423;
+		}
+
+        .item-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+		.card-ball-icon {
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			width: 50px;
+			height: 50px;
+			z-index: 10;
+			pointer-events: none;
+			display: none;
+		}
+		
+		.container.clicked .card-ball-icon {
+			display: block;
+		}
+
+        .image-center-wrapper {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            width: 120px;
+            height: 112px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .main-img {
+            margin-top: auto;
+            max-width: 120px;
+            max-height: 112px;
+            object-fit: contain;
+        }
+
+        .sub-icons-container {
+            position: absolute;
+            right: -18px; 
+            bottom: -20px; 
+            display: flex;
+            gap: 6px;
+        }
+
+        .sub-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+        }
+        
+        .sub-icon + .sub-icon {
+			margin-left: -10px;
+		}
+
+        .item-title {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: var(--text-main);
+            display: block;
+        }
+
+        .info-row {
+            margin-top: 7px;
+            display: flex;
+            align-items: flex-start;
+            font-size: 12px;
+            color: #444;
+            line-height: 1.3;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-right: 5px;
+            white-space: nowrap;
+        }
+
+        .location-link {
+            color: var(--link-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .evolve-text {
+            color: #555;
+            word-wrap: break-word;
+            max-width: 140px;
+        }
+
+		.weakness-row {
+			margin-top: 4px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		
+		.weakness-label {
+			font-size: 11px;
+			font-weight: bold;
+			color: var(--text-muted);
+			margin-bottom: 4px;
+		}
+		
+		.weakness-icons {
+			display: flex;
+			gap: 4px;
+			justify-content: center;
+		}
+		
+		.weakness-icons img {
+			width: 24px;
+			height: 24px;
+			object-fit: contain;
+		}
+		
+		.weakness-item {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 2px;
+		}
+		
+		.multiplier-badge {
+			font-size: 9px;
+			font-weight: bold;
+			background: #eee;
+			padding: 1px 4px;
+			border-radius: 4px;
+			color: #444;
+		}
+		
+		.multiplier-4x {
+			background: #ff4444;
+			color: white;
+		}
+		
+		.emoji-highlight {
+			background-color: rgba(0, 0, 0, 0.25); /* Soft grey bubble */
+			padding: 2px 5px;
+			border-radius: 6px;
+			margin-left: 4px;
+			display: inline-block;
+			line-height: 1;
+		}
+		
+		.chance-highlight {
+			background-color: rgba(240, 25, 44, 0.5); /* Soft grey bubble */
+			padding: 2px 5px;
+			border-radius: 6px;
+			margin-left: 4px;
+			display: inline-block;
+			line-height: 1;
+			font-weight: bold;
+		}
+		
+		.fixed-highlight {
+			background-color: rgba(52, 200, 40, 0.5); /* Soft grey bubble */
+			padding: 2px 5px;
+			border-radius: 6px;
+			margin-left: 4px;
+			display: inline-block;
+			line-height: 1;
+			font-weight: bold;
+		}
+		
+		.percent {
+			color: #ff4444;
+			font-weight: bold;
+		}
+
+        .highlight-flash {
+            animation: flash 1s ease-in-out 2;
+        }
+        @keyframes flash {
+            50% { box-shadow: 0 0 20px var(--selected-border); transform: scale(1.02); }
+        }
+        
+        /* --- MOBILE RESPONSIVE OVERHAUL --- */
+		@media (max-width: 600px) {
+
+			body {
+				padding: 0 !important;
+				margin: 0 !important;
+				overflow-x: hidden;
+				width: 100%;
+			}
+		
+			#top-bar {
+				display: flex !important;
+				flex-direction: column !important;
+				align-items: center !important;
+				width: 100% !important;
+				left: 0 !important;
+				right: 0 !important;
+				margin-left: 0 !important;
+				margin-right: 0 !important;
+				padding: 10px !important;
+				height: auto !important;
+				box-sizing: border-box !important;
+			}
+
+			.container {
+				scroll-margin-top: 270px !important;
+			}
+			
+			.header-main-row, 
+			#top-bar > div:first-child {
+				display: flex !important;
+				flex-direction: column !important; 
+				width: 100% !important;
+				align-items: center !important;
+				gap: 0px !important;
+				max-width: 100% !important; 
+				padding: 0 10px !important;
+				box-sizing: border-box !important;
+			}
+		
+			.main-logo {
+				max-height: 75px !important;
+				margin: 0 auto !important;
+				display: block !important;
+			}
+			
+			.header-left {
+				flex-direction: row !important;
+				gap: 10px;
+				margin: 0px 0px 5px -20px;
+			}
+		
+			.logo-text {
+				font-size: 14px;
+				width: 60px;
+				text-align: left;
+				line-height: 1.1;
+			}
+		
+			#search-container {
+				width: 100% !important;
+				max-width: 100% !important;
+				margin: 5px 0px 10px 0px !important;
+				padding: 0 !important;
+				box-sizing: border-box !important;
+				flex: none !important; 
+			}
+		
+			#search-input {
+				width: 100% !important;
+				box-sizing: border-box !important;
+			}
+		
+			.header-right {
+				display: flex !important;
+				flex-direction: column !important;
+				width: 100% !important;
+				margin-top: -10px !important;
+				gap: 0 !important;
+				align-items: center !important;
+			}
+		
+			.counter-group {
+				display: flex !important;
+				width: 100% !important;
+				flex-direction: row !important;
+				justify-content: center !important;
+				align-items: center !important;
+				margin: 10px 0px 15px -20px !important;
+				height: auto !important;
+			}
+		
+			.ball-icon {
+				margin: 0px -5px 0px 0px !important;
+				width: 50px;
+				height: 50px;
+			}
+		
+			.counter-text-wrapper {
+				width: 70% !important; 
+				min-width: 0 !important;
+				margin: 0 !important;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+			}
+			
+			.progress-label {
+				margin-bottom: -3px !important;
+			}
+		
+			.progress-container {
+				width: 100% !important;
+				margin: 10px 0 20px 0 !important;
+				display: block !important;
+			}
+		
+			#progress-bar {
+				display: block !important;
+			}
+		
+			.header-actions-row {
+				display: flex !important;
+				flex-direction: row !important;
+				justify-content: center !important;
+				align-items: center !important;
+				gap: 10px !important;
+				width: 100% !important;
+				margin-top: 5px !important;
+			}
+		
+			#clear-all-btn, 
+			#filter-toggle-btn {
+				width: auto !important;
+				margin: -10px 0px 5px 0px !important;
+				height: 40px !important;
+				font-size: 10pt !important;
+				font-weight: bold;
+				white-space: nowrap !important;
+				cursor: pointer;
+			}
+		
+			#filter-progress-section {
+				display: none !important;
+			}
+		
+			#filter-toggle-btn {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 8px;
+				width: 50%;
+				padding: 8px;
+				background: #eee;
+				border: 1px solid var(--border-color);
+				border-radius: 8px;
+			}
+
+			#filter-container {
+				display: none !important;
+				flex-direction: column;
+				width: 100% !important;
+				padding: 15px;
+				box-sizing: border-box !important;
+				background: #f9f9f9;
+				border-top: 1px solid #ddd;
+				gap: 20px;
+			}
+			
+			#filter-container.active {
+				display: flex !important;
+			}
+			
+			#type-filters {
+				max-height: none !important;
+			}
+			
+			.filter-group {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				justify-content: left;
+				gap: 10px;
+				margin-left: -5px;
+			}
+		
+			#type-filters .filter-btn {
+				display: inline-flex !important;
+				align-items: center !important;
+				justify-content: center !important;
+				padding: 0 !important;
+				font-size: 0 !important;
+				gap: 0;
+				width: 44px !important;
+				height: 44px !important;
+				border-radius: 50% !important;
+				overflow: hidden;
+			}
+			
+			#type-filters .filter-btn img {
+				margin: 0 !important;
+				width: 24px !important;
+				height: 24px !important;
+			}
+			
+			#caught-filters .filter-btn,
+			#region-filters .filter-btn {
+				display: inline-flex !important;
+				align-items: center !important;
+				justify-content: center !important;
+				padding: 8px 12px !important;
+				font-size: 10pt !important;
+				width: auto !important;
+				height: 40px !important;
+				border-radius: 20px !important;
+				gap: 8px !important;
+			}
+			
+			#caught-filters .filter-btn img,
+			#region-filters .filter-btn img {
+				width: 20px !important;
+				height: 20px !important;
+				margin: 0 !important;
+			}
+		
+			#main-grid {
+				grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+				gap: 12px;
+				padding: 10px;
+				padding-left: 5px !important;
+				padding-right: 5px !important;
+				width: 100% !important;
+				max-width: 100% !important;
+				box-sizing: border-box !important;
+				justify-content: center !important; 
+				column-gap: 10px !important; 
+				row-gap: 10px !important;
+			}
+		
+			.container {
+				width: auto; 
+				height: 180px; 
+				padding: 5px;
+			}
+		
+			.image-center-wrapper {
+				width: 85px;
+				height: 85px;
+				margin-top: 5px;
+			}
+		
+			.main-img {
+				max-width: 85px;
+				max-height: 85px;
+			}
+		
+			.card-ball-icon {
+				width: 40px;
+				height: 40px;
+			}
+			
+			.item-title {
+				margin-top: 12px;
+				font-size: 0.95em;
+			}
+		
+			.sub-icons-container {
+				right: -12px;
+				bottom: -5px;
+			}
+		
+			.sub-icon {
+				width: 26px;
+				height: 26px;
+			}
+			
+			.sub-icon {
+				width: 26px;
+				height: 26px;
+			}
+			
+			.item-title {
+				margin: 5px 0px 0px 0px;
+			}
+			
+			.weakness-row {
+				padding: 0px;
+				margin: 0px 0px 0px 0px;
+			}
+			
+			.weakness-label {
+				margin: 0px;
+			}
+		
+			.weakness-icons {
+				gap: 0;
+			}
+			
+			.info-row,
+			.label,
+			.evolve-text {
+				display: none !important;
+			}
+		}
+		
+		@media (min-width: 601px) {
+			#filter-toggle-btn {
+				display: none;
+			}
+		}
+
+    </style>
+</head>
+<body>
+
+    <header id="top-bar">
+		<div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
+			<div class="header-left">
+				<img src="logos/za.png" alt="Logo" class="main-logo">
+				<div class="logo-text">Pokedex Tracker</div>
+			</div>
+			
+			<div id="search-container">
+				<input type="text" id="search-input" placeholder="Search Pokémon..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+				<div id="autocomplete-list" class="autocomplete-items"></div>
+			</div>
+			
+			<div class="header-right">
+				<div class="counter-group">
+					<img src="icons/ball.png" alt="Caught" class="ball-icon">
+					<div class="counter-text-wrapper">
+						<div class="progress-label">Pokémon caught</div> 
+						<div class="progress-container" style="overflow: visible; margin-bottom: 20px;">
+							<div id="progress-bar"></div>
+							<div id="caught-label" class="multiplier-badge">0</div>
+							<div id="total-label" class="multiplier-badge" style="right: 0;">422</div>
+						</div>
+						
+						<div id="filter-progress-section" style="display: block; margin-top: 10px;">
+							<div id="filter-progress-label" class="progress-label">Click a single filter to see details</div>
+							<div class="progress-container" style="overflow: visible;">
+								<div id="filter-progress-bar" style="height:100%; border-radius:10px; transition:width 0.3s ease; background-color: #eee;"></div>
+								<div id="filter-caught-label" class="multiplier-badge" style="position:absolute; top:16px; transform:translateX(-50%);">0</div>
+								<div id="filter-total-label" class="multiplier-badge" style="position:absolute; top:16px; right:0; transform:translateX(50%);">0</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="header-actions-row">
+					<button id="filter-toggle-btn" onclick="document.getElementById('filter-container').classList.toggle('active')">
+						<img src="icons/location.png" style="width:16px; height:16px;"> Show/Hide Filters
+					</button>
+					<button id="clear-all-btn">Clear All</button>
+				</div>
+			</div>
+		</div>
+		
+		<div id="filter-container">
+			<div class="filter-group" id="caught-filters">
+				<button class="filter-btn type-caught" data-type="status" data-value="caught">
+					<img src="icons/ball.png" alt="">Caught
+				</button>
+				<button class="filter-btn type-uncaught" data-type="status" data-value="uncaught">
+					<img src="icons/ball2.png" alt="">Not Caught
+				</button>
+			</div>
+			<div class="filter-group" id="region-filters">
+				<button class="filter-btn type-alpha" data-type="region" data-value="Alpha">
+					<img src="icons/alpha.png" alt="">Alpha
+				</button>
+				<button class="filter-btn type-nonalpha" data-type="region" data-value="Nonalpha">
+					<img src="icons/nonalpha.png" alt="">Non Alpha
+				</button>
+			</div>
+			<div class="filter-group" id="type-filters">
+				</div>
+		</div>
+	</header>
+
+    <div id="main-grid"></div>
+
+	<!-- Sprites found here https://projectpokemon.org/home/docs/spriteindex_148/ *\ -->
+	<!-- Also helpful: https://projectpokemon.org/home/gallery/category/2-image-dex/ -->
+	<!-- Also helpful: https://www.pkparaiso.com/imagenes/xy/sprites/animados/ & pokemon_name.gif -->
+	<!-- Perhaps best: https://play.pokemonshowdown.com/sprites/ani/?view=dir -->
+	<!-- URL Stem: "https://projectpokemon.org/images/sprites-models/swsh-normal-sprites/" & pokemon_name.gif -->
+	
+    <script>
+		const pokedexData = [
+			{ id: "001", name: "Chikorita", img: "chikorita.gif", type1: "Grass", type2: "", location: "Wild Zone 20", evolve: "" },
+			{ id: "001a", name: "Alpha Chikorita", img: "chikorita.gif", type1: "Grass", type2: "", location: "Wild Zone 20<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "002", name: "Bayleef", img: "bayleef.gif", type1: "Grass", type2: "", location: "Evolve Only", evolve: "Chikorita (Lvl 16)" },
+			{ id: "002a", name: "Alpha Bayleef", img: "bayleef.gif", type1: "Grass", type2: "", location: "Evolve Only", evolve: "Alpha Chikorita (Lvl 16)" },
+			{ id: "003", name: "Meganium", img: "meganium.gif", type1: "Grass", type2: "", location: "Evolve Only", evolve: "Bayleef (Lvl 32)" },
+			{ id: "003a", name: "Alpha Meganium", img: "meganium.gif", type1: "Grass", type2: "", location: "Evolve Only", evolve: "Alpha Bayleef (Lvl 32)" },
+			{ id: "004", name: "Tepig", img: "tepig.gif", type1: "Fire", type2: "", location: "Wild Zone 20", evolve: "" },
+			{ id: "004a", name: "Alpha Tepig", img: "tepig.gif", type1: "Fire", type2: "", location: "Wild Zone 20<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "005", name: "Pignite", img: "pignite.gif", type1: "Fire", type2: "Fighting", location: "Evolve Only", evolve: "Tepig (Lvl 17)" },
+			{ id: "005a", name: "Alpha Pignite", img: "pignite.gif", type1: "Fire", type2: "Fighting", location: "Evolve Only", evolve: "Alpha Tepig (Lvl 17)" },
+			{ id: "006", name: "Emboar", img: "emboar.gif", type1: "Fire", type2: "Fighting", location: "Evolve Only", evolve: "Pignite (Lvl 36)" },
+			{ id: "006a", name: "Alpha Emboar", img: "emboar.gif", type1: "Fire", type2: "Fighting", location: "Evolve Only", evolve: "Alpha Pignite (Lvl 36)" },
+			{ id: "007", name: "Totodile", img: "totodile.gif", type1: "Water", type2: "", location: "Wild Zone 20 ", evolve: "" },
+			{ id: "007a", name: "Alpha Totodile", img: "totodile.gif", type1: "Water", type2: "", location: "Wild Zone 20<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "008", name: "Croconaw", img: "croconaw.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Totodile (Lvl 18)" },
+			{ id: "008a", name: "Alpha Croconaw", img: "croconaw.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Alpha Totodile (Lvl 18)" },
+			{ id: "009", name: "Feraligatr", img: "feraligatr.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Croconaw (Lvl 30)" },
+			{ id: "009a", name: "Alpha Feraligatr", img: "feraligatr.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Alpha Croconaw (Lvl 30)" },
+			{ id: "010", name: "Fletchling", img: "fletchling.gif", type1: "Normal", type2: "Flying", location: "Wild Zone 1", evolve: "" },
+			{ id: "010a", name: "Alpha Fletchling", img: "fletchling.gif", type1: "Normal", type2: "Flying", location: "Wild Zone 3<span class='fixed-highlight'>FIXED</span><span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "011", name: "Fletchinder", img: "fletchinder.gif", type1: "Fire", type2: "Flying", location: "Wild Zone 9", evolve: "Fletchling (Lvl 17)" },
+			{ id: "011a", name: "Alpha Fletchinder", img: "fletchinder.gif", type1: "Fire", type2: "Flying", location: "Wild Zone 7<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Fletchling (Lvl 17)" },
+			{ id: "012", name: "Talonflame", img: "talonflame.gif", type1: "Fire", type2: "Flying", location: "Vert Sector 3 (On Roof)", evolve: "Fletchinder (Lvl 35)" },
+			{ id: "012a", name: "Alpha Talonflame", img: "talonflame.gif", type1: "Fire", type2: "Flying", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Fletchinder (Lvl 35)" },
+			{ id: "013", name: "Bunnelby", img: "bunnelby.gif", type1: "Normal", type2: "", location: "Wild Zones 1 & 5", evolve: "" },
+			{ id: "013a", name: "Alpha Bunnelby", img: "bunnelby.gif", type1: "Normal", type2: "", location: "Side Mission 1", evolve: "" },
+			{ id: "014", name: "Diggersby", img: "diggersby.gif", type1: "Normal", type2: "Ground", location: "Wild Zone 17", evolve: "Bunnelby (Lvl 20)" },
+			{ id: "014a", name: "Alpha Diggersby", img: "diggersby.gif", type1: "Normal", type2: "Ground", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Bunnelby (Lvl 20)" },
+			{ id: "015", name: "Scatterbug", img: "scatterbug.gif", type1: "Bug", type2: "", location: "Wild Zone 1", evolve: "" },
+			{ id: "015a", name: "Alpha Scatterbug", img: "scatterbug.gif", type1: "Bug", type2: "", location: "Wild Zone 1<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "016", name: "Spewpa", img: "spewpa.gif", type1: "Bug", type2: "", location: "Wild Zone 4<span class='emoji-highlight'>☀️</span>", evolve: "Scatterbug (Lvl 9)" },
+			{ id: "016a", name: "Alpha Spewpa", img: "spewpa.gif", type1: "Bug", type2: "", location: "Wild Zone 4<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>☀️</span>", evolve: "Alpha Scatterbug (Lvl 9)" },
+			{ id: "017", name: "Vivillon", img: "vivillon.gif", type1: "Bug", type2: "Flying", location: "Wild Zone 13<span class='emoji-highlight'>☀️</span>", evolve: "Spewpa (Lvl 12)" },
+			{ id: "017a", name: "Alpha Vivillon", img: "vivillon.gif", type1: "Bug", type2: "Flying", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Spewpa (Lvl 12)" },
+			{ id: "018", name: "Weedle", img: "weedle.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 1", evolve: "" },
+			{ id: "018a", name: "Alpha Weedle", img: "weedle.gif", type1: "Bug", type2: "Poison", location: "Side Mission 43", evolve: "" },
+			{ id: "019", name: "Kakuna", img: "kakuna.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 2", evolve: "Weedle (Lvl 7)" },
+			{ id: "019a", name: "Alpha Kakuna", img: "kakuna.gif", type1: "Bug", type2: "Poison", location: "Magenta Sector 9 (On Tree)", evolve: "Alpha Weedle (Lvl 7)" },
+			{ id: "020", name: "Beedrill", img: "beedrill.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 15<span class='emoji-highlight'>☀️</span>", evolve: "Kakuna (Lvl 10)" },
+			{ id: "020a", name: "Alpha Beedrill", img: "beedrill.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 15<span class='fixed-highlight'>FIXED</span><span class='emoji-highlight'>☀️</span>", evolve: "Alpha Kakuna (Lvl 10)" },
+			{ id: "021", name: "Pidgey", img: "pidgey.gif", type1: "Normal", type2: "Flying", location: "Wild Zones 1 & 5", evolve: "" },
+			{ id: "021a", name: "Alpha Pidgey", img: "pidgey.gif", type1: "Normal", type2: "Flying", location: "Wild Zone 1<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "022", name: "Pidgeotto", img: "pidgeotto.gif", type1: "Normal", type2: "Flying", location: "Wild Zone 5", evolve: "Pidgey (Lvl 18)" },
+			{ id: "022a", name: "Alpha Pidgeotto", img: "pidgeotto.gif", type1: "Normal", type2: "Flying", location: "Wild Zone 5<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Pidgey (Lvl 18)" },
+			{ id: "023", name: "Pidgeot", img: "pidgeot.gif", type1: "Normal", type2: "Flying", location: "Bleu Sector 5 (On SW Roof)", evolve: "Pidgeotto (Lvl 36)" },
+			{ id: "023a", name: "Alpha Pidgeot", img: "pidgeot.gif", type1: "Normal", type2: "Flying", location: "Jaune Sector 4 (On Roof)<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Pidgeotto (Lvl 36)" },
+			{ id: "024", name: "Mareep", img: "mareep.gif", type1: "Electric", type2: "", location: "Wild Zone 1", evolve: "" },
+			{ id: "024a", name: "Alpha Mareep", img: "mareep.gif", type1: "Electric", type2: "", location: "Wild Zone 1<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "025", name: "Flaaffy", img: "flaaffy.gif", type1: "Electric", type2: "", location: "Wild Zones 6 & 16", evolve: "Mareep (Lvl 15)" },
+			{ id: "025a", name: "Alpha Flaaffy", img: "flaaffy.gif", type1: "Electric", type2: "", location: "Wild Zones 6 & 16<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Mareep (Lvl 15)" },
+			{ id: "026", name: "Ampharos", img: "ampharos.gif", type1: "Electric", type2: "", location: "Evolve Only", evolve: "Flaaffy (Lvl 30)" },
+			{ id: "026a", name: "Alpha Ampharos", img: "ampharos.gif", type1: "Electric", type2: "", location: "Wild Zone 16<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Flaaffy (Lvl 30)" },
+			{ id: "027", name: "Patrat", img: "patrat.gif", type1: "Normal", type2: "", location: "Wild Zones 2 & 4", evolve: "" },
+			{ id: "027a", name: "Alpha Patrat", img: "patrat.gif", type1: "Normal", type2: "", location: "Coulant Waterway (In Courtyard)<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "028", name: "Watchog", img: "watchog.gif", type1: "Normal", type2: "", location: "Wild Zone 10", evolve: "Patrat (Lvl 20)" },
+			{ id: "028a", name: "Alpha Watchog", img: "watchog.gif", type1: "Normal", type2: "", location: "Wild Zone 10<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Patrat (Lvl 20)" },
+			{ id: "029", name: "Budew", img: "budew.gif", type1: "Grass", type2: "Poison", location: "Wild Zone 2", evolve: "" },
+			{ id: "029a", name: "Alpha Budew", img: "budew.gif", type1: "Grass", type2: "Poison", location: "Wild Zone 2<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "030", name: "Roselia", img: "roselia.gif", type1: "Grass", type2: "Poison", location: "Wild Zone 7", evolve: "Budew (Max Friendship)" },
+			{ id: "030a", name: "Alpha Roselia", img: "roselia.gif", type1: "Grass", type2: "Poison", location: "Wild Zone 7<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Budew (Max Friendship)" },
+			{ id: "031", name: "Roserade", img: "roserade.gif", type1: "Grass", type2: "Poison", location: "Wild Zone 20", evolve: "Roselia (Shiny Stone)" },
+			{ id: "031a", name: "Alpha Roserade", img: "roserade.gif", type1: "Grass", type2: "Poison", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Roselia (Shiny Stone)" },
+			{ id: "032", name: "Magikarp", img: "magikarp.gif", type1: "Water", type2: "", location: "Wild Zones 2 & 6", evolve: "" },
+			{ id: "032a", name: "Alpha Magikarp", img: "magikarp.gif", type1: "Water", type2: "", location: "Wild Zone 2<span class='fixed-highlight'>FIXED</span><span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "033", name: "Gyarados", img: "gyarados.gif", type1: "Water", type2: "Flying", location: "Wild Zone 11", evolve: "Magikarp (Lvl 20)" },
+			{ id: "033a", name: "Alpha Gyarados", img: "gyarados.gif", type1: "Water", type2: "Flying", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Magikarp (Lvl 20)" },
+			{ id: "034", name: "Binacle", img: "binacle.gif", type1: "Rock", type2: "Water", location: "Wild Zones 2 & 6", evolve: "" },
+			{ id: "034a", name: "Alpha Binacle", img: "binacle.gif", type1: "Rock", type2: "Water", location: "Wild Zone 6<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "035", name: "Barbaracle", img: "barbaracle.gif", type1: "Rock", type2: "Water", location: "Wild Zone 16<span class='emoji-highlight'>🌑</span>", evolve: "Binacle (Lvl 39)" },
+			{ id: "035a", name: "Alpha Barbaracle", img: "barbaracle.gif", type1: "Rock", type2: "Water", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Binacle (Lvl 39)" },
+			{ id: "036", name: "Staryu", img: "staryu.gif", type1: "Water", type2: "", location: "Wild Zones 2<span class='emoji-highlight'>🌑</span> & 10", evolve: "" },
+			{ id: "036a", name: "Alpha Staryu", img: "staryu.gif", type1: "Water", type2: "", location: "Wild Zone 2<span class='fixed-highlight'>FIXED</span><span class='emoji-highlight'>🌑</span>", evolve: "" },
+			{ id: "037", name: "Starmie", img: "starmie.gif", type1: "Water", type2: "Psychic", location: "Wild Zone 16<span class='emoji-highlight'>🌑</span>", evolve: "Staryu (Water Stone)" },
+			{ id: "037a", name: "Alpha Starmie", img: "starmie.gif", type1: "Water", type2: "Psychic", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Staryu (Water Stone)" },
+			{ id: "038", name: "Flabébé", img: "flabebe.gif", type1: "Fairy", type2: "", location: "Wild Zone 3<span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "038a", name: "Alpha Flabébé", img: "flabebe.gif", type1: "Fairy", type2: "", location: "Jaune Sector 2 (On Roof)<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "039", name: "Floette", img: "floette.gif", type1: "Fairy", type2: "", location: "Wild Zone 7", evolve: "Flabébé (Lvl 19)" },
+			{ id: "039a", name: "Alpha Floette", img: "floette.gif", type1: "Fairy", type2: "", location: "Wild Zone 7<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Flabébé (Lvl 19)" },
+			{ id: "040", name: "Florges", img: "florges.gif", type1: "Fairy", type2: "", location: "Wild Zone 16<span class='emoji-highlight'>☀️</span>", evolve: "Floette (Shiny Stone)" },
+			{ id: "040a", name: "Alpha Florges", img: "florges.gif", type1: "Fairy", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Floette (Shiny Stone)" },
+			{ id: "041", name: "Skiddo", img: "skiddo.gif", type1: "Grass", type2: "", location: "Wild Zone 3", evolve: "" },
+			{ id: "041a", name: "Alpha Skiddo", img: "skiddo.gif", type1: "Grass", type2: "", location: "Wild Zone 3<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "042", name: "Gogoat", img: "gogoat.gif", type1: "Grass", type2: "", location: "Wild Zone 12", evolve: "Skiddo (Lvl 32)" },
+			{ id: "042a", name: "Alpha Gogoat", img: "gogoat.gif", type1: "Grass", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Skiddo (Lvl 32)" },
+			{ id: "043", name: "Espurr", img: "espurr.gif", type1: "Psychic", type2: "", location: "Wild Zones 3 & 9", evolve: "" },
+			{ id: "043a", name: "Alpha Espurr", img: "espurr.gif", type1: "Psychic", type2: "", location: "Wild Zones 3 & 9<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "044", name: "Meowstic", img: "meowstic.gif", type1: "Psychic", type2: "", location: "Evolve Only", evolve: "Espurr (Lvl 25)" },
+			{ id: "044a", name: "Alpha Meowstic", img: "meowstic.gif", type1: "Psychic", type2: "", location: "Wild Zone 9<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Espurr (Lvl 25)" },
+			{ id: "045", name: "Litleo", img: "litleo.gif", type1: "Fire", type2: "Normal", location: "Wild Zone 3", evolve: "Meowstic (Lvl 35)" },
+			{ id: "045a", name: "Alpha Litleo", img: "litleo.gif", type1: "Fire", type2: "Normal", location: "Wild Zone 3<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Meowstic (Lvl 35)" },
+			{ id: "046", name: "Pyroar", img: "pyroar.gif", type1: "Fire", type2: "Normal", location: "Wild Zone 17", evolve: "" },
+			{ id: "046a", name: "Alpha Pyroar", img: "pyroar.gif", type1: "Fire", type2: "Normal", location: "Wild Zone 17<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "047", name: "Pancham", img: "pancham.gif", type1: "Fighting", type2: "", location: "Wild Zone 3", evolve: "" },
+			{ id: "047a", name: "Alpha Pancham", img: "pancham.gif", type1: "Fighting", type2: "", location: "Wild Zone 3<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "048", name: "Pangoro", img: "pangoro.gif", type1: "Fighting", type2: "Dark", location: "Evolve Only", evolve: "Pancham (Lvl 32 w/ Dark Type in Party)" },
+			{ id: "048a", name: "Alpha Pangoro", img: "pangoro.gif", type1: "Fighting", type2: "Dark", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Pancham (Lvl 32 w/ Dark Type in Party)" },
+			{ id: "049", name: "Trubbish", img: "trubbish.gif", type1: "Poison", type2: "", location: "Rouge Sector 6 (On Trash Bins)", evolve: "" },
+			{ id: "049a", name: "Alpha Trubbish", img: "trubbish.gif", type1: "Poison", type2: "", location: "Vert Sector 5<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "050", name: "Garbodor", img: "garbodor.gif", type1: "Poison", type2: "", location: "Juane Sector 7 (In Alley)", evolve: "Trubbish (Lvl 36)" },
+			{ id: "050a", name: "Alpha Garbodor", img: "garbodor.gif", type1: "Poison", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Trubbish (Lvl 36)" },
+			{ id: "051", name: "Dedenne", img: "dedenne.gif", type1: "Electric", type2: "Fairy", location: "Magenta Plaza (Rooftop)", evolve: "" },
+			{ id: "051a", name: "Alpha Dedenne", img: "dedenne.gif", type1: "Electric", type2: "Fairy", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "052", name: "Pichu", img: "pichu.gif", type1: "Electric", type2: "", location: "Wild Zone 1", evolve: "" },
+			{ id: "052a", name: "Alpha Pichu", img: "pichu.gif", type1: "Electric", type2: "", location: "Wild Zone 1<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "053", name: "Pikachu", img: "pikachu.gif", type1: "Electric", type2: "", location: "Wild Zone 3", evolve: "Pichu (High Friendship)" },
+			{ id: "053a", name: "Alpha Pikachu", img: "pikachu.gif", type1: "Electric", type2: "", location: "Wild Zone 6<span class='fixed-highlight'>FIXED</span><span class='emoji-highlight'>🌑</span>", evolve: "Alpha Pichu (High Friendship)" },
+			{ id: "054", name: "Raichu", img: "raichu.gif", type1: "Electric", type2: "", location: "Evolve Only", evolve: "Pikachu (Thunder Stone)" },
+			{ id: "054a", name: "Alpha Raichu", img: "raichu.gif", type1: "Electric", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Pikachu (Thunder Stone)" },
+			{ id: "055", name: "Cleffa", img: "cleffa.gif", type1: "Fairy", type2: "", location: "Wild Zone 19<span class='emoji-highlight'>🌑</span>", evolve: "" },
+			{ id: "055a", name: "Alpha Cleffa", img: "cleffa.gif", type1: "Fairy", type2: "", location: "Wild Zone 19<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>🌑</span>", evolve: "" },
+			{ id: "056", name: "Clefairy", img: "clefairy.gif", type1: "Fairy", type2: "", location: "Wild Zone 19<span class='emoji-highlight'>☀️</span>", evolve: "Cleffa (High Friendship)" },
+			{ id: "056a", name: "Alpha Clefairy", img: "clefairy.gif", type1: "Fairy", type2: "", location: "Wild Zone 19<span class='fixed-highlight'>FIXED</span><span class='emoji-highlight'>☀️</span>", evolve: "Alpha Cleffa (High Friendship)" },
+			{ id: "057", name: "Clefable", img: "clefable.gif", type1: "Fairy", type2: "", location: "Evolve Only", evolve: "Clefairy (Moon Stone)" },
+			{ id: "057a", name: "Alpha Clefable", img: "clefable.gif", type1: "Fairy", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span><span class='emoji-highlight'>🌑</span>", evolve: "Alpha Clefairy (Moon Stone)" },
+			{ id: "058", name: "Spinarak", img: "spinarak.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 4", evolve: "" },
+			{ id: "058a", name: "Alpha Spinarak", img: "spinarak.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 4<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "059", name: "Ariados", img: "ariados.gif", type1: "Bug", type2: "Poison", location: "Lumiose Sewers", evolve: "Spinarak (Lvl 22)" },
+			{ id: "059a", name: "Alpha Ariados", img: "ariados.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Spinarak (Lvl 22)" },
+			{ id: "060", name: "Ekans", img: "ekans.gif", type1: "Poison", type2: "", location: "Wild Zone 4<span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "060a", name: "Alpha Ekans", img: "ekans.gif", type1: "Poison", type2: "", location: "Lysandre Labs<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "061", name: "Arbok", img: "arbok.gif", type1: "Poison", type2: "", location: "Evolve Only", evolve: "Ekans (Lvl 22)" },
+			{ id: "061a", name: "Alpha Arbok", img: "arbok.gif", type1: "Poison", type2: "", location: "Wild Zone 10<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Ekans (Lvl 22)" },
+			{ id: "062", name: "Abra", img: "abra.gif", type1: "Psychic", type2: "", location: "Wild Zone 5", evolve: "" },
+			{ id: "062a", name: "Alpha Abra", img: "abra.gif", type1: "Psychic", type2: "", location: "Wild Zone 5<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "063", name: "Kadabra", img: "kadabra.gif", type1: "Psychic", type2: "", location: "Wild Zone 9<span class='emoji-highlight'>🌑</span>", evolve: "Abra (Lvl 16)" },
+			{ id: "063a", name: "Alpha Kadabra", img: "kadabra.gif", type1: "Psychic", type2: "", location: "Wild Zone 9<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>🌑</span>", evolve: "Alpha Abra (Lvl 16)" },
+			{ id: "064", name: "Alakazam", img: "alakazam.gif", type1: "Psychic", type2: "", location: "Evolve Only", evolve: "Kadabra (Trade)" },
+			{ id: "064a", name: "Alpha Alakazam", img: "alakazam.gif", type1: "Psychic", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Kadabra (Trade)" },
+			{ id: "065", name: "Gastly", img: "gastly.gif", type1: "Ghost", type2: "Poison", location: "Wild Zone 4", evolve: "" },
+			{ id: "065a", name: "Alpha Gastly", img: "gastly.gif", type1: "Ghost", type2: "Poison", location: "Wild Zone 4<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "066", name: "Haunter", img: "haunter.gif", type1: "Ghost", type2: "Poison", location: "Wild Zone 15<span class='emoji-highlight'>🌑</span>", evolve: "Gastly (Lvl 25)" },
+			{ id: "066a", name: "Alpha Haunter", img: "haunter.gif", type1: "Ghost", type2: "Poison", location: "Wild Zone 15<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>🌑</span>", evolve: "Alpha Gastly (Lvl 25)" },
+			{ id: "067", name: "Gengar", img: "gengar.gif", type1: "Ghost", type2: "Poison", location: "Main Mission 20 (In Old Building)", evolve: "Haunter (Trade)" },
+			{ id: "067a", name: "Alpha Gengar", img: "gengar.gif", type1: "Ghost", type2: "Poison", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Haunter (Trade)" },
+			{ id: "068", name: "Venipede", img: "venipede.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 5", evolve: "" },
+			{ id: "068a", name: "Alpha Venipede", img: "venipede.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 5<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "069", name: "Whirlipede", img: "whirlipede.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 15<span class='emoji-highlight'>☀️</span>", evolve: "Venipede (Lvl 22)" },
+			{ id: "069a", name: "Alpha Whirlipede", img: "whirlipede.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 5<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Venipede (Lvl 22)" },
+			{ id: "070", name: "Scolipede", img: "scolipede.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 15<span class='emoji-highlight'>☀️</span>", evolve: "Whirlipede (Lvl 30)" },
+			{ id: "070a", name: "Alpha Scolipede", img: "scolipede.gif", type1: "Bug", type2: "Poison", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Whirlipede (Lvl 30)" },
+			{ id: "071", name: "Honedge", img: "honedge.gif", type1: "Steel", type2: "Ghost", location: "Wild Zone 4<span class='emoji-highlight'>🌑</span>", evolve: "" },
+			{ id: "071a", name: "Alpha Honedge", img: "honedge.gif", type1: "Steel", type2: "Ghost", location: "Wild Zone 4<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>🌑</span>", evolve: "" },
+			{ id: "072", name: "Doublade", img: "doublade.gif", type1: "Steel", type2: "Ghost", location: "Lysandre Labs", evolve: "Honedge (Lvl 35)" },
+			{ id: "072a", name: "Alpha Doublade", img: "doublade.gif", type1: "Steel", type2: "Ghost", location: "Lysandre Labs<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Honedge (Lvl 35)" },
+			{ id: "073", name: "Aegislash", img: "aegislash.gif", type1: "Steel", type2: "Ghost", location: "Evolve Only", evolve: "Doublade (Dusk Stone)" },
+			{ id: "073a", name: "Alpha Aegislash", img: "aegislash.gif", type1: "Steel", type2: "Ghost", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Doublade (Dusk Stone)" },
+			{ id: "074", name: "Bellsprout", img: "bellsprout.gif", type1: "Grass", type2: "Poison", location: "Wild Zones 5 & 10", evolve: "" },
+			{ id: "074a", name: "Alpha Bellsprout", img: "bellsprout.gif", type1: "Grass", type2: "Poison", location: "Wild Zone 5<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "075", name: "Weepinbell", img: "weepinbell.gif", type1: "Grass", type2: "Poison", location: "Wild Zone 13<span class='emoji-highlight'>☀️</span>", evolve: "Bellsprout (Lvl 21)" },
+			{ id: "075a", name: "Alpha Weepinbell", img: "weepinbell.gif", type1: "Grass", type2: "Poison", location: "Wild Zone 13<span class='fixed-highlight'>FIXED</span><span class='emoji-highlight'>☀️</span>", evolve: "Alpha Bellsprout (Lvl 21)" },
+			{ id: "076", name: "Victreebel", img: "victreebel.gif", type1: "Grass", type2: "Poison", location: "Evolve Only", evolve: "Weepinbell (Leaf Stone)" },
+			{ id: "076a", name: "Alpha Victreebel", img: "victreebel.gif", type1: "Grass", type2: "Poison", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Weepinbell (Leaf Stone)" },
+			{ id: "077", name: "Pansage", img: "pansage.gif", type1: "Grass", type2: "", location: "Hibernal Avenue (In Trees)", evolve: "" },
+			{ id: "077a", name: "Alpha Pansage", img: "pansage.gif", type1: "Grass", type2: "", location: "Bleu Sector 6 (On Roof)<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "078", name: "Simisage", img: "simisage.gif", type1: "Grass", type2: "", location: "Evolve Only", evolve: "Pansage (Leaf Stone)" },
+			{ id: "078a", name: "Alpha Simisage", img: "simisage.gif", type1: "Grass", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Pansage (Leaf Stone)" },
+			{ id: "079", name: "Pansear", img: "pansear.gif", type1: "Fire", type2: "", location: "Hibernal Avenue (In Trees)", evolve: "" },
+			{ id: "079a", name: "Alpha Pansear", img: "pansear.gif", type1: "Fire", type2: "", location: "Bleu Sector 6 (On Roof)<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "080", name: "Simisear", img: "simisear.gif", type1: "Fire", type2: "", location: "Evolve Only", evolve: "Pansear (Fire Stone)" },
+			{ id: "080a", name: "Alpha Simisear", img: "simisear.gif", type1: "Fire", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Pansear (Fire Stone)" },
+			{ id: "081", name: "Panpour", img: "panpour.gif", type1: "Water", type2: "", location: "Hibernal Avenue (In Trees)", evolve: "" },
+			{ id: "081a", name: "Alpha Panpour", img: "panpour.gif", type1: "Water", type2: "", location: "Bleu Sector 6 (On Roof)<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "082", name: "Simipour", img: "simipour.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Panpour (Water Stone)" },
+			{ id: "082a", name: "Alpha Simipour", img: "simipour.gif", type1: "Water", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Panpour (Water Stone)" },
+			{ id: "083", name: "Meditite", img: "meditite.gif", type1: "Fighting", type2: "Psychic", location: "Wild Zone 6<span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "083a", name: "Alpha Meditite", img: "meditite.gif", type1: "Fighting", type2: "Psychic", location: "Wild Zone 6<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "084", name: "Medicham", img: "medicham.gif", type1: "Fighting", type2: "Psychic", location: "Wild Zone 16<span class='emoji-highlight'>☀️</span>", evolve: "Meditite (Lvl 37)" },
+			{ id: "084a", name: "Alpha Medicham", img: "medicham.gif", type1: "Fighting", type2: "Psychic", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Meditite (Lvl 37)" },
+			{ id: "085", name: "Electrike", img: "electrike.gif", type1: "Electric", type2: "", location: "Wild Zone 5", evolve: "" },
+			{ id: "085a", name: "Alpha Electrike", img: "electrike.gif", type1: "Electric", type2: "", location: "Lysandre Labs<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "086", name: "Manectric", img: "manectric.gif", type1: "Electric", type2: "", location: "Lysandre Labs", evolve: "Electrike (Lvl 26)" },
+			{ id: "086a", name: "Alpha Manectric", img: "manectric.gif", type1: "Electric", type2: "", location: "Wild Zone 9<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Electrike (Lvl 26)" },
+			{ id: "087", name: "Ralts", img: "ralts.gif", type1: "Psychic", type2: "Fairy", location: "Vert Sector 4 (In Courtyard)", evolve: "" },
+			{ id: "087a", name: "Alpha Ralts", img: "ralts.gif", type1: "Psychic", type2: "Fairy", location: "Bleu Sector 7 (In Courtyard)<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "088", name: "Kirlia", img: "kirlia.gif", type1: "Psychic", type2: "Fairy", location: "Evolve Only", evolve: "Ralts (Lvl 20)" },
+			{ id: "088a", name: "Alpha Kirlia", img: "kirlia.gif", type1: "Psychic", type2: "Fairy", location: "Evolve Only", evolve: "Alpha Ralts (Lvl 20)" },
+			{ id: "089", name: "Gardevoir", img: "gardevoir.gif", type1: "Psychic", type2: "Fairy", location: "Wild Zone 20", evolve: "Kirlia (Lvl 30)" },
+			{ id: "089a", name: "Alpha Gardevoir", img: "gardevoir.gif", type1: "Psychic", type2: "Fairy", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Kirlia (Lvl 30)" },
+			{ id: "090", name: "Gallade", img: "gallade.gif", type1: "Psychic", type2: "Fighting", location: "Evolve Only", evolve: "Gardevoir (Dawn Stone on Male)" },
+			{ id: "090a", name: "Alpha Gallade", img: "gallade.gif", type1: "Psychic", type2: "Fighting", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Gardevoir (Dawn Stone on Male)" },
+			{ id: "091", name: "Houndour", img: "houndour.gif", type1: "Dark", type2: "Fire", location: "Wild Zone 6", evolve: "" },
+			{ id: "091a", name: "Alpha Houndour", img: "houndour.gif", type1: "Dark", type2: "Fire", location: "Lysandre Labs<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "092", name: "Houndoom", img: "houndoom.gif", type1: "Dark", type2: "Fire", location: "Lysandre Labs", evolve: "Houndour (Lvl 24)" },
+			{ id: "092a", name: "Alpha Houndoom", img: "houndoom.gif", type1: "Dark", type2: "Fire", location: "Wild Zone 6<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Houndour (Lvl 24)" },
+			{ id: "093", name: "Swablu", img: "swablu.gif", type1: "Normal", type2: "Flying", location: "Wild Zones 6 & 18<span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "093a", name: "Alpha Swablu", img: "swablu.gif", type1: "Normal", type2: "Flying", location: "Wild Zones 6 & 18<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "094", name: "Altaria", img: "altaria.gif", type1: "Dragon", type2: "Flying", location: "Wild Zone 18<span class='emoji-highlight'>☀️</span>", evolve: "Swablu (Lvl 35)" },
+			{ id: "094a", name: "Alpha Altaria", img: "altaria.gif", type1: "Dragon", type2: "Flying", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Swablu (Lvl 35)" },
+			{ id: "095", name: "Audino", img: "audino.gif", type1: "Normal", type2: "", location: "Wild Zones 7 & 19", evolve: "" },
+			{ id: "095a", name: "Alpha Audino", img: "audino.gif", type1: "Normal", type2: "", location: "Wild Zones 7 & 19<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "096", name: "Spritzee", img: "spritzee.gif", type1: "Fairy", type2: "", location: "Bleu Sector 5 (On Market Stalls)", evolve: "" },
+			{ id: "096a", name: "Alpha Spritzee", img: "spritzee.gif", type1: "Fairy", type2: "", location: "Rouge Sector 7 (On Roof)<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "097", name: "Aromatisse", img: "aromatisse.gif", type1: "Fairy", type2: "", location: "Evolve Only", evolve: "Spritzee (Trade holding Sachet)" },
+			{ id: "097a", name: "Alpha Aromatisse", img: "aromatisse.gif", type1: "Fairy", type2: "", location: "Evolve Only", evolve: "Alpha Spritzee (Trade holding Sachet)" },
+			{ id: "098", name: "Swirlix", img: "swirlix.gif", type1: "Fairy", type2: "", location: "Bleu Sector 5 (On Market Stalls)", evolve: "" },
+			{ id: "098a", name: "Alpha Swirlix", img: "swirlix.gif", type1: "Fairy", type2: "", location: "Magenta Sector 3 (On Roof)<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "099", name: "Slurpuff", img: "slurpuff.gif", type1: "Fairy", type2: "", location: "Evolve Only", evolve: "Swirlix (Trade holding Whipped Dream)" },
+			{ id: "099a", name: "Alpha Slurpuff", img: "slurpuff.gif", type1: "Fairy", type2: "", location: "Evolve Only", evolve: "Alpha Swirlix (Trade holding Whipped Dream)" },
+			{ id: "100", name: "Eevee", img: "eevee.gif", type1: "Normal", type2: "", location: "Wild Zone 19 & Magneta Sector 9 (On Roof)", evolve: "" },
+			{ id: "100a", name: "Alpha Eevee", img: "eevee.gif", type1: "Normal", type2: "", location: "Wild Zone 19<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "101", name: "Vaporeon", img: "vaporeon.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Eevee (Water Stone)" },
+			{ id: "101a", name: "Alpha Vaporeon", img: "vaporeon.gif", type1: "Water", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Eevee (Water Stone)" },
+			{ id: "102", name: "Jolteon", img: "jolteon.gif", type1: "Electric", type2: "", location: "Evolve Only", evolve: "Eevee (Thunder Stone)" },
+			{ id: "102a", name: "Alpha Jolteon", img: "jolteon.gif", type1: "Electric", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Eevee (Thunder Stone)" },
+			{ id: "103", name: "Flareon", img: "flareon.gif", type1: "Fire", type2: "", location: "Evolve Only", evolve: "Eevee (Fire Stone)" },
+			{ id: "103a", name: "Alpha Flareon", img: "flareon.gif", type1: "Fire", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Eevee (Fire Stone)" },
+			{ id: "104", name: "Espeon", img: "espeon.gif", type1: "Psychic", type2: "", location: "Evolve Only", evolve: "Eevee (High Friendship During Day)" },
+			{ id: "104a", name: "Alpha Espeon", img: "espeon.gif", type1: "Psychic", type2: "", location: "Evolve Only", evolve: "Alpha Eevee (High Friendship During Day)" },
+			{ id: "105", name: "Umbreon", img: "umbreon.gif", type1: "Dark", type2: "", location: "Evolve Only", evolve: "Eevee (High Friendship During Night)" },
+			{ id: "105a", name: "Alpha Umbreon", img: "umbreon.gif", type1: "Dark", type2: "", location: "Evolve Only", evolve: "Alpha Eevee (High Friendship During Night)" },
+			{ id: "106", name: "Leafeon", img: "leafeon.gif", type1: "Grass", type2: "", location: "Evolve Only", evolve: "Eevee (Leaf Stone)" },
+			{ id: "106a", name: "Alpha Leafeon", img: "leafeon.gif", type1: "Grass", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Eevee (Leaf Stone)" },
+			{ id: "107", name: "Glaceon", img: "glaceon.gif", type1: "Ice", type2: "", location: "Evolve Only", evolve: "Eevee (Ice Stone)" },
+			{ id: "107a", name: "Alpha Glaceon", img: "glaceon.gif", type1: "Ice", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Eevee (Ice Stone)" },
+			{ id: "108", name: "Sylveon", img: "sylveon.gif", type1: "Fairy", type2: "", location: "Evolve Only", evolve: "Eevee (Max Friendship w/ Fairy Move)" },
+			{ id: "108a", name: "Alpha Sylveon", img: "sylveon.gif", type1: "Fairy", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Eevee (Max Friendship w/ Fairy Move)" },
+			{ id: "109", name: "Buneary", img: "buneary.gif", type1: "Normal", type2: "", location: "Wild Zone 6", evolve: "" },
+			{ id: "109a", name: "Alpha Buneary", img: "buneary.gif", type1: "Normal", type2: "", location: "Wild Zone 6<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "110", name: "Lopunny", img: "lopunny.gif", type1: "Normal", type2: "", location: "Evolve Only", evolve: "Buneary (High Friendship)" },
+			{ id: "110a", name: "Alpha Lopunny", img: "lopunny.gif", type1: "Normal", type2: "", location: "Wild Zone 18<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Buneary (High Friendship)" },
+			{ id: "111", name: "Shuppet", img: "shuppet.gif", type1: "Ghost", type2: "", location: "Wild Zones 7 & 15<span class='emoji-highlight'>🌑</span>", evolve: "" },
+			{ id: "111a", name: "Alpha Shuppet", img: "shuppet.gif", type1: "Ghost", type2: "", location: "Wild Zones 7 & 15<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>🌑</span>", evolve: "" },
+			{ id: "112", name: "Banette", img: "banette.gif", type1: "Ghost", type2: "", location: "Evolve Only", evolve: "Shuppet (Lvl 37)" },
+			{ id: "112a", name: "Alpha Banette", img: "banette.gif", type1: "Ghost", type2: "", location: "Wild Zone 15<span class='emoji-highlight'>🌑</span><span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Shuppet (Lvl 37)" },
+			{ id: "113", name: "Vanillite", img: "vanillite.gif", type1: "Ice", type2: "", location: "Wild Zones 7 & 12", evolve: "" },
+			{ id: "113a", name: "Alpha Vanillite", img: "vanillite.gif", type1: "Ice", type2: "", location: "Wild Zones 7 & 12<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "114", name: "Vanillish", img: "vanillish.gif", type1: "Ice", type2: "", location: "Evolve Only", evolve: "Vanillite (Lvl 35)" },
+			{ id: "114a", name: "Alpha Vanillish", img: "vanillish.gif", type1: "Ice", type2: "", location: "Evolve Only", evolve: "Alpha Vanillite (Lvl 35)" },
+			{ id: "115", name: "Vanilluxe", img: "vanilluxe.gif", type1: "Ice", type2: "", location: "Evolve Only", evolve: "Vanillish (Lvl 47)" },
+			{ id: "115a", name: "Alpha Vanilluxe", img: "vanilluxe.gif", type1: "Ice", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Vanillish (Lvl 47)" },
+			{ id: "116", name: "Numel", img: "numel.gif", type1: "Fire", type2: "Ground", location: "Wild Zone 8", evolve: "" },
+			{ id: "116a", name: "Alpha Numel", img: "numel.gif", type1: "Fire", type2: "Ground", location: "Wild Zone 8<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "117", name: "Camerupt", img: "camerupt.gif", type1: "Fire", type2: "Ground", location: "Evolve Only", evolve: "Numel (Lvl 33)" },
+			{ id: "117a", name: "Alpha Camerupt", img: "camerupt.gif", type1: "Fire", type2: "Ground", location: "Wild Zone 8<span class='fixed-highlight'>FIXED</span><span class='emoji-highlight'>☀️</span>", evolve: "Alpha Numel (Lvl 33)" },
+			{ id: "118", name: "Hippopotas", img: "hippopotas.gif", type1: "Ground", type2: "", location: "Wild Zone 7<span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "118a", name: "Alpha Hippopotas", img: "hippopotas.gif", type1: "Ground", type2: "", location: "Wild Zone 7<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "119", name: "Hippowdon", img: "hippowdon.gif", type1: "Ground", type2: "", location: "Wild Zone 20", evolve: "Hippopotas (Lvl 34)" },
+			{ id: "119a", name: "Alpha Hippowdon", img: "hippowdon.gif", type1: "Ground", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Hippopotas (Lvl 34)" },
+			{ id: "120", name: "Drilbur", img: "drilbur.gif", type1: "Ground", type2: "", location: "Wild Zones 8 & 14", evolve: "" },
+			{ id: "120a", name: "Alpha Drilbur", img: "drilbur.gif", type1: "Ground", type2: "", location: "Wild Zones 8 & 14<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "121", name: "Excadrill", img: "excadrill.gif", type1: "Ground", type2: "Steel", location: "Wild Zone 14", evolve: "Drilbur (Lvl 31)" },
+			{ id: "121a", name: "Alpha Excadrill", img: "excadrill.gif", type1: "Ground", type2: "Steel", location: "Wild Zone 14<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Drilbur (Lvl 31)" },
+			{ id: "122", name: "Sandile", img: "sandile.gif", type1: "Ground", type2: "Dark", location: "Wild Zone 8", evolve: "" },
+			{ id: "122a", name: "Alpha Sandile", img: "sandile.gif", type1: "Ground", type2: "Dark", location: "Wild Zone 8<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "123", name: "Krokorok", img: "krokorok.gif", type1: "Ground", type2: "Dark", location: "Wild Zone 8", evolve: "Sandile (Lvl 29)" },
+			{ id: "123a", name: "Alpha Krokorok", img: "krokorok.gif", type1: "Ground", type2: "Dark", location: "Wild Zone 8<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Sandile (Lvl 29)" },
+			{ id: "124", name: "Krookodile", img: "krookodile.gif", type1: "Ground", type2: "Dark", location: "Evolve Only", evolve: "Krokorok (Lvl 40)" },
+			{ id: "124a", name: "Alpha Krookodile", img: "krookodile.gif", type1: "Ground", type2: "Dark", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Krokorok (Lvl 40)" },
+			{ id: "125", name: "Machop", img: "machop.gif", type1: "Fighting", type2: "", location: "Wild Zones 8 & 12", evolve: "" },
+			{ id: "125a", name: "Alpha Machop", img: "machop.gif", type1: "Fighting", type2: "", location: "Wild Zones 8 & 12<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "126", name: "Machoke", img: "machoke.gif", type1: "Fighting", type2: "", location: "Wild Zone 12", evolve: "Machop (Lvl 28)" },
+			{ id: "126a", name: "Alpha Machoke", img: "machoke.gif", type1: "Fighting", type2: "", location: "Wild Zone 12<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Machop (Lvl 28)" },
+			{ id: "127", name: "Machamp", img: "machamp.gif", type1: "Fighting", type2: "", location: "Evolve Only", evolve: "Machoke (Trade)" },
+			{ id: "127a", name: "Alpha Machamp", img: "machamp.gif", type1: "Fighting", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Machoke (Trade)" },
+			{ id: "128", name: "Gible", img: "gible.gif", type1: "Dragon", type2: "Ground", location: "Wild Zone 8", evolve: "" },
+			{ id: "128a", name: "Alpha Gible", img: "gible.gif", type1: "Dragon", type2: "Ground", location: "Wild Zone 8<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "129", name: "Gabite", img: "gabite.gif", type1: "Dragon", type2: "Ground", location: "Evolve Only", evolve: "Gible (Lvl 24)" },
+			{ id: "129a", name: "Alpha Gabite", img: "gabite.gif", type1: "Dragon", type2: "Ground", location: "Evolve Only", evolve: "Alpha Gible (Lvl 24)" },
+			{ id: "130", name: "Garchomp", img: "garchomp.gif", type1: "Dragon", type2: "Ground", location: "Evolve Only", evolve: "Gabite (Lvl 48)" },
+			{ id: "130a", name: "Alpha Garchomp", img: "garchomp.gif", type1: "Dragon", type2: "Ground", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Gabite (Lvl 48)" },
+			{ id: "131", name: "Carbink", img: "carbink.gif", type1: "Rock", type2: "Fairy", location: "Wild Zone 9", evolve: "" },
+			{ id: "131a", name: "Alpha Carbink", img: "carbink.gif", type1: "Rock", type2: "Fairy", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "132", name: "Sableye", img: "sableye.gif", type1: "Dark", type2: "Ghost", location: "Wild Zone 9", evolve: "" },
+			{ id: "132a", name: "Alpha Sableye", img: "sableye.gif", type1: "Dark", type2: "Ghost", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "133", name: "Mawile", img: "mawile.gif", type1: "Steel", type2: "Fairy", location: "Wild Zone 9", evolve: "" },
+			{ id: "133a", name: "Alpha Mawile", img: "mawile.gif", type1: "Steel", type2: "Fairy", location: "Wild Zone 17<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "134", name: "Absol", img: "absol.gif", type1: "Dark", type2: "", location: "Main Mission 9", evolve: "" },
+			{ id: "134a", name: "Alpha Absol", img: "absol.gif", type1: "Dark", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "135", name: "Riolu", img: "riolu.gif", type1: "Fighting", type2: "", location: "Rouge Sector 4 (On SW Roof)<span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "135a", name: "Alpha Riolu", img: "riolu.gif", type1: "Fighting", type2: "", location: "Rouge Sector 4 (On SW Roof)<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "136", name: "Lucario", img: "lucario.gif", type1: "Fighting", type2: "Steel", location: "Wild Zone 20", evolve: "Riolu (High Friendship at Day)" },
+			{ id: "136a", name: "Alpha Lucario", img: "lucario.gif", type1: "Fighting", type2: "Steel", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Riolu (High Friendship at Day)" },
+			{ id: "137", name: "Slowpoke", img: "slowpoke.gif", type1: "Water", type2: "Psychic", location: "Wild Zones 10 & 11", evolve: "" },
+			{ id: "137a", name: "Alpha Slowpoke", img: "slowpoke.gif", type1: "Water", type2: "Psychic", location: "Wild Zones 10 & 11<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "138", name: "Slowbro", img: "slowbro.gif", type1: "Water", type2: "Psychic", location: "Evolve Only", evolve: "Slowpoke (Lvl 37)" },
+			{ id: "138a", name: "Alpha Slowbro", img: "slowbro.gif", type1: "Water", type2: "Psychic", location: "Wild Zone 11<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Slowpoke (Lvl 37)" },
+			{ id: "139", name: "Slowking", img: "slowking.gif", type1: "Water", type2: "Psychic", location: "Evolve Only", evolve: "Slowpoke (Trade Holding King's Rock)" },
+			{ id: "139a", name: "Alpha Slowking", img: "slowking.gif", type1: "Water", type2: "Psychic", location: "Evolve Only", evolve: "Alpha Slowpoke (Trade Holding King's Rock)" },
+			{ id: "140", name: "Carvanha", img: "carvanha.gif", type1: "Water", type2: "Dark", location: "Wild Zone 10", evolve: "" },
+			{ id: "140a", name: "Alpha Carvanha", img: "carvanha.gif", type1: "Water", type2: "Dark", location: "Wild Zone 10<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "141", name: "Sharpedo", img: "sharpedo.gif", type1: "Water", type2: "Dark", location: "Evolve Only", evolve: "Carvanha (Lvl 30)" },
+			{ id: "141a", name: "Alpha Sharpedo", img: "sharpedo.gif", type1: "Water", type2: "Dark", location: "Wild Zone 10<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Carvanha (Lvl 30)" },
+			{ id: "142", name: "Tynamo", img: "tynamo.gif", type1: "Electric", type2: "", location: "Wild Zone 10", evolve: "" },
+			{ id: "142a", name: "Alpha Tynamo", img: "tynamo.gif", type1: "Electric", type2: "", location: "Wild Zone 10<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "143", name: "Eelektrik", img: "eelektrik.gif", type1: "Electric", type2: "", location: "Evolve Only", evolve: "Tynamo (Lvl 39)" },
+			{ id: "143a", name: "Alpha Eelektrik", img: "eelektrik.gif", type1: "Electric", type2: "", location: "Evolve Only", evolve: "Alpha Tynamo (Lvl 39)" },
+			{ id: "144", name: "Eelektross", img: "eelektross.gif", type1: "Electric", type2: "", location: "Evolve Only", evolve: "Elektrik (Thunder Stone)" },
+			{ id: "144a", name: "Alpha Eelektross", img: "eelektross.gif", type1: "Electric", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Elektrik (Thunder Stone)" },
+			{ id: "145", name: "Dratini", img: "dratini.gif", type1: "Dragon", type2: "", location: "Restaurant Le Nah (On Roof)", evolve: "Eelektross (Lvl 30)" },
+			{ id: "145a", name: "Alpha Dratini", img: "dratini.gif", type1: "Dragon", type2: "", location: "Magenta Sector 8 (On Roof)<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Eelektross (Lvl 30)" },
+			{ id: "146", name: "Dragonair", img: "dragonair.gif", type1: "Dragon", type2: "", location: "Jaune Sector 2 (On Roof)", evolve: "Dratini (Lvl 55)" },
+			{ id: "146a", name: "Alpha Dragonair", img: "dragonair.gif", type1: "Dragon", type2: "", location: "Restaurant Le Nah (On Roof)<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Dratini (Lvl 55)" },
+			{ id: "147", name: "Dragonite", img: "dragonite.gif", type1: "Dragon", type2: "Flying", location: "Evolve Only", evolve: "Dragonair (Lvl 55)" },
+			{ id: "147a", name: "Alpha Dragonite", img: "dragonite.gif", type1: "Dragon", type2: "Flying", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Dragonair (Lvl 55)" },
+			{ id: "148", name: "Bulbasaur", img: "bulbasaur.gif", type1: "Grass", type2: "Poison", location: "Wild Zone 20", evolve: "" },
+			{ id: "148a", name: "Alpha Bulbasaur", img: "bulbasaur.gif", type1: "Grass", type2: "Poison", location: "Wild Zone 20<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "149", name: "Ivysaur", img: "ivysaur.gif", type1: "Grass", type2: "Poison", location: "Evolve Only", evolve: "Bulbasaur (Lvl 16)" },
+			{ id: "149a", name: "Alpha Ivysaur", img: "ivysaur.gif", type1: "Grass", type2: "Poison", location: "Evolve Only", evolve: "Alpha Bulbasaur (Lvl 16)" },
+			{ id: "150", name: "Venusaur", img: "venusaur.gif", type1: "Grass", type2: "Poison", location: "Evolve Only", evolve: "Ivysaur (Lvl 32)" },
+			{ id: "150a", name: "Alpha Venusaur", img: "venusaur.gif", type1: "Grass", type2: "Poison", location: "Evolve Only", evolve: "Alpha Ivysaur (Lvl 32)" },
+			{ id: "151", name: "Charmander", img: "charmander.gif", type1: "Fire", type2: "", location: "Wild Zone 20", evolve: "" },
+			{ id: "151a", name: "Alpha Charmander", img: "charmander.gif", type1: "Fire", type2: "", location: "Wild Zone 20<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "152", name: "Charmeleon", img: "charmeleon.gif", type1: "Fire", type2: "", location: "Evolve Only", evolve: "Charmander (Lvl 16)" },
+			{ id: "152a", name: "Alpha Charmeleon", img: "charmeleon.gif", type1: "Fire", type2: "", location: "Evolve Only", evolve: "Alpha Charmander (Lvl 16)" },
+			{ id: "153", name: "Charizard", img: "charizard.gif", type1: "Fire", type2: "Flying", location: "Evolve Only", evolve: "Charmeleon (Lvl 32)" },
+			{ id: "153a", name: "Alpha Charizard", img: "charizard.gif", type1: "Fire", type2: "Flying", location: "Evolve Only", evolve: "Alpha Charmeleon (Lvl 32)" },
+			{ id: "154", name: "Squirtle", img: "squirtle.gif", type1: "Water", type2: "", location: "Side Mission 22 & Wild Zone 20", evolve: "" },
+			{ id: "154a", name: "Alpha Squirtle", img: "squirtle.gif", type1: "Water", type2: "", location: "Wild Zone 20<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "155", name: "Wartortle", img: "wartortle.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Squirtle (Lvl 16)" },
+			{ id: "155a", name: "Alpha Wartortle", img: "wartortle.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Alpha Squirtle (Lvl 16)" },
+			{ id: "156", name: "Blastoise", img: "blastoise.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Wartortle (Lvl 36)" },
+			{ id: "156a", name: "Alpha Blastoise", img: "blastoise.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Alpha Wartortle (Lvl 36)" },
+			{ id: "157", name: "Stunfisk", img: "stunfisk.gif", type1: "Ground", type2: "Electric", location: "Wild Zone 11", evolve: "" },
+			{ id: "157a", name: "Alpha Stunfisk", img: "stunfisk.gif", type1: "Ground", type2: "Electric", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "158", name: "Furfrou", img: "furfrou.gif", type1: "Normal", type2: "", location: "Wild Zones 11 & 19", evolve: "" },
+			{ id: "158a", name: "Alpha Furfrou", img: "furfrou.gif", type1: "Normal", type2: "", location: "Wild Zones 19<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "159", name: "Inkay", img: "inkay.gif", type1: "Dark", type2: "Psychic", location: "Wild Zone 11", evolve: "" },
+			{ id: "159a", name: "Alpha Inkay", img: "inkay.gif", type1: "Dark", type2: "Psychic", location: "Lumiose Sewers<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "160", name: "Malamar", img: "malamar.gif", type1: "Dark", type2: "Psychic", location: "Wild Zone 20", evolve: "Inkay (Lvl 30 Holding Console Upside Down)" },
+			{ id: "160a", name: "Alpha Malamar", img: "malamar.gif", type1: "Dark", type2: "Psychic", location: "Wild Zone 20<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Inkay (Lvl 30 Holding Console Upside Down)" },
+			{ id: "161", name: "Skrelp", img: "skrelp.gif", type1: "Poison", type2: "Water", location: "Lumiose Sewers", evolve: "" },
+			{ id: "161a", name: "Alpha Skrelp", img: "skrelp.gif", type1: "Poison", type2: "Water", location: "Lumiose Sewers<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "162", name: "Dragalge", img: "dragalge.gif", type1: "Poison", type2: "Dragon", location: "Wild Zone 20", evolve: "Skrelp (Lvl 48)" },
+			{ id: "162a", name: "Alpha Dragalge", img: "dragalge.gif", type1: "Poison", type2: "Dragon", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Skrelp (Lvl 48)" },
+			{ id: "163", name: "Clauncher", img: "clauncher.gif", type1: "Water", type2: "", location: "Wild Zone 11", evolve: "" },
+			{ id: "163a", name: "Alpha Clauncher", img: "clauncher.gif", type1: "Water", type2: "", location: "Wild Zone 11<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "164", name: "Clawitzer", img: "clawitzer.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Clauncher (Lvl 37)" },
+			{ id: "164a", name: "Alpha Clawitzer", img: "clawitzer.gif", type1: "Water", type2: "", location: "Wild Zone 11<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Clauncher (Lvl 37)" },
+			{ id: "165", name: "Goomy", img: "goomy.gif", type1: "Dragon", type2: "", location: "Vert Sector 9 (On Bridge During Rain)", evolve: "" },
+			{ id: "165a", name: "Alpha Goomy", img: "goomy.gif", type1: "Dragon", type2: "", location: "Saison Canal (During Rain)<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "166", name: "Sliggoo", img: "sliggoo.gif", type1: "Dragon", type2: "", location: "Vert Sector 4 (By Water During Rain)", evolve: "Goomy (Lvl 40)" },
+			{ id: "166a", name: "Alpha Sliggoo", img: "sliggoo.gif", type1: "Dragon", type2: "", location: "Vert Sector 4 (By Water During Rain)<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Goomy (Lvl 40)" },
+			{ id: "167", name: "Goodra", img: "goodra.gif", type1: "Dragon", type2: "", location: "Evolve Only", evolve: "Sliggoo (Lvl 50 While Raining)" },
+			{ id: "167a", name: "Alpha Goodra", img: "goodra.gif", type1: "Dragon", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Sliggoo (Lvl 50 While Raining)" },
+			{ id: "168", name: "Delibird", img: "delibird.gif", type1: "Ice", type2: "Flying", location: "Wild Zone 12", evolve: "" },
+			{ id: "168a", name: "Alpha Delibird", img: "delibird.gif", type1: "Ice", type2: "Flying", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "169", name: "Snorunt", img: "snorunt.gif", type1: "Ice", type2: "", location: "Wild Zone 12", evolve: "" },
+			{ id: "169a", name: "Alpha Snorunt", img: "snorunt.gif", type1: "Ice", type2: "", location: "Wild Zone 12<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "170", name: "Glalie", img: "glalie.gif", type1: "Ice", type2: "", location: "Evolve Only", evolve: "Snorunt (Lvl 42)" },
+			{ id: "170a", name: "Alpha Glalie", img: "glalie.gif", type1: "Ice", type2: "", location: "Evolve Only", evolve: "Alpha Snorunt (Lvl 42)" },
+			{ id: "171", name: "Froslass", img: "froslass.gif", type1: "Ice", type2: "Ghost", location: "Evolve Only", evolve: "Snorunt (Dawn Stone on Female)" },
+			{ id: "171a", name: "Alpha Froslass", img: "froslass.gif", type1: "Ice", type2: "Ghost", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Snorunt (Dawn Stone on Female)" },
+			{ id: "172", name: "Snover", img: "snover.gif", type1: "Grass", type2: "Ice", location: "Wild Zone 12", evolve: "" },
+			{ id: "172a", name: "Alpha Snover", img: "snover.gif", type1: "Grass", type2: "Ice", location: "Wild Zone 12<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "173", name: "Abomasnow", img: "abomasnow.gif", type1: "Grass", type2: "Ice", location: "Evolve Only", evolve: "Snover (Lvl 40)" },
+			{ id: "173a", name: "Alpha Abomasnow", img: "abomasnow.gif", type1: "Grass", type2: "Ice", location: "Wild Zone 12<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Snover (Lvl 40)" },
+			{ id: "174", name: "Bergmite", img: "bergmite.gif", type1: "Ice", type2: "", location: "Wild Zone 12", evolve: "" },
+			{ id: "174a", name: "Alpha Bergmite", img: "bergmite.gif", type1: "Ice", type2: "", location: "Wild Zone 12<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "175", name: "Avalugg", img: "avalugg.gif", type1: "Ice", type2: "", location: "Evolve Only", evolve: "Bergmite (Lvl 37)" },
+			{ id: "175a", name: "Alpha Avalugg", img: "avalugg.gif", type1: "Ice", type2: "", location: "Wild Zone 12<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Bergmite (Lvl 37)" },
+			{ id: "176", name: "Scyther", img: "scyther.gif", type1: "Bug", type2: "Flying", location: "Wild Zone 13<span class='emoji-highlight'>🌑</span>", evolve: "" },
+			{ id: "176a", name: "Alpha Scyther", img: "scyther.gif", type1: "Bug", type2: "Flying", location: "Wild Zone 13<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>🌑</span>", evolve: "" },
+			{ id: "177", name: "Scizor", img: "scizor.gif", type1: "Bug", type2: "Steel", location: "Evolve Only", evolve: "Scyther (Trade holding Metal Coat)" },
+			{ id: "177a", name: "Alpha Scizor", img: "scizor.gif", type1: "Bug", type2: "Steel", location: "Evolve Only", evolve: "Alpha Scyther (Trade holding Metal Coat)" },
+			{ id: "178", name: "Pinsir", img: "pinsir.gif", type1: "Bug", type2: "", location: "Wild Zone 13", evolve: "" },
+			{ id: "178a", name: "Alpha Pinsir", img: "pinsir.gif", type1: "Bug", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "179", name: "Heracross", img: "heracross.gif", type1: "Bug", type2: "Fighting", location: "Wild Zone 13", evolve: "" },
+			{ id: "179a", name: "Alpha Heracross", img: "heracross.gif", type1: "Bug", type2: "Fighting", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "180", name: "Emolga", img: "emolga.gif", type1: "Electric", type2: "Flying", location: "Wild Zone 14", evolve: "" },
+			{ id: "180a", name: "Alpha Emolga", img: "emolga.gif", type1: "Electric", type2: "Flying", location: "Wild Zone 14<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "181", name: "Hawlucha", img: "hawlucha.gif", type1: "Fighting", type2: "Flying", location: "Restaurant Le Yeah (On Roof)", evolve: "" },
+			{ id: "181a", name: "Alpha Hawlucha", img: "hawlucha.gif", type1: "Fighting", type2: "Flying", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "182", name: "Phantump", img: "phantump.gif", type1: "Ghost", type2: "Grass", location: "Wild Zone 13<span class='emoji-highlight'>🌑</span>", evolve: "" },
+			{ id: "182a", name: "Alpha Phantump", img: "phantump.gif", type1: "Ghost", type2: "Grass", location: "Wild Zone 13<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>🌑</span>", evolve: "" },
+			{ id: "183", name: "Trevenant", img: "trevenant.gif", type1: "Ghost", type2: "Grass", location: "Restaurant Le Yeah (On Roof)", evolve: "Phantump (Trade)" },
+			{ id: "183a", name: "Alpha Trevenant", img: "trevenant.gif", type1: "Ghost", type2: "Grass", location: "Wild Zone 13<span class='fixed-highlight'>FIXED</span><span class='emoji-highlight'>🌑</span>", evolve: "Alpha Phantump (Trade)" },
+			{ id: "184", name: "Scraggy", img: "scraggy.gif", type1: "Dark", type2: "Fighting", location: "Lumiose Sewers", evolve: "" },
+			{ id: "184a", name: "Alpha Scraggy", img: "scraggy.gif", type1: "Dark", type2: "Fighting", location: "Lumiose Sewers<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "185", name: "Scrafty", img: "scrafty.gif", type1: "Dark", type2: "Fighting", location: "Wild Zone 20", evolve: "Scraggy (Lvl 39)" },
+			{ id: "185a", name: "Alpha Scrafty", img: "scrafty.gif", type1: "Dark", type2: "Fighting", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Scraggy (Lvl 39)" },
+			{ id: "186", name: "Noibat", img: "noibat.gif", type1: "Flying", type2: "Dragon", location: "Wild Zone 18<span class='emoji-highlight'>🌑</span>", evolve: "" },
+			{ id: "186a", name: "Alpha Noibat", img: "noibat.gif", type1: "Flying", type2: "Dragon", location: "Lumiose Sewers<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "187", name: "Noivern", img: "noivern.gif", type1: "Flying", type2: "Dragon", location: "Wild Zone 18<span class='emoji-highlight'>🌑</span>", evolve: "Noibat (Lvl 48)" },
+			{ id: "187a", name: "Alpha Noivern", img: "noivern.gif", type1: "Flying", type2: "Dragon", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Noibat (Lvl 48)" },
+			{ id: "188", name: "Klefki", img: "klefki.gif", type1: "Steel", type2: "Fairy", location: "Wild Zone 17<span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "188a", name: "Alpha Klefki", img: "klefki.gif", type1: "Steel", type2: "Fairy", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "189", name: "Litwick", img: "litwick.gif", type1: "Ghost", type2: "Fire", location: "Lumiose Sewers", evolve: "" },
+			{ id: "189a", name: "Alpha Litwick", img: "litwick.gif", type1: "Ghost", type2: "Fire", location: "Lumiose Sewers<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "190", name: "Lampent", img: "lampent.gif", type1: "Ghost", type2: "Fire", location: "Wild Zone 17<span class='emoji-highlight'>🌑</span>", evolve: "Litwick (Lvl 41)" },
+			{ id: "190a", name: "Alpha Lampent", img: "lampent.gif", type1: "Ghost", type2: "Fire", location: "Wild Zone 17<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>🌑</span>", evolve: "Alpha Litwick (Lvl 41)" },
+			{ id: "191", name: "Chandelure", img: "chandelure.gif", type1: "Ghost", type2: "Fire", location: "Evolve Only", evolve: "Lampent (Dusk Stone)" },
+			{ id: "191a", name: "Alpha Chandelure", img: "chandelure.gif", type1: "Ghost", type2: "Fire", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Lampent (Dusk Stone)" },
+			{ id: "192", name: "Aerodactyl", img: "aerodactyl.gif", type1: "Rock", type2: "Flying", location: "Restore Fossil (Amber)", evolve: "" },
+			{ id: "193", name: "Tyrunt", img: "tyrunt.gif", type1: "Rock", type2: "Dragon", location: "Restore Fossil (Jaw)", evolve: "" },
+			{ id: "194", name: "Tyrantrum", img: "tyrantrum.gif", type1: "Rock", type2: "Dragon", location: "Evolve Only", evolve: "Tyrunt (Lvl 39 During Day)" },
+			{ id: "195", name: "Amaura", img: "amaura.gif", type1: "Rock", type2: "Ice", location: "Restore Fossil (Sail)", evolve: "" },
+			{ id: "196", name: "Aurorus", img: "aurorus.gif", type1: "Rock", type2: "Ice", location: "Evolve Only", evolve: "Amaura (Lvl 39 During Night)" },
+			{ id: "197", name: "Onix", img: "onix.gif", type1: "Rock", type2: "Ground", location: "Wild Zone 14", evolve: "" },
+			{ id: "197a", name: "Alpha Onix", img: "onix.gif", type1: "Rock", type2: "Ground", location: "Wild Zone 14<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "198", name: "Steelix", img: "steelix.gif", type1: "Steel", type2: "Ground", location: "Evolve Only", evolve: "Onix (Trade holding Metal Coat)" },
+			{ id: "198a", name: "Alpha Steelix", img: "steelix.gif", type1: "Steel", type2: "Ground", location: "Main Mission 40", evolve: "Alpha Onix (Trade holding Metal Coat)" },
+			{ id: "199", name: "Aron", img: "aron.gif", type1: "Steel", type2: "Rock", location: "Wild Zone 14", evolve: "" },
+			{ id: "199a", name: "Alpha Aron", img: "aron.gif", type1: "Steel", type2: "Rock", location: "Wild Zone 14<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "200", name: "Lairon", img: "lairon.gif", type1: "Steel", type2: "Rock", location: "Wild Zone 14", evolve: "Aron (Lvl 32)" },
+			{ id: "200a", name: "Alpha Lairon", img: "lairon.gif", type1: "Steel", type2: "Rock", location: "Wild Zone 14<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Aron (Lvl 32)" },
+			{ id: "201", name: "Aggron", img: "aggron.gif", type1: "Steel", type2: "Rock", location: "Wild Zone 20", evolve: "Lairon (Lvl 42)" },
+			{ id: "201a", name: "Alpha Aggron", img: "aggron.gif", type1: "Steel", type2: "Rock", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Lairon (Lvl 42)" },
+			{ id: "202", name: "Helioptile", img: "helioptile.gif", type1: "Electric", type2: "Normal", location: "Wild Zone 14<span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "202a", name: "Alpha Helioptile", img: "helioptile.gif", type1: "Electric", type2: "Normal", location: "Wild Zone 14<span class='chance-highlight'>CHANCE</span><span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "203", name: "Heliolisk", img: "heliolisk.gif", type1: "Electric", type2: "Normal", location: "Evolve Only", evolve: "Helioptile (Sun Stone)" },
+			{ id: "203a", name: "Alpha Heliolisk", img: "heliolisk.gif", type1: "Electric", type2: "Normal", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Helioptile (Sun Stone)" },
+			{ id: "204", name: "Pumpkaboo", img: "pumpkaboo.gif", type1: "Ghost", type2: "Grass", location: "Wild Zone 15", evolve: "" },
+			{ id: "204a", name: "Alpha Pumpkaboo", img: "pumpkaboo.gif", type1: "Ghost", type2: "Grass", location: "Wild Zone 15<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "205", name: "Gourgeist", img: "gourgeist.gif", type1: "Ghost", type2: "Grass", location: "Evolve Only", evolve: "Pumpkaboo (Trade)" },
+			{ id: "205a", name: "Alpha Gourgeist", img: "gourgeist.gif", type1: "Ghost", type2: "Grass", location: "Wild Zones 15 & 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Pumpkaboo (Trade)" },
+			{ id: "206", name: "Larvitar", img: "larvitar.gif", type1: "Rock", type2: "Ground", location: "Wild Zone 15", evolve: "" },
+			{ id: "206a", name: "Alpha Larvitar", img: "larvitar.gif", type1: "Rock", type2: "Ground", location: "Wild Zone 15<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "207", name: "Pupitar", img: "pupitar.gif", type1: "Rock", type2: "Ground", location: "Evolve Only", evolve: "Larvitar (Lvl 30)" },
+			{ id: "207a", name: "Alpha Pupitar", img: "pupitar.gif", type1: "Rock", type2: "Ground", location: "Evolve Only", evolve: "Alpha Larvitar (Lvl 30)" },
+			{ id: "208", name: "Tyranitar", img: "tyranitar.gif", type1: "Rock", type2: "Dark", location: "Evolve Only", evolve: "Pupitar (Lvl 55)" },
+			{ id: "208a", name: "Alpha Tyranitar", img: "tyranitar.gif", type1: "Rock", type2: "Dark", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Pupitar (Lvl 55)" },
+			{ id: "209", name: "Froakie", img: "froakie.gif", type1: "Water", type2: "", location: "Wild Zone 16", evolve: "" },
+			{ id: "209a", name: "Alpha Froakie", img: "froakie.gif", type1: "Water", type2: "", location: "Wild Zone 16<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "210", name: "Frogadier", img: "frogadier.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Froakie (Lvl 16)" },
+			{ id: "210a", name: "Alpha Frogadier", img: "frogadier.gif", type1: "Water", type2: "", location: "Evolve Only", evolve: "Alpha Froakie (Lvl 16)" },
+			{ id: "211", name: "Greninja", img: "greninja.gif", type1: "Water", type2: "Dark", location: "Evolve Only", evolve: "Frogadier (Lvl 36)" },
+			{ id: "211a", name: "Alpha Greninja", img: "greninja.gif", type1: "Water", type2: "Dark", location: "Evolve Only", evolve: "Alpha Frogadier (Lvl 36)" },
+			{ id: "212", name: "Falinks", img: "falinks.gif", type1: "Fighting", type2: "", location: "Wild Zone 16", evolve: "" },
+			{ id: "212a", name: "Alpha Falinks", img: "falinks.gif", type1: "Fighting", type2: "", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "213", name: "Chespin", img: "chespin.gif", type1: "Grass", type2: "", location: "Wild Zone 17", evolve: "" },
+			{ id: "213a", name: "Alpha Chespin", img: "chespin.gif", type1: "Grass", type2: "", location: "Wild Zone 17<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "214", name: "Quilladin", img: "quilladin.gif", type1: "Grass", type2: "", location: "Evolve Only", evolve: "Chespin (Lvl 16)" },
+			{ id: "214a", name: "Alpha Quilladin", img: "quilladin.gif", type1: "Grass", type2: "", location: "Evolve Only", evolve: "Alpha Chespin (Lvl 16)" },
+			{ id: "215", name: "Chesnaught", img: "chesnaught.gif", type1: "Grass", type2: "Fighting", location: "Evolve Only", evolve: "Quilladin (Lvl 36)" },
+			{ id: "215a", name: "Alpha Chesnaught", img: "chesnaught.gif", type1: "Grass", type2: "Fighting", location: "Evolve Only", evolve: "Alpha Quilladin (Lvl 36)" },
+			{ id: "216", name: "Skarmory", img: "skarmory.gif", type1: "Steel", type2: "Flying", location: "Wild Zone 17<span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "216a", name: "Alpha Skarmory", img: "skarmory.gif", type1: "Steel", type2: "Flying", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "217", name: "Fennekin", img: "fennekin.gif", type1: "Fire", type2: "", location: "Wild Zone 18", evolve: "" },
+			{ id: "217a", name: "Alpha Fennekin", img: "fennekin.gif", type1: "Fire", type2: "", location: "Wild Zone 18<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "218", name: "Braixen", img: "braixen.gif", type1: "Fire", type2: "", location: "Evolve Only", evolve: "Fennekin (Lvl 16)" },
+			{ id: "218a", name: "Alpha Braixen", img: "braixen.gif", type1: "Fire", type2: "", location: "Evolve Only", evolve: "Alpha Fennekin (Lvl 16)" },
+			{ id: "219", name: "Delphox", img: "delphox.gif", type1: "Fire", type2: "Psychic", location: "Evolve Only", evolve: "Braixen (Lvl 36)" },
+			{ id: "219a", name: "Alpha Delphox", img: "delphox.gif", type1: "Fire", type2: "Psychic", location: "Evolve Only", evolve: "Alpha Braixen (Lvl 36)" },
+			{ id: "220", name: "Bagon", img: "bagon.gif", type1: "Dragon", type2: "", location: "Wild Zone 18", evolve: "" },
+			{ id: "220a", name: "Alpha Bagon", img: "bagon.gif", type1: "Dragon", type2: "", location: "Wild Zone 18<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "221", name: "Shelgon", img: "shelgon.gif", type1: "Dragon", type2: "", location: "Evolve Only", evolve: "Bagon (Lvl 30)" },
+			{ id: "221a", name: "Alpha Shelgon", img: "shelgon.gif", type1: "Dragon", type2: "", location: "Evolve Only", evolve: "Alpha Bagon (Lvl 30)" },
+			{ id: "222", name: "Salamence", img: "salamence.gif", type1: "Dragon", type2: "Flying", location: "Evolve Only", evolve: "Shelgon (Lvl 30)" },
+			{ id: "222a", name: "Alpha Salamence", img: "salamence.gif", type1: "Dragon", type2: "Flying", location: "Wild Zone 18<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Shelgon (Lvl 30)" },
+			{ id: "223", name: "Kangaskhan", img: "kangaskhan.gif", type1: "Normal", type2: "", location: "Wild Zone 19", evolve: "Salamence (Lvl 50)" },
+			{ id: "223a", name: "Alpha Kangaskhan", img: "kangaskhan.gif", type1: "Normal", type2: "", location: "Wild Zone 19<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Salamence (Lvl 50)" },
+			{ id: "224", name: "Drampa", img: "drampa.gif", type1: "Normal", type2: "Dragon", location: "Wild Zone 19<span class='emoji-highlight'>☀️</span>", evolve: "" },
+			{ id: "224a", name: "Alpha Drampa", img: "drampa.gif", type1: "Normal", type2: "Dragon", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "" },
+			{ id: "225", name: "Beldum", img: "beldum.gif", type1: "Steel", type2: "Psychic", location: "Lysandre Labs", evolve: "" },
+			{ id: "225a", name: "Alpha Beldum", img: "beldum.gif", type1: "Steel", type2: "Psychic", location: "Lysandre Labs<span class='chance-highlight'>CHANCE</span>", evolve: "" },
+			{ id: "226", name: "Metang", img: "metang.gif", type1: "Steel", type2: "Psychic", location: "Lysandre Labs", evolve: "Beldum (Lvl 20)" },
+			{ id: "226a", name: "Alpha Metang", img: "metang.gif", type1: "Steel", type2: "Psychic", location: "Lysandre Labs<span class='chance-highlight'>CHANCE</span>", evolve: "Alpha Beldum (Lvl 20)" },
+			{ id: "227", name: "Metagross", img: "metagross.gif", type1: "Steel", type2: "Psychic", location: "Evolve Only", evolve: "Metang (Lvl 45)" },
+			{ id: "227a", name: "Alpha Metagross", img: "metagross.gif", type1: "Steel", type2: "Psychic", location: "Wild Zone 20<span class='fixed-highlight'>FIXED</span>", evolve: "Alpha Metang (Lvl 45)" },
+			{ id: "228", name: "Xerneas", img: "xerneas.gif", type1: "Fairy", type2: "", location: "Main Mission 40", evolve: "" },
+			{ id: "229", name: "Yveltal", img: "yveltal.gif", type1: "Dark", type2: "Flying", location: "Main Mission 41", evolve: "" },
+			{ id: "230", name: "Zygarde", img: "zygarde.gif", type1: "Dragon", type2: "Ground", location: "Main Mission 42", evolve: "" },
+			{ id: "231", name: "Diancie", img: "diancie.gif", type1: "Rock", type2: "Fairy", location: "EX Mission 1", evolve: "" },
+			{ id: "232", name: "Mewtwo", img: "mewtwo.gif", type1: "Psychic", type2: "", location: "EX Mission 2", evolve: "" }
+		];
+
+		const typeChart = {
+			"Grass": { weakTo: ["Fire", "Ice", "Poison", "Flying", "Bug"], resists: ["Water", "Electric", "Grass", "Ground"] },
+			"Fire": { weakTo: ["Water", "Ground", "Rock"], resists: ["Fire", "Grass", "Ice", "Bug", "Steel", "Fairy"] },
+			"Water": { weakTo: ["Electric", "Grass"], resists: ["Fire", "Water", "Ice", "Steel"] },
+			"Bug": { weakTo: ["Fire", "Flying", "Rock"], resists: ["Grass", "Fighting", "Ground"] },
+			"Normal": { weakTo: ["Fighting"], resists: [], immuneTo: ["Ghost"] },
+			"Flying": { weakTo: ["Electric", "Ice", "Rock"], resists: ["Grass", "Fighting", "Bug"], immuneTo: ["Ground"] },
+			"Dark": { weakTo: ["Fighting", "Bug", "Fairy"], resists: ["Ghost", "Dark"], immuneTo: ["Psychic"] },
+			"Electric": { weakTo: ["Ground"], resists: ["Electric", "Flying", "Steel"] },
+			"Ice": { weakTo: ["Fire", "Fighting", "Rock", "Steel"], resists: ["Ice"] },
+			"Ground": { weakTo: ["Water", "Grass", "Ice"], resists: ["Poison", "Rock"], immuneTo: ["Electric"] },
+			"Rock": { weakTo: ["Water", "Grass", "Fighting", "Ground", "Steel"], resists: ["Normal", "Fire", "Poison", "Flying"] },
+			"Psychic": { weakTo: ["Bug", "Ghost", "Dark"], resists: ["Fighting", "Psychic"] },
+			"Poison": { weakTo: ["Ground", "Psychic"], resists: ["Grass", "Fighting", "Poison", "Bug", "Fairy"] },
+			"Steel": { weakTo: ["Fire", "Fighting", "Ground"], resists: ["Normal", "Grass", "Ice", "Flying", "Psychic", "Bug", "Rock", "Dragon", "Steel", "Fairy"], immuneTo: ["Poison"] },
+			"Ghost": { weakTo: ["Ghost", "Dark"], resists: ["Poison", "Bug"], immuneTo: ["Normal", "Fighting"] },
+			"Fighting": { weakTo: ["Flying", "Psychic", "Fairy"], resists: ["Bug", "Rock", "Dark"] },
+			"Dragon": { weakTo: ["Ice", "Dragon", "Fairy"], resists: ["Fire", "Water", "Grass", "Electric"] },
+			"Fairy": { weakTo: ["Poison", "Steel"], resists: ["Fighting", "Bug", "Dark"], immuneTo: ["Dragon"] }
+		};
+
+		const POKEDEX_ID = 'pokemon-za-tracker';
+        const grid = document.getElementById('main-grid');
+        const searchInput = document.getElementById('search-input');
+        const autoList = document.getElementById('autocomplete-list');
+        const caughtCountDisplay = document.getElementById('caught-count');
+		let clickedStates = JSON.parse(localStorage.getItem(POKEDEX_ID)) || {};
+
+		const types = ["Normal", "Fire", "Water", "Grass", "Electric", "Ice", "Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug", "Rock", "Ghost", "Dark", "Steel", "Dragon", "Fairy"];
+		
+		let activeFilters = {
+			status: null,
+			region: 'Nonalpha',
+			types: []
+		};
+		
+
+        function calculateDetailedWeaknesses(t1, t2) {
+            const scores = {};
+            const allTypes = Object.keys(typeChart);
+            allTypes.forEach(attackType => {
+                let multiplier = 1;
+                const getEff = (pkmType) => {
+                    if (!pkmType || !typeChart[pkmType]) return 1;
+                    if (typeChart[pkmType].weakTo.includes(attackType)) return 2;
+                    if (typeChart[pkmType].resists.includes(attackType)) return 0.5;
+                    if (typeChart[pkmType].immuneTo && typeChart[pkmType].immuneTo.includes(attackType)) return 0;
+                    return 1;
+                };
+                multiplier *= getEff(t1);
+                if (t2) multiplier *= getEff(t2);
+                if (multiplier > 1) scores[attackType] = multiplier;
+            });
+            return Object.entries(scores).map(([type, mult]) => ({ type, mult })).sort((a, b) => b.mult - a.mult);
+        }
+
+
+
+		function updateProgress() {
+			const caughtCount = Object.values(clickedStates).filter(v => v === true).length;
+			const totalCount = pokedexData.length;
+			const percentage = (caughtCount / totalCount) * 100;
+		
+			document.getElementById('progress-bar').style.width = percentage + '%';
+			document.getElementById('caught-label').textContent = caughtCount;
+			document.getElementById('caught-label').style.left = percentage + '%';
+			document.getElementById('total-label').textContent = totalCount;
+			localStorage.setItem('za_caught_count', caughtCount);
+		}
+		
+		function updateFilterProgressBar() {
+			const allActive = Array.from(document.querySelectorAll('.filter-btn.active'));
+			const activeTypes = allActive.filter(btn => btn.dataset.type === 'pokemon-type');
+			const activeRegions = allActive.filter(btn => btn.dataset.type === 'region');
+		
+			const filterLabel = document.getElementById('filter-progress-label');
+			const filterBar = document.getElementById('filter-progress-bar');
+			const caughtLabel = document.getElementById('filter-caught-label');
+			const totalLabel = document.getElementById('filter-total-label');
+		
+			const isSingleFilter = (activeTypes.length + activeRegions.length) === 1;
+		
+			if (isSingleFilter) {
+				const activeBtn = activeTypes[0] || activeRegions[0];
+				const filterValue = activeBtn.dataset.value;
+				const isRegion = activeBtn.dataset.type === 'region';
+				
+				filterLabel.textContent = `${filterValue} Types Caught`;
+		
+				const relevantPokemon = pokedexData.filter(p => {
+				if (!isRegion) {
+					return p.type1 === filterValue || p.type2 === filterValue;
+				} else {
+					if (filterValue === 'Alpha') return p.id.endsWith('a');
+					if (filterValue === 'Nonalpha') return !p.id.endsWith('a');
+					return false;
+				}
+			});
+		
+				const caughtCount = relevantPokemon.filter(p => clickedStates[p.id] === true).length;
+				const totalCount = relevantPokemon.length;
+				const percentage = totalCount > 0 ? (caughtCount / totalCount) * 100 : 0;
+		
+				filterBar.style.width = percentage + '%';
+				
+				caughtLabel.textContent = caughtCount;
+				caughtLabel.style.left = percentage + '%';
+				caughtLabel.style.display = 'block';
+				
+				totalLabel.textContent = totalCount;
+				totalLabel.style.display = 'block';
+		
+				const typeColors = {
+					bug: '#91A119', dark: '#624D4E', dragon: '#5060E1', electric: '#FAC000',
+					fairy: '#EF70EF', fighting: '#FF8000', fire: '#E62829', flying: '#81B9EF',
+					ghost: '#704170', grass: '#3FA129', ground: '#915121', ice: '#3DCEF3',
+					normal: '#9FA19F', poison: '#9141CB', psychic: '#EF4179', rock: '#AFA981',
+					steel: '#60A1B8', water: '#2980EF', alpha: '#A44C2F'
+				};
+				const barColor = typeColors[filterValue.toLowerCase()] || '#777';
+				filterBar.style.backgroundColor = barColor;
+				caughtLabel.style.color = barColor;
+		
+			} else {
+				filterLabel.textContent = "Click a single filter to see details";
+				filterBar.style.width = '0%';
+				caughtLabel.style.display = 'none';
+				totalLabel.style.display = 'none';
+			}
+		}
+
+		const typeContainer = document.getElementById('type-filters');
+		types.forEach(type => {
+			const btn = document.createElement('button');
+			btn.className = `filter-btn type-${type.toLowerCase()}`;
+			btn.dataset.type = 'pokemon-type';
+			btn.dataset.value = type;
+		
+			const icon = `<img src="types/${type.toLowerCase()}.png" alt="">`;
+			btn.innerHTML = `${icon}${type}`;
+		
+			typeContainer.appendChild(btn);
+		});
+
+		document.querySelectorAll('.filter-btn').forEach(btn => {
+			btn.addEventListener('click', () => {
+				const type = btn.dataset.type;
+				const value = btn.dataset.value;
+		
+				if (type === 'status') {
+					activeFilters.status = activeFilters.status === value ? null : value;
+				} else if (type === 'region') {
+					activeFilters.region = activeFilters.region === value ? null : value;
+				} else if (type === 'pokemon-type') {
+					const index = activeFilters.types.indexOf(value);
+					if (index > -1) {
+						activeFilters.types.splice(index, 1);
+					} else if (activeFilters.types.length < 2) {
+						activeFilters.types.push(value);
+					}
+				}
+				updateFilterUI();
+				renderGrid();
+				if (window.innerWidth > 600) {
+				    searchInput.focus();
+				}
+			});
+		});
+
+		function updateFilterUI() {
+			document.querySelectorAll('.filter-btn').forEach(btn => {
+				const category = btn.dataset.type;
+				const value = btn.dataset.value;
+				
+				let isActive = false;
+				if (category === 'status') isActive = activeFilters.status === value;
+				if (category === 'region') isActive = activeFilters.region === value;
+				if (category === 'pokemon-type') isActive = activeFilters.types.includes(value);
+				
+				btn.classList.toggle('active', isActive);
+		
+				if (category === 'pokemon-type' && activeFilters.types.length >= 2) {
+					btn.disabled = !activeFilters.types.includes(value);
+				} else {
+					btn.disabled = false;
+				}
+			});
+		}
+			
+		function renderGrid() {
+			const searchTerm = searchInput.value.toLowerCase();
+			const grid = document.getElementById('main-grid');
+		
+			const filteredData = pokedexData.filter(pokemon => {
+				const matchesSearch = pokemon.name.toLowerCase().includes(searchTerm);
+				const isCaught = clickedStates[pokemon.id] === true; 
+				let matchesStatus = true;
+				
+				if (activeFilters.status === 'caught') {
+					matchesStatus = isCaught;
+				} else if (activeFilters.status === 'uncaught') {
+					matchesStatus = !isCaught;
+				}
+				
+				let matchesRegion = true;
+				if (activeFilters.region === 'Alpha') {
+					matchesRegion = pokemon.id.endsWith('a');
+				} else if (activeFilters.region === 'Nonalpha') {
+					matchesRegion = !pokemon.id.endsWith('a');
+				}
+				const matchesType = activeFilters.types.length === 0 || 
+					activeFilters.types.every(t => pokemon.type1 === t || pokemon.type2 === t);
+		
+				return matchesSearch && matchesStatus && matchesRegion && matchesType;
+			});
+			
+            grid.innerHTML = '';
+            filteredData.forEach(item => {
+                const container = document.createElement('div');
+				const isAlpha = item.name.includes("Alpha");
+				const isClicked = clickedStates[item.id] ? 'clicked' : '';
+				
+				let regionalClass = '';
+				if (isAlpha) {
+					regionalClass = 'alpha-card';
+				}
+    
+				container.className = `container ${isClicked} ${regionalClass}`;
+				container.id = `item-${item.id}`;
+                
+                const detailedWeaknesses = calculateDetailedWeaknesses(item.type1, item.type2);
+                const weaknessIcons = detailedWeaknesses.map(w => `
+                    <div class="weakness-item">
+                        <img src="types/${w.type.toLowerCase()}.png" alt="${w.type}">
+                       <span class="multiplier-badge ${w.mult === 4 ? 'multiplier-4x' : ''}">${w.mult}x</span>
+                    </div>
+                `).join('');
+
+                const displayValue = item.location.endsWith('locations') 
+                    ? `<a class="location-link" href="https://pokemondb.net/pokedex/${item.location}" target="_blank">Click Here</a>`
+                    : `<span>${item.location}</span>`;
+
+                container.innerHTML = `
+                    <img src="icons/ball.png" class="card-ball-icon" alt="Caught">
+					<div class="item-number">#${item.id}</div>
+					<div class="image-center-wrapper">
+                        <img class="main-img" src="pokemon/${item.img}" alt="${item.name}">
+                        <div class="sub-icons-container">
+                            <img class="sub-icon" src="types/${item.type1.toLowerCase()}.png">
+                            ${item.type2 ? `<img class="sub-icon" src="types/${item.type2.toLowerCase()}.png">` : ''}
+                        </div>
+                    </div>
+                    <div class="item-title">${item.name}</div>
+                    <div class="weakness-row">
+                        <div class="weakness-label">Weak to:</div>
+                        <div class="weakness-icons">${weaknessIcons}</div>
+                    </div>
+                    <div class="info-row">
+                       <span class="label">Location:</span>
+                        ${displayValue}
+                    </div>
+                    <div class="info-row">
+                       <span class="label">Evolve:</span>
+                       <span class="evolve-text">${item.evolve || 'None'}</span>
+                    </div>
+                `;
+
+                container.addEventListener('click', () => {
+                    container.classList.toggle('clicked');
+                    clickedStates[item.id] = container.classList.contains('clicked');
+                    localStorage.setItem(POKEDEX_ID, JSON.stringify(clickedStates));
+                    updateProgress();
+                    updateFilterProgressBar();
+					if (window.innerWidth > 600) {
+				    	searchInput.focus();
+					}
+                });
+
+                grid.appendChild(container);
+            });
+            updateProgress();
+            updateFilterProgressBar();
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+			if (window.innerWidth > 600) {
+				searchInput.focus();
+			}
+        }
+
+        document.getElementById('clear-all-btn').addEventListener('click', () => {
+            if (confirm("Clear all caught Pokémon?")) {
+                clickedStates = {};
+                localStorage.setItem(POKEDEX_ID, JSON.stringify(clickedStates));
+                updateProgress();
+                updateFilterProgressBar();
+                renderGrid();
+				if (window.innerWidth > 600) {
+					searchInput.focus();
+				}
+            }
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            autoList.innerHTML = '';
+            if (!val) { autoList.style.display = 'none'; return; }
+            const matches = pokedexData.filter(d => d.name.toLowerCase().includes(val)).slice(0, 10);
+            matches.forEach(match => {
+				const div = document.createElement('div');
+				div.className = 'suggestion-item';
+				div.textContent = match.name;
+				div.onclick = () => {
+					const target = document.getElementById(`item-${match.id}`);
+					if (target) {
+						const headerHeight = document.getElementById('top-bar').offsetHeight;
+						const elementPosition = target.getBoundingClientRect().top + window.pageYOffset;
+						window.scrollTo({
+							top: elementPosition - headerHeight - 10,
+							behavior: 'smooth'
+						});
+			
+						target.classList.add('highlight-flash');
+						setTimeout(() => target.classList.remove('highlight-flash'), 2000);
+					}
+					autoList.style.display = 'none';
+					searchInput.value = '';
+					if (window.innerWidth > 600) {
+						searchInput.focus();
+					}
+				};
+				autoList.appendChild(div);
+			});
+            autoList.style.display = autoList.childElementCount > 0 ? 'block' : 'none';
+        });
+
+        document.addEventListener('click', (e) => { if (e.target !== searchInput) autoList.style.display = 'none'; });
+
+        updateFilterUI();
+		updateFilterProgressBar();
+		renderGrid();
+    </script>
+</body>
+</html>
