@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Legends Z-A Tracker</title>
+    <title>Pokémon Sword Tracker</title>
 	<link rel="icon" type="image/png" href="icons/ball.png">
     <style>
         :root {
@@ -37,7 +37,7 @@
 			background: var(--card-bg);
 			border-bottom: 1px solid var(--border-color);
 			display: flex;
-			justify-content: space-between;
+			justify-content: center;
 			align-items: center;
 			margin-top: -10px;
 			padding: 5px 20px 5px 0px; /* this was -5 bottom */
@@ -52,15 +52,43 @@
 			justify-content: space-between;
 			align-items: center;
 		}
-
 		
 		.header-left {
 			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: flex-start;
+			width: 300px;
+			margin-left: 20px;
+			gap: 15px;
+		}
+		
+		.logo-wrapper {
+			display: flex;
 			flex-direction: column;
 			align-items: center;
-			justify-content: center;
-			width: 200px;
-			margin-left: 20px;
+		}
+		
+		.logo-wrapper {
+			display: flex;
+			flex-direction: column; /* Keeps logo and text stacked */
+			align-items: center;
+		}
+		
+		.back-btn {
+			padding: 8px 12px;
+			background: #f0f0f0;
+			border: 1px solid #ccc;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 12px;
+			font-weight: bold;
+			color: #333;
+			white-space: nowrap;
+		}
+		
+		.back-btn:hover {
+			background: #e0e0e0;
 		}
 		
 		.main-logo {
@@ -602,6 +630,7 @@
 			#top-bar {
 				display: flex !important;
 				flex-direction: column !important;
+				justify-content: flex-start;
 				align-items: center !important;
 				width: 100% !important;
 				left: 0 !important;
@@ -611,6 +640,14 @@
 				padding: 10px !important;
 				height: auto !important;
 				box-sizing: border-box !important;
+			}
+			
+			.back-btn {
+				position: static; 
+				transform: none;
+				margin-right: 20px; /* Space between button and logo */
+				font-size: 10px;
+				padding: 5px 8px;
 			}
 
 			.container {
@@ -907,8 +944,11 @@
     <header id="top-bar">
 		<div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
 			<div class="header-left">
-				<img src="logos/za.png" alt="Logo" class="main-logo">
-				<div class="logo-text">Pokedex Tracker</div>
+				<button class="back-btn" onclick="index.html">&lt; Back<br>to hub</button>
+				<div class="logo-wrapper">
+					<img src="logos/swsh.png" alt="Logo" class="main-logo">
+					<div class="logo-text">Pokedex Tracker</div>
+				</div>
 			</div>
 			
 			<div id="search-container">
