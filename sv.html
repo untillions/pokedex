@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Scarlet Violet Tracker</title>
+	<link rel="icon" type="image/png" href="icons/ball.png">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #d0d0d0;
+            --selected-bg: #e8f4fd;
+            --selected-border: #2196f3;
+            --text-main: #333;
+            --text-muted: #777;
+            --link-color: #2196f3;
+        }
+
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+		#top-bar {
+			position: sticky;
+			top: 0;
+			z-index: 2000;
+			width: 100%;
+			height: auto !important;
+			min-height: 120px;
+			background: var(--card-bg);
+			border-bottom: 1px solid var(--border-color);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin-top: -10px;
+			padding: 5px 20px 5px 0px;
+			box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+			box-sizing: border-box;
+			flex-direction: column;
+		}
+		
+		.header-main-row {
+			display: flex;
+			width: 100%;
+			justify-content: space-between;
+			align-items: center;
+		}
+		
+		.header-left {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: flex-start;
+			width: 300px;
+			margin-left: 20px;
+			gap: 15px;
+		}
+		
+		.logo-wrapper {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		
+		.back-btn {
+			padding: 8px 12px;
+			background: #f0f0f0;
+			border: 1px solid #ccc;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 12px;
+			font-weight: bold;
+			color: #333;
+			white-space: nowrap;
+		}
+		
+		.back-btn:hover {
+			background: #e0e0e0;
+		}
+		
+		.main-logo {
+			max-height: 90px;
+			width: auto;
+		}
+		
+		.logo-text {
+			font-size: 18px;
+			font-weight: bold;
+			color: var(--text-main);
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			line-height: 1;
+			margin-top: 2px;
+		}
+		
+		#search-container {
+			flex: 0 1 400px;
+			position: relative;
+			display: flex;
+			margin-bottom: 0;
+		}
+		
+		.header-right {
+			display: flex;
+			align-items: center;
+			gap: 20px;
+		}
+		
+		.ball-icon {
+			width: 60px;
+			height: 60px;
+			margin-bottom: 15px;
+		}
+		
+		.counter-group {
+			display: flex;
+			height: auto !important;
+			align-items: center;
+			gap: 15px;
+			width: 400px;
+			margin-top: 15px;
+			justify-content: flex-start;
+		}
+		
+		.counter-text-wrapper {
+			display: flex;
+			flex-direction: column;
+			line-height: 1.2;
+			min-width: 100px;
+			flex-grow: 1;
+
+		}
+		
+		.total-label {
+			font-size: 14px;
+			color: var(--text-muted);
+			font-weight: normal;
+		}
+		
+		.help-btn {
+			padding: 8px 12px;
+			background-color: #bfe1fc;
+            border: 1px solid #87c6f9;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 10pt;
+			font-weight: bold;
+			color: #333;
+			white-space: nowrap;
+		}
+		
+		.help-btn:hover {
+			background: #2196f3;
+			color: #fff;
+		}
+		
+		#help-modal {
+			display: none; 
+			position: fixed; 
+			z-index: 3000; 
+			left: 0; 
+			top: 0; 
+			width: 100%; 
+			height: 100%; 
+			overflow: auto; 
+			background-color: rgba(0,0,0,0.5);
+		}
+		
+		.modal-content {
+			background-color: #fefefe;
+			margin: 10% auto;
+			padding: 20px;
+			border: 1px solid #888;
+			width: 80%;
+			max-width: 400px;
+			border-radius: 12px;
+			box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+		}
+		
+		.modal-header { display: flex; justify-content: space-between; align-items: center; }
+		.modal-subheader { font-size: 16px; font-weight: bold; margin: 20px 0 10px 0; padding-bottom: 5px; border-bottom: 1px solid #ddd; color: #444; }
+		.close-btn { cursor: pointer; font-size: 20px; font-weight: bold; }
+		
+		.legend-item { display: flex; align-items: center; margin-bottom: 10px; font-size: 14px; }
+		.legend-emoji { font-size: 20px; margin-right: 10px; min-width: 30px; text-align: center; }
+		
+		.weather-grid {	display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;	}
+		.weather-grid .legend-item { margin-bottom: 0; }
+
+		.header-actions-row {
+			display: flex;
+			flex-direction: column !important;
+			align-items: center;
+			gap: 10px;
+		}
+		
+		#clear-all-btn {
+			padding: 8px 16px;
+			background: #ff4444;
+			color: white;
+			border: none;
+			border-radius: 8px;
+			font-size: 10pt;
+			border: 1px solid #a10000;
+			cursor: pointer;
+			font-weight: bold;
+		}
+		
+		#clear-all-btn:hover {
+			background: #cc0000;
+		}		
+		
+		.progress-container {
+			flex-grow: 1;
+			height: 12px;
+			background-color: #eee;
+			border-radius: 10px;
+			border: 1px solid var(--border-color);
+			position: relative;
+			margin: 0px 15px 25px 15px; 
+			overflow: visible;
+		}
+
+		.progress-label {
+			font-size: 11px;
+			font-weight: bold;
+			color: var(--text-muted);
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			margin-bottom: 4px;
+			text-align: left;
+		}
+		
+		#progress-bar {
+			height: 100%;
+			width: 0%;
+			background-color: #cc0000;
+			border-radius: 10px;
+			transition: width 0.3s ease;
+		}
+		
+		#caught-label {
+			position: absolute;
+			top: 16px;
+			z-index: 20;
+			color: #cc0000;
+			transform: translateX(-50%);
+			white-space: nowrap;
+		}
+		
+		#total-label {
+			position: absolute;
+			top: 16px;
+			right: 0; 
+			transform: translateX(50%);
+			z-index: 10;
+		}
+		
+		#filter-progress-bar {
+			height: 100%;
+			width: 0%;
+			background-color: #777;
+			border-radius: 10px;
+			transition: width 0.3s ease, background-color 0.3s ease;
+		}
+		
+		#filter-caught-label {
+			position: absolute;
+			top: 16px;
+			z-index: 20;
+			color: 000;
+			transform: translateX(-50%);
+			white-space: nowrap;
+		}
+		
+		#filter-total-label {
+			position: absolute;
+			top: 16px;
+			right: 0; 
+			transform: translateX(50%);
+			z-index: 10;
+		}
+		
+		#filter-container {
+			display: grid;
+			grid-template-columns: auto auto 1fr;
+			gap: 40px;
+			width: 83%;
+			margin-left: auto;
+			margin-right: auto;
+			padding: 10px 0;
+			border-top: 1px solid var(--border-color);
+			align-items: start;
+		}
+		
+		.filter-group {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+		
+		#type-filters {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 6px;
+			align-content: flex-start;
+		}
+		
+		.filter-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			padding: 6px 12px;
+			border-radius: 20px;
+			border: 2px solid #ccc;
+			background: white;
+			cursor: pointer;
+			font-size: 12px;
+			font-weight: 600;
+			transition: all 0.2s ease;
+			text-align: center;
+			white-space: nowrap;
+		}
+		
+		.filter-btn img {
+			width: 18px;
+			height: 18px;
+			object-fit: contain;
+		}
+		
+		.filter-btn:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		.type-bug { background: #DBE0B4; color: #5E6910; border-color: #5E6910; }
+		.type-dark { background: #CCC5C5; color: #403233; border-color: #403233; }
+		.type-dragon { background: #C6CBF5; color: #343E92; border-color: #343E92; }
+		.type-electric { background: #FDEAAC; color: #A37D00; border-color: #A37D00; }
+		.type-fairy { background: #FAD0FA; color: #9B499B; border-color: #9B499B; }
+		.type-fighting { background: #FFD5AC; color: #A65300; border-color: #A65300; }
+		.type-fire { background: #F7B9B9; color: #961A1B; border-color: #961A1B; }
+		.type-flying { background: #D6E8FA; color: #54789B; border-color: #54789B; }
+		.type-ghost { background: #D0C1D0; color: #492A49; border-color: #492A49; }
+		.type-grass { background: #C0E0B9; color: #29691B; border-color: #29691B; }
+		.type-ground { background: #DBC6B7; color: #5E3515; border-color: #5E3515; }
+		.type-ice { background: #C0EFFB; color: #28869E; border-color: #28869E; }
+		.type-normal { background: #E0E0E0; color: #676967; border-color: #676967; }
+		.type-poison { background: #DBC1EE; color: #5E2A84; border-color: #5E2A84; }
+		.type-psychic { background: #FAC1D3; color: #9B2A4F; border-color: #9B2A4F; }
+		.type-rock { background: #E5E3D6; color: #726E54; border-color: #726E54; }
+		.type-steel { background: #CBE0E8; color: #3E6978; border-color: #3E6978; }
+		.type-water { background: #B9D5FA; color: #1B539B; border-color: #1B539B; }
+
+		.type-caught { background: white; color: black; border-color: gray; }
+		.type-uncaught { background: white; color: black; border-color: gray; }
+		.type-galar { background: #f0e6ff; color: #7e57c2; border-color: #b39ddb; }
+		
+		.filter-btn.active.type-bug { background: #91A119; color: white; border-color: #5E6910; }
+		.filter-btn.active.type-dark { background: #624D4E; color: white; border-color: #403233; }
+		.filter-btn.active.type-dragon { background: #5060E1; color: white; border-color: #343E92; }
+		.filter-btn.active.type-electric { background: #FAC000; color: #333; border-color: #A37D00; }
+		.filter-btn.active.type-fairy { background: #EF70EF; color: white; border-color: #9B499B; }
+		.filter-btn.active.type-fighting { background: #FF8000; color: white; border-color: #A65300; }
+		.filter-btn.active.type-fire { background: #E62829; color: white; border-color: #961A1B; }
+		.filter-btn.active.type-flying { background: #81B9EF; color: white; border-color: #54789B; }
+		.filter-btn.active.type-ghost { background: #704170; color: white; border-color: #492A49; }
+		.filter-btn.active.type-grass { background: #3FA129; color: white; border-color: #29691B; }
+		.filter-btn.active.type-ground { background: #915121; color: white; border-color: #5E3515; }
+		.filter-btn.active.type-ice { background: #3DCEF3; color: #333; border-color: #28869E; }
+		.filter-btn.active.type-normal { background: #9FA19F; color: white; border-color: #676967; }
+		.filter-btn.active.type-poison { background: #9141CB; color: white; border-color: #5E2A84; }
+		.filter-btn.active.type-psychic { background: #EF4179; color: white; border-color: #9B2A4F; }
+		.filter-btn.active.type-rock { background: #AFA981; color: white; border-color: #726E54; }
+		.filter-btn.active.type-steel { background: #60A1B8; color: white; border-color: #3E6978; }
+		.filter-btn.active.type-water { background: #2980EF; color: white; border-color: #1B539B; }
+				
+		.filter-btn.active.type-caught { background: lightgray; color: black; border-color: gray; }
+		.filter-btn.active.type-uncaught { background: lightgray; color: black; border-color: gray; }
+		.filter-btn.active.type-galar { background: #ACA0BF; color: #333; border-color: #7e57c2; }	
+
+        #search-container {
+            position: sticky;
+            top: 10px;
+            z-index: 1000;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 0px;
+        }
+
+        #search-input {
+            width: 100%;
+            box-sizing: border-box !important;
+            padding: 10px 15px 10px 15px;
+            border-radius: 20px;
+            font-size: 11pt;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            outline: none;
+        }
+
+        #autocomplete-list {
+            background: white;
+            border: 1px solid var(--border-color);
+            max-height: 250px;
+            font-size: 11pt;
+            overflow-y: auto;
+            display: none;
+            position: absolute;
+            box-sizing: border-box !important;
+            width: 100% !important;
+            border-radius: 12px;
+            margin-top: 45px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .suggestion-item:hover { background-color: #f8f9fa; }
+
+        #main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 200px); 
+            gap: 15px;
+            margin-top: 10px;
+            justify-content: center;
+            width: 100%;
+            max-width: 1320px; 
+        }
+
+        .container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 200px;
+            height: 325px; 
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-sizing: border-box;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .container.clicked {
+            background-color: var(--selected-bg);
+            border-color: var(--selected-border);
+            border-width: 2px;
+        }
+        
+		.galarian-card {
+			background-color: #f0e6ff !important; 
+			border-color: #b39ddb !important;
+		}
+		
+		.container.galarian-card.clicked {
+			background-color: #e6d6ff !important;
+			border-color: #7e57c2 !important;
+		}
+		
+		.container.galarian-card.clicked .item-title,
+		.container.galarian-card.clicked .label,
+		.container.galarian-card.clicked .item-number {
+			color: #4a148c;
+		}
+
+        .item-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+		.card-ball-icon {
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			width: 50px;
+			height: 50px;
+			z-index: 10;
+			pointer-events: none;
+			display: none;
+		}
+		
+		.container.clicked .card-ball-icon {
+			display: block;
+		}
+
+        .image-center-wrapper {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            width: 120px;
+            height: 112px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .main-img {
+            margin-top: auto;
+            max-width: 120px;
+            max-height: 112px;
+            object-fit: contain;
+        }
+
+        .sub-icons-container {
+            position: absolute;
+            right: -18px; 
+            bottom: -20px; 
+            display: flex;
+            gap: 6px;
+        }
+
+        .sub-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+        }
+        
+        .sub-icon + .sub-icon {
+			margin-left: -10px;
+		}
+
+        .item-title {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: var(--text-main);
+            display: block;
+        }
+
+        .info-row,
+        .info-row-2 {
+            margin-top: 7px;
+            display: flex;
+            align-items: flex-start;
+            font-size: 12px;
+            color: #444;
+            line-height: 1.3;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-right: 5px;
+            white-space: nowrap;
+        }
+
+        .location-link {
+            color: var(--link-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .evolve-text {
+            color: #555;
+            word-wrap: break-word;
+            max-width: 140px;
+        }
+
+		.weakness-row {
+			margin-top: 4px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		
+		.weakness-label {
+			font-size: 11px;
+			font-weight: bold;
+			color: var(--text-muted);
+			margin-bottom: 4px;
+		}
+		
+		.weakness-icons {
+			display: flex;
+			gap: 4px;
+			justify-content: center;
+		}
+		
+		.weakness-icons img {
+			width: 24px;
+			height: 24px;
+			object-fit: contain;
+		}
+		
+		.weakness-item {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 2px;
+		}
+		
+		.multiplier-badge {
+			font-size: 9px;
+			font-weight: bold;
+			background: #eee;
+			padding: 1px 4px;
+			border-radius: 4px;
+			color: #444;
+		}
+		
+		.multiplier-4x {
+			background: #ff4444;
+			color: white;
+		}
+		
+		.emoji-highlight {
+			background-color: rgba(0, 0, 0, 0.25);
+			padding: 2px 5px;
+			border-radius: 6px;
+			margin-left: 4px;
+			display: inline-block;
+			line-height: 1;
+		}
+				
+		.time-highlight {
+			background-color: rgba(61,210,161,0.5);
+			padding: 2px 5px;
+			border-radius: 6px;
+			margin-left: 4px;
+			display: inline-block;
+			line-height: 1;
+		}
+		
+		.scarlet-highlight {
+			background-color: rgba(140, 23, 23, 0.5);
+			padding: 2px 5px;
+			border-radius: 6px;
+			margin-left: 4px;
+			display: inline-block;
+			line-height: 1;
+			font-weight: bold;
+		}
+		
+		.violet-highlight {
+			background-color: rgba(236, 52, 249, 0.5);
+			padding: 2px 5px;
+			border-radius: 6px;
+			margin-left: 4px;
+			display: inline-block;
+			line-height: 1;
+			font-weight: bold;
+		}
+		
+		.percent {
+			color: #ff4444;
+			font-weight: bold;
+		}
+
+        .highlight-flash {
+            animation: flash 1s ease-in-out 2;
+        }
+        @keyframes flash {
+            50% { box-shadow: 0 0 20px var(--selected-border); transform: scale(1.02); }
+        }
+        
+        /* --- MOBILE RESPONSIVE OVERHAUL --- */
+		@media (max-width: 600px) {
+
+			body { padding: 0; margin: 0; overflow-x: hidden; width: 100%; }
+		
+			#top-bar {
+				display: flex;
+				flex-direction: column;
+				justify-content: flex-start;
+				align-items: center;
+				width: 100%;
+				left: 0;
+				right: 0;
+				margin-left: 0;
+				margin-right: 0;
+				padding: 10px;
+				height: auto;
+				box-sizing: border-box;
+			}
+			
+			.back-btn {
+				position: static; 
+				transform: none;
+				margin-right: 20px;
+				font-size: 11px;
+				padding: 10px 10px;
+			}
+			
+			.header-main-row, 
+			#top-bar > div:first-child {
+				display: flex;
+				flex-direction: column; 
+				width: 100%;
+				align-items: center;
+				gap: 0px;
+				max-width: 100%; 
+				padding: 0 10px;
+				box-sizing: border-box;
+			}
+		
+			.main-logo { max-height: 75px; margin: 0 auto; display: block; }
+			
+			.header-left { flex-direction: row; gap: 10px; margin: 0px 0px 5px -20px; }
+		
+			.logo-text { font-size: 14px; width: 60px; text-align: left; line-height: 1.1; }
+		
+			#search-container {
+				width: 100%;
+				max-width: 100%;
+				margin: 5px 0px 10px 0px;
+				padding: 0;
+				box-sizing: border-box;
+				flex: none; 
+			}
+		
+			#search-input { width: 100%; box-sizing: border-box; }
+		
+			.header-right {
+				display: flex;
+				flex-direction: column;
+				width: 100%;
+				margin-top: -10px;
+				gap: 0;
+				align-items: center;
+			}
+		
+			.counter-group {
+				display: flex;
+				width: 100%;
+				flex-direction: row;
+				justify-content: center;
+				align-items: center;
+				margin: 10px 0px 15px -20px;
+				height: auto;
+			}
+		
+			.ball-icon { margin: 0px -5px 0px 0px; width: 50px; height: 50px; }
+		
+			.counter-text-wrapper {
+				width: 70%; 
+				min-width: 0;
+				margin: 0;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+			}
+			
+			.progress-label { margin-bottom: -3px; }
+		
+			.progress-container { width: 100%; margin: 10px 0 20px 0; display: block; }
+		
+			#progress-bar { display: block; }
+		
+			.header-actions-row {
+				display: flex;
+				flex-direction: row !important;
+				justify-content: center;
+				align-items: center;
+				gap: 10px;
+				width: 100%;
+				margin-top: 5px;
+			}
+
+			#clear-all-btn, 
+			#filter-toggle-btn,
+			#help-btn {
+				width: auto !important;
+				margin: -10px 0px 5px 0px;
+				height: 40px;
+				font-size: 10pt;
+				font-weight: bold;
+				white-space: nowrap;
+				cursor: pointer;
+			}
+		
+			#filter-progress-section { display: none !important; }
+		
+			#filter-toggle-btn {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 8px;
+				width: 50%;
+				padding: 8px;
+				background: #eee;
+				border: 1px solid var(--border-color);
+				border-radius: 8px;
+			}
+
+			#filter-container {
+				display: none;
+				flex-direction: column;
+				width: 100%;
+				padding: 15px;
+				box-sizing: border-box;
+				background: #f9f9f9;
+				border-top: 1px solid #ddd;
+				gap: 20px;
+			}
+			
+			#filter-container.active { display: flex !important; }
+			
+			#type-filters { max-height: none !important; }
+			
+			.filter-group {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				justify-content: left;
+				gap: 10px;
+				margin-left: -5px;
+			}
+		
+			#type-filters .filter-btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 0;
+				font-size: 0;
+				gap: 0;
+				width: 44px;
+				height: 44px;
+				border-radius: 50%;
+				overflow: hidden;
+			}
+			
+			#type-filters .filter-btn img { margin: 0; width: 24px; height: 24px; }
+			
+			#caught-filters .filter-btn,
+			#region-filters .filter-btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 8px 12px;
+				font-size: 10pt;
+				width: auto;
+				height: 40px;
+				border-radius: 20px;
+				gap: 8px;
+			}
+			
+			#caught-filters .filter-btn img,
+			#region-filters .filter-btn img {
+				width: 20px;
+				height: 20px;
+				margin: 0;
+			}
+		
+			#main-grid {
+				grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+				gap: 12px;
+				padding: 10px;
+				padding-left: 5px;
+				padding-right: 5px;
+				width: 100%;
+				max-width: 100%;
+				box-sizing: border-box;
+				justify-content: center; 
+				column-gap: 10px; 
+				row-gap: 10px;
+			}
+			
+			.container { width: auto; height: 225px; padding: 5px; scroll-margin-top: 270px }
+		
+			.image-center-wrapper { width: 85px; height: 85px; margin-top: 5px; }
+		
+			.main-img { max-width: 85px; max-height: 85px; }
+		
+			.card-ball-icon { width: 40px; height: 40px; }
+			
+			.item-title { margin: 5px 0px 4px 0px; font-size: 0.95em; }
+		
+			.sub-icons-container { right: -12px; bottom: -5px; }
+		
+			.sub-icon { width: 26px; height: 26px; }
+			
+			.weakness-row { padding: 0px; margin: 0px 0px 0px 0px; }
+			
+			.weakness-label { margin: 0px; }
+		
+			.weakness-icons { gap: 0; }
+			
+			.info-row { margin: 7px; justify-content: center; text-align: center; }
+			
+			.info-row-2, .label, .evolve-text { display: none !important; }
+		}
+		
+		@media (min-width: 601px) {
+			
+			#filter-toggle-btn { display: none; }
+		
+		}
+
+    </style>
+</head>
+<body>
+
+    <header id="top-bar">
+		<div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
+			<div class="header-left">
+				<button class="back-btn" onclick="window.location.href='index.html'">&lt; Back<br>to hub</button>
+				<div class="logo-wrapper">
+					<img src="logos/sv.png" alt="Logo" class="main-logo">
+					<div class="logo-text">Pokedex Tracker</div>
+				</div>
+			</div>
+			
+			<div id="search-container">
+				<input type="text" id="search-input" placeholder="Search Pokémon..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+				<div id="autocomplete-list" class="autocomplete-items"></div>
+			</div>
+			
+			<div class="header-right">
+				<div class="counter-group">
+					<img src="icons/ball.png" alt="Caught" class="ball-icon">
+					<div class="counter-text-wrapper">
+						<div class="progress-label">Pokémon caught</div> 
+						<div class="progress-container" style="overflow: visible; margin-bottom: 20px;">
+							<div id="progress-bar"></div>
+							<div id="caught-label" class="multiplier-badge">0</div>
+							<div id="total-label" class="multiplier-badge" style="right: 0;">422</div>
+						</div>
+						
+						<div id="filter-progress-section" style="display: block; margin-top: 10px;">
+							<div id="filter-progress-label" class="progress-label">Click a single filter to see details</div>
+							<div class="progress-container" style="overflow: visible;">
+								<div id="filter-progress-bar" style="height:100%; border-radius:10px; transition:width 0.3s ease; background-color: #eee;"></div>
+								<div id="filter-caught-label" class="multiplier-badge" style="position:absolute; top:16px; transform:translateX(-50%);">0</div>
+								<div id="filter-total-label" class="multiplier-badge" style="position:absolute; top:16px; right:0; transform:translateX(50%);">0</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="header-actions-row">
+					<button id="filter-toggle-btn" onclick="document.getElementById('filter-container').classList.toggle('active')">
+						<img src="icons/location.png" style="width:16px; height:16px;"> Filters
+					</button>
+					<button id="help-btn" class="help-btn" onclick="document.getElementById('help-modal').style.display='block'">Help</button>
+					<button id="clear-all-btn">Clear All</button>
+				</div>
+				<div id="help-modal">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h3>Icon Legend</h3>
+							<span class="close-btn" onclick="document.getElementById('help-modal').style.display='none'">&times;</span>
+						</div>
+						<div class="modal-subheader">Weather Types</div>
+						<div class="weather-grid">
+							<div class="legend-item"><span class="legend-emoji">🪟</span><span>Clear/Normal</span></div>
+							<div class="legend-item"><span class="legend-emoji">⛅</span><span>Cloudy/Overcast</span></div>
+							<div class="legend-item"><span class="legend-emoji">☔</span><span>Raining</span></div>
+							<div class="legend-item"><span class="legend-emoji">⚡</span><span>Thunderstorm</span></div>
+							<div class="legend-item"><span class="legend-emoji">❄️</span><span>Snowing</span></div>
+							<div class="legend-item"><span class="legend-emoji">🌧️</span><span>Snowstorm</span></div>
+							<div class="legend-item"><span class="legend-emoji">☀️</span><span>Sunny</span></div>
+							<div class="legend-item"><span class="legend-emoji">🌪️</span><span>Sandstorm</span></div>
+							<div class="legend-item"><span class="legend-emoji">🌫️</span><span>Fog</span></div>
+						</div>
+						<div class="modal-subheader">Encounter Types</div>
+						<div class="legend-item"><span class="legend-emoji">🌳</span><span>Shake Trees</span></div>
+						<div class="legend-item"><span class="legend-emoji">🎣</span><span>Fishing Spawn</span></div>
+						<div class="legend-item"><span class="legend-emoji">🌊</span><span>Surfing Spawn</span></div>
+						<div class="legend-item"><span class="legend-emoji">👁️</span><span>Overworld Spawn</span></div>
+						<div class="legend-item"><span class="legend-emoji">🔍</span><span>Non-Overworld Spawn</span></div>
+						<div class="legend-item"><span class="legend-emoji">📍</span><span>Wandering Spawn</span></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div id="filter-container">
+			<div class="filter-group" id="caught-filters">
+				<button class="filter-btn type-caught" data-type="status" data-value="caught">
+					<img src="icons/ball.png" alt="">Caught
+				</button>
+				<button class="filter-btn type-uncaught" data-type="status" data-value="uncaught">
+					<img src="icons/ball2.png" alt="">Not Caught
+				</button>
+			</div>
+			<div class="filter-group" id="region-filters">
+				<button class="filter-btn type-galar" data-type="region" data-value="Galar">
+					<img src="icons/location.png" alt="">Galar
+				</button>
+			</div>
+			<div class="filter-group" id="type-filters">
+				</div>
+		</div>
+	</header>
+
+    <div id="main-grid"></div>
+
+	<!-- Sprite Directory 1: https://projectpokemon.org/home/docs/spriteindex_148/ -->
+	<!-- Sprite Directory 2: https://play.pokemonshowdown.com/sprites/ani/?view=dir -->
+	    
+    <script>
+		
+		const pokedexData = [
+			{ id: "001", name: "Sprigatito", img: "sprigatito.gif", type1: "Grass", type2: "", location: "Starter", evolve: "" },
+			{ id: "002", name: "Floragato", img: "floragato.gif", type1: "Grass", type2: "", location: "Evolve or Trade", evolve: "Sprigatito (Lvl 16)" },
+			{ id: "003", name: "Meowscarada", img: "meowscarada.gif", type1: "Grass", type2: "Dark", location: "Evolve or Trade", evolve: "Floragato (Lvl 36)" },
+			{ id: "004", name: "Fuecoco", img: "fuecoco.gif", type1: "Fire", type2: "", location: "Starter", evolve: "" },
+			{ id: "005", name: "Crocalor", img: "crocalor.gif", type1: "Fire", type2: "", location: "Evolve or Trade", evolve: "Fuecoco (Lvl 16)" },
+			{ id: "006", name: "Skeledirge", img: "skeledirge.gif", type1: "Fire", type2: "Ghost", location: "Evolve or Trade", evolve: "Crocalor (Lvl 36)" },
+			{ id: "007", name: "Quaxly", img: "quaxly.gif", type1: "Water", type2: "", location: "Starter", evolve: "" },
+			{ id: "008", name: "Quaxwell", img: "quaxwell.gif", type1: "Water", type2: "", location: "Evolve or Trade", evolve: "Quaxly (Lvl 16)" },
+			{ id: "009", name: "Quaquaval", img: "quaquaval.gif", type1: "Water", type2: "Fighting", location: "Evolve or Trade", evolve: "Quaxwell (Lvl 36)" },
+			{ id: "010", name: "Lechonk", img: "lechonk.gif", type1: "Normal", type2: "", location: "South 1 & 4 <span class='emoji-highlight'>🌱🌲</span>", evolve: "" },
+			{ id: "011", name: "Oinkologne", img: "oinkologne.gif", type1: "Normal", type2: "", location: "East 1 & 2 <span class='emoji-highlight'>🌱🌲</span> <span class='percent'>20%</span>", evolve: "Lechonk (Lvl 18)" },
+			{ id: "012", name: "Tarountula", img: "tarountula.gif", type1: "Bug", type2: "", location: "South 1 & 4 <span class='emoji-highlight'>🌱🌲</span>", evolve: "" },
+			{ id: "013", name: "Spidops", img: "spidops.gif", type1: "Bug", type2: "", location: "East 1 & 2 <span class='emoji-highlight'>🌲🎋</span> <span class='percent'>20%</span>", evolve: "Tarountula (Lvl 15)" },
+			{ id: "014", name: "Nymble", img: "nymble.gif", type1: "Bug", type2: "", location: "West 1 <span class='emoji-highlight'>🌱⛰️</span>", evolve: "" },
+			{ id: "015", name: "Lokix", img: "lokix.gif", type1: "Bug", type2: "Dark", location: "West 1 <span class='emoji-highlight'>⛰️🪨🎋</span>", evolve: "Nymble (Lvl 24)" },
+			{ id: "016", name: "Hoppip", img: "hoppip.gif", type1: "Grass", type2: "Flying", location: "South 1 & 2 <span class='emoji-highlight'>🌱</span>", evolve: "" },
+			{ id: "017", name: "Skiploom", img: "skiploom.gif", type1: "Grass", type2: "Flying", location: "East 1 & 2 <span class='emoji-highlight'>🌱🌸</span> <span class='percent'>20%</span>", evolve: "Hoppip (Lvl 18)" },
+			{ id: "018", name: "Jumpluff", img: "jumpluff.gif", type1: "Grass", type2: "Flying", location: "Great Crater <span class='emoji-highlight'>🌱</span>", evolve: "Skiploom (Lvl 27)" },
+			{ id: "019", name: "Fletchling", img: "fletchling.gif", type1: "Normal", type2: "Flying", location: "South 1 & 2 <span class='emoji-highlight'>🌱</span>", evolve: "" },
+			{ id: "020", name: "Fletchinder", img: "fletchinder.gif", type1: "Fire", type2: "Flying", location: "South 4 & 5 <span class='emoji-highlight'>🌱</span>", evolve: "Fletchling (Lvl 17)" },
+			{ id: "021", name: "Talonflame", img: "talonflame.gif", type1: "Fire", type2: "Flying", location: "Great Crater <span class='emoji-highlight'>🪨</span>", evolve: "Fletchinder (Lvl 35)" },
+			{ id: "022", name: "Pawmi", img: "pawmi.gif", type1: "Electric", type2: "", location: "South 1 & 3 <span class='emoji-highlight'>🌱🪨</span> <span class='percent'>5%</span>", evolve: "" },
+			{ id: "023", name: "Pawmo", img: "pawmo.gif", type1: "Electric", type2: "Fighting", location: "South 2 & 4 <span class='emoji-highlight'>🌱⛰️</span> <span class='percent'>10%</span>", evolve: "Pawmi (Lvl 18)" },
+			{ id: "024", name: "Pawmot", img: "pawmot.gif", type1: "Electric", type2: "Fighting", location: "Evolve or Trade", evolve: "Pawmo (Walk 1000 Steps in LGPE)" },
+			{ id: "025", name: "Houndour", img: "houndour.gif", type1: "Dark", type2: "Fire", location: "South 1 & 4 <span class='emoji-highlight'>🪨🦇</span>", evolve: "" },
+			{ id: "026", name: "Houndoom", img: "houndoom.gif", type1: "Dark", type2: "Fire", location: "North 2 <span class='emoji-highlight'>🪨🦇</span> <span class='percent'>20%</span>", evolve: "Houndour (Lvl 24)" },
+			{ id: "027", name: "Yungoos", img: "yungoos.gif", type1: "Normal", type2: "", location: "Any West <span class='emoji-highlight'>🦇</span>", evolve: "" },
+			{ id: "028", name: "Gumshoos", img: "gumshoos.gif", type1: "Normal", type2: "", location: "Any West <span class='emoji-highlight'>🪨🦇</span>", evolve: "Yungoos (Lvl 20 during Day)" },
+			{ id: "029", name: "Skwovet", img: "skwovet.gif", type1: "Normal", type2: "", location: "South 2 & 4 <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "030", name: "Greedent", img: "greedent.gif", type1: "Normal", type2: "", location: "North 1 & 2 <span class='emoji-highlight'>🌲</span>", evolve: "Skwovet (Lvl 24)" },
+			{ id: "031", name: "Sunkern", img: "sunkern.gif", type1: "Grass", type2: "", location: "South 1 & 2 <span class='emoji-highlight'>🌸</span><span class='time-highlight'>🌅🏙️🌇</span>", evolve: "" },
+			{ id: "032", name: "Sunflora", img: "sunflora.gif", type1: "Grass", type2: "", location: "South 1 & 2 <span class='emoji-highlight'>🌸</span><span class='time-highlight'>🌅🏙️🌇</span>", evolve: "Sunkern (Sun Stone)" },
+			{ id: "033", name: "Kricketot", img: "kricketot.gif", type1: "Bug", type2: "", location: "South 2 <span class='emoji-highlight'>🌿</span>", evolve: "" },
+			{ id: "034", name: "Kricketune", img: "kricketune.gif", type1: "Bug", type2: "", location: "North 1 & 2 <span class='emoji-highlight'>🎋</span>", evolve: "Kricketot (Lvl 10)" },
+			{ id: "035", name: "Scatterbug", img: "scatterbug.gif", type1: "Bug", type2: "", location: "South 1 <span class='emoji-highlight'>🌱</span>", evolve: "" },
+			{ id: "036", name: "Spewpa", img: "spewpa.gif", type1: "Bug", type2: "", location: "South 1 & 4 <span class='emoji-highlight'>🌸</span>", evolve: "Scatterbug (Lvl 9)" },
+			{ id: "037", name: "Vivillon", img: "vivillon.gif", type1: "Bug", type2: "Flying", location: "South 1 & 2 <span class='emoji-highlight'>🌸</span>", evolve: "Spewpa (Lvl 12)" },
+			{ id: "038", name: "Combee", img: "combee.gif", type1: "Bug", type2: "Flying", location: "South 1 & 2 <span class='emoji-highlight'>🌸🌿</span>", evolve: "" },
+			{ id: "039", name: "Vespiquen", img: "vespiquen.gif", type1: "Bug", type2: "Flying", location: "South 1 & 2 <span class='emoji-highlight'>🌸</span>", evolve: "Combee (Lvl 21 Female)" },
+			{ id: "040", name: "Rookidee", img: "rookidee.gif", type1: "Flying", type2: "", location: "Any East <span class='emoji-highlight'>🌱⛰️🏡🪨</span>", evolve: "" },
+			{ id: "041", name: "Corvisquire", img: "corvisquire.gif", type1: "Flying", type2: "", location: "Any East <span class='emoji-highlight'>🌱⛰️🏡🪨</span>", evolve: "Rookidee (Lvl 18)" },
+			{ id: "042", name: "Corviknight", img: "corviknight.gif", type1: "Flying", type2: "Steel", location: "Great Crater <span class='emoji-highlight'>🌱</span> <span class='percent'>20%</span>", evolve: "Corvisquire (Lvl 38)" },
+			{ id: "043", name: "Happiny", img: "happiny.gif", type1: "Normal", type2: "", location: "Any South <span class='emoji-highlight'>🌱🌸</span> <span class='percent'>1%</span>", evolve: "" },
+			{ id: "044", name: "Chansey", img: "chansey.gif", type1: "Normal", type2: "", location: "North 3 <span class='emoji-highlight'>🌱🌸</span> <span class='percent'>1%</span>", evolve: "Happiny (Oval Stone)" },
+			{ id: "045", name: "Blissey", img: "blissey.gif", type1: "Normal", type2: "", location: "Any North <span class='emoji-highlight'>🌸</span> <span class='percent'>1%</span>", evolve: "Chansey (High Friendship)" },
+			{ id: "046", name: "Azurill", img: "azurill.gif", type1: "Normal", type2: "Fairy", location: "South 1 & 4 <span class='emoji-highlight'>⛵🎣</span>", evolve: "" },
+			{ id: "047", name: "Marill", img: "marill.gif", type1: "Water", type2: "Fairy", location: "East 2 <span class='emoji-highlight'>🌱🏖️</span>", evolve: "Azurill (High Friendship)" },
+			{ id: "048", name: "Azumarill", img: "azumarill.gif", type1: "Water", type2: "Fairy", location: "Casseroya Lake <span class='emoji-highlight'>⛵🎣</span>", evolve: "Marill (Lvl 18)" },
+			{ id: "049", name: "Surskit", img: "surskit.gif", type1: "Bug", type2: "Water", location: "South 1 & 5 <span class='emoji-highlight'>⛵🎣</span>", evolve: "" },
+			{ id: "050", name: "Masquerain", img: "masquerain.gif", type1: "Bug", type2: "Flying", location: "South 4 & 5 <span class='emoji-highlight'>⛵🎣</span> <span class='percent'>20%</span>", evolve: "Surskit (Lvl 22)" },
+			{ id: "051", name: "Buizel", img: "buizel.gif", type1: "Water", type2: "", location: "East 1 & 2 <span class='emoji-highlight'>🎣🌊🏖️</span> <span class='percent'>20%</span>", evolve: "" },
+			{ id: "052", name: "Floatzel", img: "floatzel.gif", type1: "Water", type2: "", location: "Any East <span class='emoji-highlight'>🌊</span>", evolve: "Buizel (Lvl 26)" },
+			{ id: "053", name: "Paldean Wooper", img: "paldean wooper.gif", type1: "Poison", type2: "Ground", location: "South 4 & 5 <span class='emoji-highlight'>⛵🪷</span>", evolve: "" },
+			{ id: "054", name: "Clodsire", img: "clodsire.gif", type1: "Poison", type2: "Ground", location: "South 5 <span class='emoji-highlight'>⛵🪷</span>", evolve: "" },
+			{ id: "055", name: "Psyduck", img: "psyduck.gif", type1: "Water", type2: "", location: "South 1 & 4 <span class='emoji-highlight'>⛵🎣</span>", evolve: "" },
+			{ id: "056", name: "Golduck", img: "golduck.gif", type1: "Water", type2: "", location: "Casseroya Lake <span class='emoji-highlight'>⛵🎣</span> <span class='percent'>20%</span>", evolve: "Psyduck (Lvl 33)" },
+			{ id: "057", name: "Chewtle", img: "chewtle.gif", type1: "Water", type2: "", location: "South 5 <span class='emoji-highlight'>🪷</span>", evolve: "" },
+			{ id: "058", name: "Drednaw", img: "drednaw.gif", type1: "Water", type2: "Rock", location: "Casseroya Lake <span class='emoji-highlight'>⛵</span>", evolve: "Chewtle (Lvl 22)" },
+			{ id: "059", name: "Igglybuff", img: "igglybuff.gif", type1: "Normal", type2: "Fairy", location: "South 1 & 2 <span class='emoji-highlight'>🏡</span>", evolve: "" },
+			{ id: "060", name: "Jigglypuff", img: "jigglypuff.gif", type1: "Normal", type2: "Fairy", location: "West 3 <span class='emoji-highlight'>🏡</span>", evolve: "Igglybuff (High Friendship)" },
+			{ id: "061", name: "Wigglytuff", img: "wigglytuff.gif", type1: "Normal", type2: "Fairy", location: "North 1 <span class='emoji-highlight'>⛰️</span> <span class='percent'>5%</span>", evolve: "Jigglypuff (Moon Stone)" },
+			{ id: "062", name: "Ralts", img: "ralts.gif", type1: "Psychic", type2: "Fairy", location: "South 1 <span class='emoji-highlight'>🏡</span><span class='time-highlight'>🌅🏙️🌇</span>", evolve: "" },
+			{ id: "063", name: "Kirlia", img: "kirlia.gif", type1: "Psychic", type2: "Fairy", location: "East 2 <span class='emoji-highlight'>🏡</span><span class='time-highlight'>🌅🏙️🌇</span>", evolve: "Ralts (Lvl 20)" },
+			{ id: "064", name: "Gardevoir", img: "gardevoir.gif", type1: "Psychic", type2: "Fairy", location: "Glaseado Mountain <span class='emoji-highlight'>❄️</span><span class='time-highlight'>🌅🏙️🌇</span>", evolve: "Kirlia (Lvl 30)" },
+			{ id: "065", name: "Gallade", img: "gallade.gif", type1: "Psychic", type2: "Fighting", location: "Glaseado Mountain <span class='emoji-highlight'>⛰️</span><span class='time-highlight'>🌅🏙️🌇</span>", evolve: "Gardevoir (Dawn Stone on Male)" },
+			{ id: "066", name: "Drowzee", img: "drowzee.gif", type1: "Psychic", type2: "", location: "South 1 & 2 <span class='emoji-highlight'>🏛️</span>", evolve: "" },
+			{ id: "067", name: "Hypno", img: "hypno.gif", type1: "Psychic", type2: "", location: "Great Crater <span class='emoji-highlight'>🕳️</span>", evolve: "Drowzee (Lvl 26)" },
+			{ id: "068", name: "Gastly", img: "gastly.gif", type1: "Ghost", type2: "Poison", location: "West 1 <span class='emoji-highlight'>⛰️</span><span class='time-highlight'>🌃</span>", evolve: "" },
+			{ id: "069", name: "Haunter", img: "haunter.gif", type1: "Ghost", type2: "Poison", location: "Glaseado Mountain <span class='emoji-highlight'>⛰️❄️🏛️</span><span class='time-highlight'>🌃</span>", evolve: "Gastly (Lvl 25)" },
+			{ id: "070", name: "Gengar", img: "gengar.gif", type1: "Ghost", type2: "Poison", location: "Evolve or Trade", evolve: "Haunter (Trade)" },
+			{ id: "071", name: "Tandemaus", img: "tandemaus.gif", type1: "Normal", type2: "", location: "Pokémon League <span class='emoji-highlight'>🏡</span>", evolve: "" },
+			{ id: "072", name: "Maushold", img: "maushold.gif", type1: "Normal", type2: "", location: "Evolve or Trade", evolve: "Tandemaus (Look Up Instructions)" },
+			{ id: "073", name: "Pichu", img: "pichu.gif", type1: "Electric", type2: "", location: "South 1 & 2 <span class='emoji-highlight'>🌲</span> <span class='percent'>10%</span>", evolve: "" },
+			{ id: "074", name: "Pikachu", img: "pikachu.gif", type1: "Electric", type2: "", location: "South 2 & 4 <span class='emoji-highlight'>🌲</span> <span class='percent'>10%</span>", evolve: "Pichu (High Friendship)" },
+			{ id: "075", name: "Raichu", img: "raichu.gif", type1: "Electric", type2: "", location: "Casseroya Lake <span class='emoji-highlight'>🌱</span> <span class='percent'>10%</span>", evolve: "Pikachu (Thunder Stone)" },
+			{ id: "076", name: "Fidough", img: "fidough.gif", type1: "Fairy", type2: "", location: "South 1 & 2 <span class='emoji-highlight'>🏡</span>", evolve: "" },
+			{ id: "077", name: "Dachsbun", img: "dachsbun.gif", type1: "Fairy", type2: "", location: "South 1 & 2 <span class='emoji-highlight'>🏡</span>", evolve: "Fidough (Lvl 26)" },
+			{ id: "078", name: "Slakoth", img: "slakoth.gif", type1: "Normal", type2: "", location: "South 3 & 5 <span class='emoji-highlight'>🌱</span> <span class='percent'>10%</span>", evolve: "" },
+			{ id: "079", name: "Vigoroth", img: "vigoroth.gif", type1: "Normal", type2: "", location: "South 5 <span class='emoji-highlight'>🌱⛰️</span>", evolve: "Slakoth (Lvl 18)" },
+			{ id: "080", name: "Slaking", img: "slaking.gif", type1: "Normal", type2: "", location: "Casseroya Lake <span class='emoji-highlight'>🌲</span> <span class='percent'>5%</span>", evolve: "Vigoroth (Lvl 36)" },
+			{ id: "081", name: "Bounsweet", img: "bounsweet.gif", type1: "Grass", type2: "", location: "South 1 & 2 <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "082", name: "Steenee", img: "steenee.gif", type1: "Grass", type2: "", location: "East 1 <span class='emoji-highlight'>🌲</span>", evolve: "Steenee (Lvl 18)" },
+			{ id: "083", name: "Tsareena", img: "tsareena.gif", type1: "Grass", type2: "", location: "Evolve or Trade", evolve: "Steenee (Lvl up w/ Stomp)" },
+			{ id: "084", name: "Smoliv", img: "smoliv.gif", type1: "Grass", type2: "Normal", location: "South 2 <span class='emoji-highlight'>🌿</span>", evolve: "" },
+			{ id: "085", name: "Dolliv", img: "dolliv.gif", type1: "Grass", type2: "Normal", location: "Any North <span class='emoji-highlight'>🌸</span> <span class='percent'>10%</span>", evolve: "Smoliv (Lvl 25)" },
+			{ id: "086", name: "Arboliva", img: "arboliva.gif", type1: "Grass", type2: "Normal", location: "Evolve or Trade", evolve: "Dolliv (Lvl 35)" },
+			{ id: "087", name: "Bonsly", img: "bonsly.gif", type1: "Rock", type2: "", location: "South 1 & 2 <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "088", name: "Sudowoodo", img: "sudowoodo.gif", type1: "Rock", type2: "", location: "Casseroya Lake <span class='emoji-highlight'>🌲</span>", evolve: "Bonsly (Lvl Up w/ Mimic)" },
+			{ id: "089", name: "Rockruff", img: "rockruff.gif", type1: "Rock", type2: "", location: "West 1 <span class='emoji-highlight'>⛰️</span>", evolve: "" },
+			{ id: "090", name: "Lycanroc", img: "lycanroc.gif", type1: "Rock", type2: "", location: "Great Crater <span class='emoji-highlight'>🪨🦇</span>", evolve: "Rockruff (Lvl 25)" },
+			{ id: "091", name: "Rolycoly", img: "rolycoly.gif", type1: "Rock", type2: "", location: "East 3 <span class='emoji-highlight'>💎</span>", evolve: "" },
+			{ id: "092", name: "Carkol", img: "carkol.gif", type1: "Rock", type2: "Fire", location: "East 3 <span class='emoji-highlight'>💎</span>", evolve: "Rolycoly (Lvl 18)" },
+			{ id: "093", name: "Coalossal", img: "coalossal.gif", type1: "Rock", type2: "Fire", location: "Evolve or Trade", evolve: "Carkol (Lvl 34)" },
+			{ id: "094", name: "Shinx", img: "shinx.gif", type1: "Electric", type2: "", location: "South 3 <span class='emoji-highlight'>🪨</span>", evolve: "" },
+			{ id: "095", name: "Luxio", img: "luxio.gif", type1: "Electric", type2: "", location: "South 5 <span class='emoji-highlight'>🌱</span> <span class='percent'>20%</span>", evolve: "Shinx (Lvl 15)" },
+			{ id: "096", name: "Luxray", img: "luxray.gif", type1: "Electric", type2: "", location: "North 2 <span class='emoji-highlight'>🎋</span> <span class='percent'>20%</span>", evolve: "Luxio (Lvl 30)" },
+			{ id: "097", name: "Starly", img: "starly.gif", type1: "Normal", type2: "Flying", location: "South 2 & 4 <span class='emoji-highlight'>🌱🌿</span> <span class='percent'>20%</span><span class='time-highlight'>🌅🏙️🌇</span>", evolve: "" },
+			{ id: "098", name: "Staravia", img: "staravia.gif", type1: "Normal", type2: "Flying", location: "South 2 & 4 <span class='emoji-highlight'>🌱</span><span class='time-highlight'>🌅🏙️🌇</span>", evolve: "Starly (Lvl 14)" },
+			{ id: "099", name: "Staraptor", img: "staraptor.gif", type1: "Normal", type2: "Flying", location: "Casseroya Lake <span class='emoji-highlight'>🌱⛵</span> <span class='percent'>7%</span><span class='time-highlight'>🌅🏙️🌇</span>", evolve: "Staravia (Lvl 34)" },
+			{ id: "100", name: "Oricorio", img: "oricorio.gif", type1: "Fire", type2: "Flying", location: "East 1 <span class='emoji-highlight'>🏡🌸</span>", evolve: "" },
+			{ id: "101", name: "Mareep", img: "mareep.gif", type1: "Electric", type2: "", location: "South 2 <span class='emoji-highlight'>🌱🌿</span>", evolve: "" },
+			{ id: "102", name: "Flaaffy", img: "flaaffy.gif", type1: "Electric", type2: "", location: "West 2 <span class='emoji-highlight'>🌱</span>", evolve: "Mareep (Lvl 15)" },
+			{ id: "103", name: "Ampharos", img: "ampharos.gif", type1: "Electric", type2: "", location: "North 1 <span class='emoji-highlight'>⛰️</span> <span class='percent'>1%</span>", evolve: "Flaaffy (Lvl 30)" },
+			{ id: "104", name: "Petilil", img: "petilil.gif", type1: "Grass", type2: "", location: "South 2 & 4 <span class='emoji-highlight'>🌸</span>", evolve: "" },
+			{ id: "105", name: "Lilligant", img: "lilligant.gif", type1: "Grass", type2: "", location: "North 3 <span class='emoji-highlight'>🌸</span> <span class='percent'>5%</span>", evolve: "Petilil (Sun Stone)" },
+			{ id: "106", name: "Shroomish", img: "shroomish.gif", type1: "Grass", type2: "", location: "West 3 <span class='emoji-highlight'>🌱🌲</span>", evolve: "" },
+			{ id: "107", name: "Breloom", img: "breloom.gif", type1: "Grass", type2: "Fighting", location: "West 3 <span class='emoji-highlight'>🌲🎋</span>", evolve: "Shroomish (Lvl 23)" },
+			{ id: "108", name: "Applin", img: "applin.gif", type1: "Grass", type2: "Dragon", location: "North 1 & 2 <span class='emoji-highlight'>🌲</span> <span class='percent'>10%</span>", evolve: "" },
+			{ id: "109", name: "Flapple", img: "flapple.gif", type1: "Grass", type2: "Dragon", location: "Evolve or Trade", evolve: "Applin (Tart Apple)" },
+			{ id: "110", name: "Appletun", img: "appletun.gif", type1: "Grass", type2: "Dragon", location: "Evolve or Trade", evolve: "Applin (Sweet Apple)" },
+			{ id: "111", name: "Spoink", img: "spoink.gif", type1: "Psychic", type2: "", location: "South 3 <span class='emoji-highlight'>⛰️🪨</span> <span class='percent'>20%</span>", evolve: "" },
+			{ id: "112", name: "Grumpig", img: "grumpig.gif", type1: "Psychic", type2: "", location: "North 1 & 2 <span class='emoji-highlight'>⛰️🪨</span> <span class='percent'>20%</span>", evolve: "Spoink (Lvl 32)" },
+			{ id: "113", name: "Squawkabilly", img: "squawkabilly.gif", type1: "Normal", type2: "Flying", location: "Any East <span class='emoji-highlight'>🏡</span>", evolve: "" },
+			{ id: "114", name: "Misdreavus", img: "misdreavus.gif", type1: "Ghost", type2: "", location: "North 1 & 2 <span class='emoji-highlight'>⛵</span><span class='time-highlight'>🌃</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "115", name: "Mismagius", img: "mismagius.gif", type1: "Ghost", type2: "", location: "Casseroya Lake <span class='emoji-highlight'>⛵</span> <span class='percent'>3%</span><span class='time-highlight'>🌃</span><span class='violet-highlight'>🟣only</span>", evolve: "Misdreavus (Dusk Stone)" },
+			{ id: "116", name: "Makuhita", img: "makuhita.gif", type1: "Fighting", type2: "", location: "Any West <span class='emoji-highlight'>🪨🦇</span> <span class='percent'>20%</span>", evolve: "" },
+			{ id: "117", name: "Hariyama", img: "hariyama.gif", type1: "Fighting", type2: "", location: "East 3 <span class='emoji-highlight'>💎</span>", evolve: "Makuhita (Lvl 24)" },
+			{ id: "118", name: "Crabrawler", img: "crabrawler.gif", type1: "Fighting", type2: "", location: "North 1 & 3 <span class='emoji-highlight'>🏖️</span>", evolve: "" },
+			{ id: "119", name: "Crabominable", img: "crabominable.gif", type1: "Fighting", type2: "Ice", location: "Glaseado Mountain <span class='emoji-highlight'>❄️</span> <span class='percent'>10%</span>", evolve: "Crabrawler (Ice Stone)" },
+			{ id: "120", name: "Salandit", img: "salandit.gif", type1: "Poison", type2: "Fire", location: "North 1 <span class='emoji-highlight'>🦇</span>", evolve: "" },
+			{ id: "121", name: "Salazzle", img: "salazzle.gif", type1: "Poison", type2: "Fire", location: "North 1 <span class='emoji-highlight'>🦇</span> <span class='percent'>5%</span>", evolve: "Salandit (Lvl 33 Female)" },
+			{ id: "122", name: "Phanpy", img: "phanpy.gif", type1: "Ground", type2: "", location: "West 1 <span class='emoji-highlight'>🏜️⛰️⛵</span>", evolve: "" },
+			{ id: "123", name: "Donphan", img: "donphan.gif", type1: "Ground", type2: "", location: "West 2 <span class='emoji-highlight'>🏜️🌱</span> <span class='percent'>20%</span>", evolve: "Phanpy (Lvl 25)" },
+			{ id: "124", name: "Cufant", img: "cufant.gif", type1: "Steel", type2: "", location: "East 3 <span class='emoji-highlight'>💎</span>", evolve: "" },
+			{ id: "125", name: "Copperajah", img: "copperajah.gif", type1: "Steel", type2: "", location: "East 3 <span class='emoji-highlight'>💎</span> <span class='percent'>15%</span>", evolve: "Cufant (Lvl 34)" },
+			{ id: "126", name: "Gible", img: "gible.gif", type1: "Dragon", type2: "Ground", location: "West 1 & 2 <span class='emoji-highlight'>🦇</span>", evolve: "" },
+			{ id: "127", name: "Gabite", img: "gabite.gif", type1: "Dragon", type2: "Ground", location: "Great Crater <span class='emoji-highlight'>🕳️</span>", evolve: "Gible (Lvl 24)" },
+			{ id: "128", name: "Garchomp", img: "garchomp.gif", type1: "Dragon", type2: "Ground", location: "Evolve or Trade", evolve: "Gabite (Lvl 48)" },
+			{ id: "129", name: "Nacli", img: "nacli.gif", type1: "Rock", type2: "", location: "Any West <span class='emoji-highlight'>🪨</span>", evolve: "" },
+			{ id: "130", name: "Naclstack", img: "naclstack.gif", type1: "Rock", type2: "", location: "Any North <span class='emoji-highlight'>🪨</span>", evolve: "Nacli (Lvl 24)" },
+			{ id: "131", name: "Garganacl", img: "garganacl.gif", type1: "Rock", type2: "", location: "Great Crater <span class='emoji-highlight'>🕳️</span> <span class='percent'>20%</span>", evolve: "Naclstack (Lvl 38)" },
+			{ id: "132", name: "Wingull", img: "wingull.gif", type1: "Water", type2: "Flying", location: "West 1 & 2 <span class='emoji-highlight'>🌊🏖️</span>", evolve: "" },
+			{ id: "133", name: "Pelipper", img: "pelipper.gif", type1: "Water", type2: "Flying", location: "North Paldean Sea <span class='emoji-highlight'>🌊🏖️</span>", evolve: "Wingull (Lvl 25)" },
+			{ id: "134", name: "Magikarp", img: "magikarp.gif", type1: "Water", type2: "", location: "South Paldean Sea <span class='emoji-highlight'>🌊🏖️</span>", evolve: "" },
+			{ id: "135", name: "Gyarados", img: "gyarados.gif", type1: "Water", type2: "Flying", location: "Casseroya Lake <span class='emoji-highlight'>⛵</span> <span class='percent'>15%</span>", evolve: "Magikarp (Lvl 20)" },
+			{ id: "136", name: "Arrokuda", img: "arrokuda.gif", type1: "Water", type2: "", location: "Any South <span class='emoji-highlight'>🎣🌊</span>", evolve: "" },
+			{ id: "137", name: "Barraskewda", img: "barraskewda.gif", type1: "Water", type2: "", location: "Any North <span class='emoji-highlight'>🎣🌊</span> <span class='percent'>20%</span>", evolve: "Arrokuda (Lvl 26)" },
+			{ id: "138", name: "Basculin", img: "basculin.gif", type1: "Water", type2: "", location: "Any West <span class='emoji-highlight'>⛵🎣</span>", evolve: "" },
+			{ id: "139", name: "Gulpin", img: "gulpin.gif", type1: "Poison", type2: "", location: "East 1 <span class='emoji-highlight'>🌱🏡</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "140", name: "Swalot", img: "swalot.gif", type1: "Poison", type2: "", location: "Casseroya Lake <span class='emoji-highlight'>⛵</span><span class='violet-highlight'>🟣only</span>", evolve: "Gulpin (Lvl 26)" },
+			{ id: "141", name: "Meowth", img: "meowth.gif", type1: "Normal", type2: "", location: "West 2 & 3 <span class='emoji-highlight'>🌱🏡</span>", evolve: "" },
+			{ id: "142", name: "Persian", img: "persian.gif", type1: "Normal", type2: "", location: "West 3 <span class='emoji-highlight'>🌱🏡</span>", evolve: "Meowth (Lvl 28)" },
+			{ id: "143", name: "Drifloon", img: "drifloon.gif", type1: "Ghost", type2: "Flying", location: "South 2 & 6 <span class='emoji-highlight'>🏡⛰️</span><span class='time-highlight'>🌇🌃</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "144", name: "Drifblim", img: "drifblim.gif", type1: "Ghost", type2: "Flying", location: "Glaseado Mountain <span class='emoji-highlight'>🏡⛰️</span> <span class='percent'>20%</span><span class='time-highlight'>🌇🌃</span><span class='scarlet-highlight'>🔴only</span>", evolve: "Drifloon (Lvl 28)" },
+			{ id: "145", name: "Flabébé", img: "flabebe.gif", type1: "Fairy", type2: "", location: "South 4 & 6 <span class='emoji-highlight'>🌸</span>", evolve: "" },
+			{ id: "146", name: "Floette", img: "floette.gif", type1: "Fairy", type2: "", location: "North 1 & 2 <span class='emoji-highlight'>🌸</span>", evolve: "Flabébé (Lvl 19)" },
+			{ id: "147", name: "Florges", img: "florges.gif", type1: "Fairy", type2: "", location: "North 3 <span class='emoji-highlight'>🌸</span> <span class='percent'>1%</span>", evolve: "Floette (Shiny Stone)" },
+			{ id: "148", name: "Diglett", img: "diglett.gif", type1: "Ground", type2: "", location: "East 3 <span class='emoji-highlight'>💎</span>", evolve: "" },
+			{ id: "149", name: "Dugtrio", img: "dugtrio.gif", type1: "Ground", type2: "", location: "East 3 <span class='emoji-highlight'>💎</span>", evolve: "Diglett (Lvl 26)" },
+			{ id: "150", name: "Torkoal", img: "torkoal.gif", type1: "Fire", type2: "", location: "East 3 <span class='emoji-highlight'>💎</span> <span class='percent'>10%</span>", evolve: "" },
+			{ id: "151", name: "Numel", img: "numel.gif", type1: "Fire", type2: "Ground", location: "West 1 <span class='emoji-highlight'>⛰️</span>", evolve: "" },
+			{ id: "152", name: "Camerupt", img: "camerupt.gif", type1: "Fire", type2: "Ground", location: "North 2 <span class='emoji-highlight'>🪨</span> <span class='percent'>20%</span>", evolve: "Numel (Lvl 33)" },
+			{ id: "153", name: "Bronzor", img: "bronzor.gif", type1: "Steel", type2: "Psychic", location: "West 1 & 3 <span class='emoji-highlight'>🏛️</span>", evolve: "" },
+			{ id: "154", name: "Bronzong", img: "bronzong.gif", type1: "Steel", type2: "Psychic", location: "Casseroya Lake <span class='emoji-highlight'>❄️🏛️</span>", evolve: "Bronzor (Lvl 33)" },
+			{ id: "155", name: "Axew", img: "axew.gif", type1: "Dragon", type2: "", location: "North 1 <span class='emoji-highlight'>⛰️🎣</span> <span class='percent'>20%</span>", evolve: "" },
+			{ id: "156", name: "Fraxure", img: "fraxure.gif", type1: "Dragon", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>⛰️</span> <span class='percent'>20%</span>", evolve: "Axew (Lvl 38)" },
+			{ id: "157", name: "Haxorus", img: "haxorus.gif", type1: "Dragon", type2: "", location: "Evolve or Trade", evolve: "Fraxure (Lvl 48)" },
+			{ id: "158", name: "Mankey", img: "mankey.gif", type1: "Fighting", type2: "", location: "West 1 <span class='emoji-highlight'>🌱⛰️</span>", evolve: "" },
+			{ id: "159", name: "Primeape", img: "primeape.gif", type1: "Fighting", type2: "", location: "North 1 & 2 <span class='emoji-highlight'>🌲🪨🎋</span> <span class='percent'>10%</span>", evolve: "Mankey (Lvl 28)" },
+			{ id: "160", name: "Annihilape", img: "annihilape.gif", type1: "Fighting", type2: "Ghost", location: "Evolve or Trade", evolve: "Primeape (Use Rage Fist x20)" },
+			{ id: "161", name: "Meditite", img: "meditite.gif", type1: "Fighting", type2: "Psychic", location: "South 4 & 6 <span class='emoji-highlight'>⛰️🦇</span>", evolve: "" },
+			{ id: "162", name: "Medicham", img: "medicham.gif", type1: "Fighting", type2: "Psychic", location: "South 6 <span class='emoji-highlight'> 🌱⛰️</span> <span class='percent'>20%</span>", evolve: "Meditite (Lvl 37)" },
+			{ id: "163", name: "Riolu", img: "riolu.gif", type1: "Fighting", type2: "", location: "South 4 <span class='emoji-highlight'> ⛰️</span> <span class='percent'>20%</span>", evolve: "" },
+			{ id: "164", name: "Lucario", img: "lucario.gif", type1: "Fighting", type2: "Steel", location: "North 1 & 2 <span class='emoji-highlight'> ⛰️🪨</span> <span class='percent'>3%</span>", evolve: "Riolu (High Friendship)" },
+			{ id: "165", name: "Charcadet", img: "charcadet.gif", type1: "Fire", type2: "", location: "North 1 & 2 <span class='emoji-highlight'> 🌲⛰️🪨🦇</span> <span class='percent'>1%</span>", evolve: "" },
+			{ id: "166", name: "Armarouge", img: "armarouge.gif", type1: "Fire", type2: "Psychic", location: "Evolve <span class='scarlet-highlight'>🔴only</span> or Trade", evolve: "Charcadet (Auspicious Armor)" },
+			{ id: "167", name: "Ceruledge", img: "ceruledge.gif", type1: "Fire", type2: "Ghost", location: "Evolve <span class='violet-highlight'>🟣only</span> or Trade", evolve: "Armarouge (Malicious Armor)" },
+			{ id: "168", name: "Barboach", img: "barboach.gif", type1: "Water", type2: "Ground", location: "South 1 & 4 <span class='emoji-highlight'>⛵</span>", evolve: "" },
+			{ id: "169", name: "Whiscash", img: "whiscash.gif", type1: "Water", type2: "Ground", location: "South 1 & 4 <span class='emoji-highlight'>⛵</span> <span class='percent'>10%</span>", evolve: "Barboach (Lvl 30)" },
+			{ id: "170", name: "Tadbulb", img: "tadbulb.gif", type1: "Electric", type2: "", location: "South 4 & 5 <span class='emoji-highlight'>🪷🎣</span>", evolve: "" },
+			{ id: "171", name: "Bellibolt", img: "bellibolt.gif", type1: "Electric", type2: "", location: "Great Crater <span class='emoji-highlight'>🎣</span>", evolve: "Tadbulb (Thunder Stone)" },
+			{ id: "172", name: "Goomy", img: "goomy.gif", type1: "Dragon", type2: "", location: "South 4 & 5 <span class='emoji-highlight'>🪷🎣</span>", evolve: "" },
+			{ id: "173", name: "Sliggoo", img: "sliggoo.gif", type1: "Dragon", type2: "", location: "Casseroya Lake <span class='emoji-highlight'>🪷🎣</span>", evolve: "Goomy (Lvl 40)" },
+			{ id: "174", name: "Goodra", img: "goodra.gif", type1: "Dragon", type2: "", location: "Evolve or Trade", evolve: "Sliggoo (Lvl 50 While Raining)" },
+			{ id: "175", name: "Croagunk", img: "croagunk.gif", type1: "Poison", type2: "Fighting", location: "South 5 <span class='emoji-highlight'>🪷⛵🎣</span>", evolve: "" },
+			{ id: "176", name: "Toxicroak", img: "toxicroak.gif", type1: "Poison", type2: "Fighting", location: "Casseroya Lake <span class='emoji-highlight'>🪷⛵🎣</span>", evolve: "Croagunk (Lvl 37)" },
+			{ id: "177", name: "Wattrel", img: "wattrel.gif", type1: "Electric", type2: "Flying", location: "South Paldean Sea <span class='emoji-highlight'>🌊🏖️</span>", evolve: "" },
+			{ id: "178", name: "Kilowattrel", img: "kilowattrel.gif", type1: "Electric", type2: "Flying", location: "North Paldean Sea <span class='emoji-highlight'>🌊🏖️</span>", evolve: "Wattrel (Lvl 25)" },
+			{ id: "179", name: "Eevee", img: "eevee.gif", type1: "Normal", type2: "", location: "West 3 <span class='emoji-highlight'>🏡</span>", evolve: "Breed any Eeveelution" },
+			{ id: "180", name: "Vaporeon", img: "vaporeon.gif", type1: "Water", type2: "", location: "Casseroya Lake <span class='emoji-highlight'>⛵🎣</span> <span class='percent'>1%</span>", evolve: "Eevee (Water Stone)" },
+			{ id: "181", name: "Jolteon", img: "jolteon.gif", type1: "Electric", type2: "", location: "West 3 <span class='emoji-highlight'>🌲</span> <span class='percent'>1%</span>", evolve: "Eevee (Thunder Stone)" },
+			{ id: "182", name: "Flareon", img: "flareon.gif", type1: "Fire", type2: "", location: "North 1 <span class='emoji-highlight'>⛰️</span> <span class='percent'>1%</span>", evolve: "Eevee (Fire Stone)" },
+			{ id: "183", name: "Espeon", img: "espeon.gif", type1: "Psychic", type2: "", location: "Any Area <span class='emoji-highlight'>🌱</span> <span class='percent'>1%</span><span class='time-highlight'>🌅🏙️🌇</span>", evolve: "Eevee (High Friendship During Day)" },
+			{ id: "184", name: "Umbreon", img: "umbreon.gif", type1: "Dark", type2: "", location: "West 3 <span class='emoji-highlight'>🦇</span> <span class='percent'>1%</span><span class='time-highlight'>🌃</span>", evolve: "Eevee (High Friendship During Night)" },
+			{ id: "185", name: "Leafeon", img: "leafeon.gif", type1: "Grass", type2: "", location: "West 3 <span class='emoji-highlight'>🌲</span> <span class='percent'>1%</span>", evolve: "Eevee (Leaf Stone)" },
+			{ id: "186", name: "Glaceon", img: "glaceon.gif", type1: "Ice", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>❄️</span> <span class='percent'>1%</span>", evolve: "Eevee (Ice Stone)" },
+			{ id: "187", name: "Sylveon", img: "sylveon.gif", type1: "Fairy", type2: "", location: "South 6 <span class='emoji-highlight'>🏡</span> <span class='percent'>1%</span>", evolve: "Eevee (Max Friendship w/ Fairy Move)" },
+			{ id: "188", name: "Dunsparce", img: "dunsparce.gif", type1: "Normal", type2: "", location: "Great Crater <span class='emoji-highlight'>🕳️</span>", evolve: "" },
+			{ id: "189", name: "Dudunsparce", img: "dudunsparce.gif", type1: "Normal", type2: "", location: "Great Crater <span class='emoji-highlight'>🕳️</span> <span class='percent'>2%</span>", evolve: "Dunsparce (Lvl Up w/ Hyper Drill)" },
+			{ id: "190", name: "Deerling", img: "deerling.gif", type1: "Normal", type2: "Grass", location: "West 2 & 3 <span class='emoji-highlight'>🌱</span>", evolve: "" },
+			{ id: "191", name: "Sawsbuck", img: "sawsbuck.gif", type1: "Normal", type2: "Grass", location: "West 2 & 3 <span class='emoji-highlight'>🌱🌲</span>", evolve: "Deerling (Lvl 34)" },
+			{ id: "192", name: "Girafarig", img: "girafarig.gif", type1: "Normal", type2: "Psychic", location: "West 2 <span class='emoji-highlight'>🌱🌲</span>", evolve: "" },
+			{ id: "193", name: "Farigiraf", img: "farigiraf.gif", type1: "Normal", type2: "Psychic", location: "Great Crater <span class='emoji-highlight'>🌱</span> <span class='percent'>10%</span>", evolve: "Girafarig (Lvl Up w/ Twin Beam)" },
+			{ id: "194", name: "Grimer", img: "grimer.gif", type1: "Poison", type2: "", location: "East 2 <span class='emoji-highlight'>🏡</span>", evolve: "" },
+			{ id: "195", name: "Muk", img: "muk.gif", type1: "Poison", type2: "", location: "East 2 <span class='emoji-highlight'>🏡</span> <span class='percent'>3%</span>", evolve: "Grimer (Lvl 38)" },
+			{ id: "196", name: "Maschiff", img: "maschiff.gif", type1: "Dark", type2: "", location: "West 2 & 3 <span class='emoji-highlight'>🌱🏛️</span>", evolve: "" },
+			{ id: "197", name: "Mabosstiff", img: "mabosstiff.gif", type1: "Dark", type2: "", location: "West 2 & 3 <span class='emoji-highlight'>🌱🌲🏛️</span>", evolve: "Maschiff (Lvl 30)" },
+			{ id: "198", name: "Toxel", img: "toxel.gif", type1: "Electric", type2: "Poison", location: "South 4 & 6 <span class='emoji-highlight'>🌱⛰️🦇</span>", evolve: "" },
+			{ id: "198", name: "Toxtricity", img: "toxtricity.gif", type1: "Electric", type2: "Poison", location: "South 4 & 6 <span class='emoji-highlight'>⛰️🦇</span> <span class='percent'>15%</span>", evolve: "Toxel (Lvl 30)" },
+			{ id: "200", name: "Dedenne", img: "dedenne.gif", type1: "Electric", type2: "Fairy", location: "North 3 <span class='emoji-highlight'>🏡</span> <span class='percent'>20%</span>", evolve: "" },
+			{ id: "201", name: "Pachirisu", img: "pachirisu.gif", type1: "Electric", type2: "", location: "South 4 & 5 <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "202", name: "Shroodle", img: "shroodle.gif", type1: "Poison", type2: "Normal", location: "Tagtree Thicket <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "203", name: "Grafaiai", img: "grafaiai.gif", type1: "Poison", type2: "Normal", location: "Tagtree Thicket <span class='emoji-highlight'>🌲</span>", evolve: "Shroodle (Lvl 28)" },
+			{ id: "204", name: "Stantler", img: "stantler.gif", type1: "Normal", type2: "", location: "South 5 <span class='emoji-highlight'>🌱🪨</span>", evolve: "" },
+			{ id: "205", name: "Foongus", img: "foongus.gif", type1: "Grass", type2: "Poison", location: "East 1 & 2 <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "206", name: "Amoonguss", img: "amoonguss.gif", type1: "Grass", type2: "Poison", location: "East 1 & 2 <span class='emoji-highlight'>🌲</span>", evolve: "Foongus (Lvl 39)" },
+			{ id: "207", name: "Voltorb", img: "voltorb.gif", type1: "Electric", type2: "", location: "West 3 <span class='emoji-highlight'>🏡💎</span>", evolve: "" },
+			{ id: "208", name: "Electrode", img: "electrode.gif", type1: "Electric", type2: "", location: "West 3 <span class='emoji-highlight'>🏡</span> <span class='percent'>10%</span>", evolve: "Voltorb (Lvl 30)" },
+			{ id: "209", name: "Magnemite", img: "magnemite.gif", type1: "Electric", type2: "Steel", location: "East 2 & 3 <span class='emoji-highlight'>🌱</span>", evolve: "" },
+			{ id: "210", name: "Magneton", img: "magneton.gif", type1: "Electric", type2: "Steel", location: "Glaseado Mountain <span class='emoji-highlight'>⛰️</span> <span class='percent'>20%</span>", evolve: "Magnemite (Lvl 30)" },
+			{ id: "211", name: "Magnezone", img: "magnezone.gif", type1: "Electric", type2: "Steel", location: "Evolve or Trade", evolve: "Magneton (Thunder Stone)" },
+			{ id: "212", name: "Ditto", img: "ditto.gif", type1: "Normal", type2: "", location: "West 2 & 3 <span class='emoji-highlight'>🏡</span>", evolve: "" },
+			{ id: "213", name: "Growlithe", img: "growlithe.gif", type1: "Fire", type2: "", location: "East 3 <span class='emoji-highlight'>🪨💎</span> <span class='percent'>10%</span>", evolve: "" },
+			{ id: "214", name: "Arcanine", img: "arcanine.gif", type1: "Fire", type2: "", location: "North 2 <span class='emoji-highlight'>🪨🎋</span> <span class='percent'>2%</span>", evolve: "Growlithe (Fire Stone)" },
+			{ id: "215", name: "Teddiursa", img: "teddiursa.gif", type1: "Normal", type2: "", location: "East 1 <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "216", name: "Ursaring", img: "ursaring.gif", type1: "Normal", type2: "", location: "North 1 & 2 <span class='emoji-highlight'>🌲⛰️🎋</span>", evolve: "Teddiursa (Lvl 30)" },
+			{ id: "217", name: "Zangoose", img: "zangoose.gif", type1: "Normal", type2: "", location: "South 5 <span class='emoji-highlight'>⛵</span>", evolve: "" },
+			{ id: "218", name: "Seviper", img: "seviper.gif", type1: "Poison", type2: "", location: "South 5 <span class='emoji-highlight'>🌱⛵</span> <span class='percent'>15%</span>", evolve: "" },
+			{ id: "219", name: "Swablu", img: "swablu.gif", type1: "Normal", type2: "Flying", location: "West 1 <span class='emoji-highlight'>⛰️</span>", evolve: "" },
+			{ id: "220", name: "Altaria", img: "altaria.gif", type1: "Dragon", type2: "Flying", location: "Great Crater <span class='emoji-highlight'>🎣</span>", evolve: "Swablu (Lvl 35)" },
+			{ id: "221", name: "Skiddo", img: "skiddo.gif", type1: "Grass", type2: "", location: "Any West <span class='emoji-highlight'>⛰️🪨</span>", evolve: "" },
+			{ id: "222", name: "Gogoat", img: "gogoat.gif", type1: "Grass", type2: "", location: "Any North <span class='emoji-highlight'>⛰️🪨</span>", evolve: "Skiddo (Lvl 32)" },
+			{ id: "223", name: "Tauros", img: "tauros.gif", type1: "Normal", type2: "", location: "East 1 & 2 <span class='emoji-highlight'>🌱</span>", evolve: "" },
+			{ id: "224", name: "Litleo", img: "litleo.gif", type1: "Fire", type2: "Normal", location: "East 1 <span class='emoji-highlight'>🌱⛰️🪨</span>", evolve: "" },
+			{ id: "225", name: "Pyroar", img: "pyroar.gif", type1: "Fire", type2: "Normal", location: "Glaseado Mountain <span class='emoji-highlight'>🌱⛰️🪨</span>", evolve: "Litleo (Lvl 35)" },
+			{ id: "226", name: "Stunky", img: "stunky.gif", type1: "Poison", type2: "Dark", location: "West 2 <span class='emoji-highlight'>🌱⛵</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "227", name: "Skuntank", img: "skuntank.gif", type1: "Poison", type2: "Dark", location: "Casseroya Lake <span class='emoji-highlight'>🌲⛵</span><span class='scarlet-highlight'>🔴only</span>", evolve: "Stunky (Lvl 34)" },
+			{ id: "228", name: "Zorua", img: "zorua.gif", type1: "Dark", type2: "", location: "Tagtree Thicket <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "229", name: "Zoroark", img: "zoroark.gif", type1: "Dark", type2: "", location: "Tagtree Thicket <span class='emoji-highlight'>🌲</span> <span class='percent'>10%</span>", evolve: "Zorua (Lvl 30)" },
+			{ id: "230", name: "Sneasel", img: "sneasel.gif", type1: "Dark", type2: "Ice", location: "North 1 <span class='emoji-highlight'>⛰️❄️</span>", evolve: "" },
+			{ id: "231", name: "Weavile", img: "weavile.gif", type1: "Dark", type2: "Ice", location: "North 1 <span class='emoji-highlight'>❄️</span> <span class='percent'>1%</span>", evolve: "Sneasel (Level Up w/ Razor Claw at Night)" },
+			{ id: "232", name: "Murkrow", img: "murkrow.gif", type1: "Dark", type2: "Flying", location: "Any East <span class='emoji-highlight'>🌱🏡</span><span class='time-highlight'>🌇🌃</span>", evolve: "" },
+			{ id: "233", name: "Honchkrow", img: "honchkrow.gif", type1: "Dark", type2: "Flying", location: "South 2 & 4 <span class='emoji-highlight'>🌲⛰️🪨</span> <span class='percent'>1%</span><span class='time-highlight'>🌇🌃</span>", evolve: "Murkrow (Dusk Stone)" },
+			{ id: "234", name: "Gothita", img: "gothita.gif", type1: "Psychic", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>🏡</span>", evolve: "" },
+			{ id: "235", name: "Gothorita", img: "gothorita.gif", type1: "Psychic", type2: "", location: "South 6 <span class='emoji-highlight'>🏡</span>", evolve: "Gothita (Lvl 32)" },
+			{ id: "236", name: "Gothitelle", img: "gothitelle.gif", type1: "Psychic", type2: "", location: "South 6 <span class='emoji-highlight'>🏡</span> <span class='percent'>1%</span>", evolve: "Gothorita (Lvl 41)" },
+			{ id: "237", name: "Sinistea", img: "sinistea.gif", type1: "Ghost", type2: "", location: "East 3 <span class='emoji-highlight'>🏡🏛️</span>", evolve: "" },
+			{ id: "238", name: "Polteageist", img: "polteageist.gif", type1: "Ghost", type2: "", location: "Evolve or Trade", evolve: "Sinistea (Cracked Pot)" },
+			{ id: "239", name: "Mimikyu", img: "mimikyu.gif", type1: "Ghost", type2: "Fairy", location: "Glaseado Mountain <span class='emoji-highlight'>🏛️</span>", evolve: "" },
+			{ id: "240", name: "Klefki", img: "klefki.gif", type1: "Steel", type2: "Fairy", location: "Glaseado Mountain <span class='emoji-highlight'>🏡</span>", evolve: "" },
+			{ id: "241", name: "Indeedee", img: "indeedee.gif", type1: "Psychic", type2: "Normal", location: "North 1 & 2 <span class='emoji-highlight'>🌱⛰️</span>", evolve: "" },
+			{ id: "242", name: "Bramblin", img: "bramblin.gif", type1: "Grass", type2: "Ghost", location: "Asado Desert <span class='emoji-highlight'>🏜️</span>", evolve: "" },
+			{ id: "243", name: "Brambleghast", img: "brambleghast.gif", type1: "Grass", type2: "Ghost", location: "North 1 <span class='emoji-highlight'>🌲⛰️</span> <span class='percent'>1%</span>", evolve: "Bramblin (Walk 1000 steps in LGPE)" },
+			{ id: "244", name: "Toedscool", img: "toedscool.gif", type1: "Ground", type2: "Grass", location: "Any East <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "245", name: "Toedscruel", img: "toedscruel.gif", type1: "Ground", type2: "Grass", location: "Casseroya Lake <span class='emoji-highlight'>🌲</span> <span class='percent'>5%</span>", evolve: "Toedscool (Lvl 30)" },
+			{ id: "246", name: "Tropius", img: "tropius.gif", type1: "Grass", type2: "Flying", location: "Casseroya Lake <span class='emoji-highlight'>🌲⛵</span>", evolve: "" },
+			{ id: "247", name: "Fomantis", img: "fomantis.gif", type1: "Grass", type2: "", location: "North 1 & 2 <span class='emoji-highlight'>🌸</span>", evolve: "" },
+			{ id: "248", name: "Lurantis", img: "lurantis.gif", type1: "Grass", type2: "", location: "North 1 & 2 <span class='emoji-highlight'>🌸</span>", evolve: "Fomantis (Lvl 34 at Day)" },
+			{ id: "249", name: "Klawf", img: "klawf.gif", type1: "Rock", type2: "", location: "South 3 <span class='emoji-highlight'>🪨</span>", evolve: "" },
+			{ id: "250", name: "Capsakid", img: "capsakid.gif", type1: "Grass", type2: "", location: "Asado Desert <span class='emoji-highlight'>🏜️</span>", evolve: "" },
+			{ id: "251", name: "Scovillain", img: "scovillain.gif", type1: "Grass", type2: "Fire", location: "North 1 <span class='emoji-highlight'>⛰️</span> <span class='percent'>10%</span>", evolve: "Capsakid (Fire Stone)" },
+			{ id: "252", name: "Cacnea", img: "cacnea.gif", type1: "Grass", type2: "", location: "Asado Desert <span class='emoji-highlight'>🏜️</span>", evolve: "" },
+			{ id: "253", name: "Cacturne", img: "cacturne.gif", type1: "Grass", type2: "Dark", location: "Asado Desert <span class='emoji-highlight'>🏜️</span> <span class='percent'>20%</span>", evolve: "Cacnea (Lvl 32)" },
+			{ id: "254", name: "Rellor", img: "rellor.gif", type1: "Bug", type2: "", location: "Asado Desert <span class='emoji-highlight'>🏜️</span>", evolve: "" },
+			{ id: "255", name: "Rabsca", img: "rabsca.gif", type1: "Bug", type2: "Psychic", location: "Asado Desert <span class='emoji-highlight'>🏜️</span> <span class='percent'>1%</span>", evolve: "Rellor (Walk 1000 steps in LGPE)" },
+			{ id: "256", name: "Venonat", img: "venonat.gif", type1: "Bug", type2: "Poison", location: "East 1 & 2 <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "257", name: "Venomoth", img: "venomoth.gif", type1: "Bug", type2: "Poison", location: "North 1 & 2 <span class='emoji-highlight'>🌲</span><span class='time-highlight'>🌃</span>", evolve: "Venonat (Lvl 31)" },
+			{ id: "258", name: "Pineco", img: "pineco.gif", type1: "Bug", type2: "", location: "North 1 & 2 <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "259", name: "Forretress", img: "forretress.gif", type1: "Bug", type2: "Steel", location: "Casseroya Lake <span class='emoji-highlight'>🌲</span> <span class='percent'>20%</span>", evolve: "Pineco (Lvl 31)" },
+			{ id: "260", name: "Scyther", img: "scyther.gif", type1: "Bug", type2: "Flying", location: "Casseroya Lake <span class='emoji-highlight'>⛵🎋</span>", evolve: "" },
+			{ id: "261", name: "Scizor", img: "scizor.gif", type1: "Bug", type2: "Steel", location: "Evolve or Trade", evolve: "Scyther (Trade holding Metal Coat)" },
+			{ id: "262", name: "Heracross", img: "heracross.gif", type1: "Bug", type2: "Fighting", location: "Casseroya Lake <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "263", name: "Flittle", img: "flittle.gif", type1: "Psychic", type2: "", location: "Asado Desert <span class='emoji-highlight'>🏜️</span>", evolve: "" },
+			{ id: "264", name: "Espathra", img: "espathra.gif", type1: "Psychic", type2: "", location: "North 1 <span class='emoji-highlight'>⛰️</span>", evolve: "Flittle (Lvl 35)" },
+			{ id: "265", name: "Hippopotas", img: "hippopotas.gif", type1: "Ground", type2: "", location: "Asado Desert <span class='emoji-highlight'>🏜️</span>", evolve: "" },
+			{ id: "266", name: "Hippowdon", img: "hippowdon.gif", type1: "Ground", type2: "", location: "Asado Desert <span class='emoji-highlight'>🏜️</span>", evolve: "Hippopotas (Lvl 34)" },
+			{ id: "267", name: "Sandile", img: "sandile.gif", type1: "Ground", type2: "Dark", location: "Asado Desert <span class='emoji-highlight'>🏜️</span>", evolve: "" },
+			{ id: "268", name: "Krokorok", img: "krokorok.gif", type1: "Ground", type2: "Dark", location: "Asado Desert <span class='emoji-highlight'>🏜️</span>", evolve: "Sandile (Lvl 29)" },
+			{ id: "269", name: "Krookodile", img: "krookodile.gif", type1: "Ground", type2: "Dark", location: "Evolve or Trade", evolve: "Krokorok (Lvl 40)" },
+			{ id: "270", name: "Silicobra", img: "silicobra.gif", type1: "Ground", type2: "", location: "Asado Desert <span class='emoji-highlight'>🏜️</span>", evolve: "" },
+			{ id: "271", name: "Sandaconda", img: "sandaconda.gif", type1: "Ground", type2: "", location: "Asado Desert <span class='emoji-highlight'>🏜️</span>", evolve: "Silicobra (Lvl 36)" },
+			{ id: "272", name: "Mudbray", img: "mudbray.gif", type1: "Ground", type2: "", location: "West 1 <span class='emoji-highlight'>⛰️</span>", evolve: "" },
+			{ id: "273", name: "Mudsdale", img: "mudsdale.gif", type1: "Ground", type2: "", location: "North 1 <span class='emoji-highlight'>⛰️</span> <span class='percent'>12%</span>", evolve: "Mudbray (Lvl 30)" },
+			{ id: "274", name: "Larvesta", img: "larvesta.gif", type1: "Bug", type2: "Fire", location: "Asado Desert <span class='emoji-highlight'>🏜️</span> <span class='percent'>5%</span>", evolve: "" },
+			{ id: "275", name: "Volcarona", img: "volcarona.gif", type1: "Bug", type2: "Fire", location: "Great Crater <span class='emoji-highlight'>🌱</span> <span class='percent'>1%</span>", evolve: "Larvesta (Lvl 59)" },
+			{ id: "276", name: "Bagon", img: "bagon.gif", type1: "Dragon", type2: "", location: "South 5 <span class='emoji-highlight'>⛰️</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "277", name: "Shelgon", img: "shelgon.gif", type1: "Dragon", type2: "", location: "South 6 <span class='emoji-highlight'>🦇</span> <span class='percent'>10%</span><span class='violet-highlight'>🟣only</span>", evolve: "Bagon (Lvl 30)" },
+			{ id: "278", name: "Salamence", img: "salamence.gif", type1: "Dragon", type2: "Flying", location: "Evolve or Trade", evolve: "Shelgon (Lvl 50)" },
+			{ id: "279", name: "Tinkatink", img: "tinkatink.gif", type1: "Fairy", type2: "Steel", location: "Any South <span class='emoji-highlight'>🏛️</span>", evolve: "" },
+			{ id: "280", name: "Tinkatuff", img: "tinkatuff.gif", type1: "Fairy", type2: "Steel", location: "North 1 & 2 <span class='emoji-highlight'>⛰️</span>", evolve: "Tinkatink (Lvl 24)" },
+			{ id: "281", name: "Tinkaton", img: "tinkaton.gif", type1: "Fairy", type2: "Steel", location: "Evolve or Trade", evolve: "Tinkatuff (Lvl 38)" },
+			{ id: "282", name: "Hatenna", img: "hatenna.gif", type1: "Psychic", type2: "", location: "West 3 <span class='emoji-highlight'>⛵</span>", evolve: "" },
+			{ id: "283", name: "Hattrem", img: "hattrem.gif", type1: "Psychic", type2: "", location: "North 1 & 2 <span class='emoji-highlight'>⛵</span>", evolve: "Hatenna (Lvl 32)" },
+			{ id: "284", name: "Hatterene", img: "hatterene.gif", type1: "Psychic", type2: "Fairy", location: "Evolve or Trade", evolve: "Hattrem (Lvl 42)" },
+			{ id: "285", name: "Impidimp", img: "impidimp.gif", type1: "Dark", type2: "Fairy", location: "Tagtree Thicket <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "286", name: "Morgrem", img: "morgrem.gif", type1: "Dark", type2: "Fairy", location: "Tagtree Thicket <span class='emoji-highlight'>🌲</span> <span class='percent'>20%</span>", evolve: "Impidimp (Lvl 32)" },
+			{ id: "287", name: "Grimmsnarl", img: "grimmsnarl.gif", type1: "Dark", type2: "Fairy", location: "Evolve or Trade", evolve: "Morgrem (Lvl 42)" },
+			{ id: "288", name: "Wiglett", img: "wiglett.gif", type1: "Water", type2: "", location: "East 1 & 2 <span class='emoji-highlight'>🏖️</span>", evolve: "" },
+			{ id: "289", name: "Wugtrio", img: "wugtrio.gif", type1: "Water", type2: "", location: "North 1 & 3 <span class='emoji-highlight'>🏖️</span> <span class='percent'>20%</span>", evolve: "Wiglett (Lvl 26)" },
+			{ id: "290", name: "Bombirdier", img: "bombirdier.gif", type1: "Flying", type2: "Dark", location: "West 1 & 2 <span class='emoji-highlight'>🏖️</span>", evolve: "" },
+			{ id: "291", name: "Finizen", img: "finizen.gif", type1: "Water", type2: "", location: "Any East <span class='emoji-highlight'>🌊</span>", evolve: "" },
+			{ id: "292", name: "Palafin", img: "palafin.gif", type1: "Water", type2: "", location: "Evolve or Trade", evolve: "Finizen (Lvl 38 in Co-op)" },
+			{ id: "293", name: "Varoom", img: "varoom.gif", type1: "Steel", type2: "Poison", location: "East 3 <span class='emoji-highlight'>🏡💎</span> <span class='percent'>10%</span>", evolve: "" },
+			{ id: "294", name: "Revavroom", img: "revavroom.gif", type1: "Steel", type2: "Poison", location: "East 3 <span class='emoji-highlight'>🪨</span>", evolve: "Varoom (Lvl 40)" },
+			{ id: "295", name: "Cyclizar", img: "cyclizar.gif", type1: "Dragon", type2: "Normal", location: "East 2 <span class='emoji-highlight'>🌱🌲⛰️🎣</span> <span class='percent'>1%</span>", evolve: "" },
+			{ id: "296", name: "Orthworm", img: "orthworm.gif", type1: "Steel", type2: "", location: "East 3 <span class='emoji-highlight'>💎</span>", evolve: "" },
+			{ id: "297", name: "Sableye", img: "sableye.gif", type1: "Dark", type2: "Ghost", location: "Any West <span class='emoji-highlight'>🦇</span> <span class='percent'>20%</span>", evolve: "" },
+			{ id: "298", name: "Shuppet", img: "shuppet.gif", type1: "Ghost", type2: "", location: "Any East <span class='emoji-highlight'>🏡</span><span class='time-highlight'>🌃</span>", evolve: "" },
+			{ id: "299", name: "Banette", img: "banette.gif", type1: "Ghost", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>🏡</span><span class='time-highlight'>🌃</span>", evolve: "Shuppet (Lvl 37)" },
+			{ id: "300", name: "Falinks", img: "falinks.gif", type1: "Fighting", type2: "", location: "North 2 <span class='emoji-highlight'>🎋🏛️</span>", evolve: "" },
+			{ id: "301", name: "Hawlucha", img: "hawlucha.gif", type1: "Fighting", type2: "Flying", location: "North 1 & 2 <span class='emoji-highlight'>⛰️🪨</span>", evolve: "" },
+			{ id: "302", name: "Spiritomb", img: "spiritomb.gif", type1: "Ghost", type2: "Dark", location: "Glaseado Mountain <span class='emoji-highlight'>⛰️</span> <span class='percent'>1%</span><span class='time-highlight'>🌃</span>", evolve: "" },
+			{ id: "303", name: "Noibat", img: "noibat.gif", type1: "Flying", type2: "Dragon", location: "North 1 & 2 <span class='emoji-highlight'>🦇</span>", evolve: "" },
+			{ id: "304", name: "Noivern", img: "noivern.gif", type1: "Flying", type2: "Dragon", location: "North 1 & 2 <span class='emoji-highlight'>🦇🪨</span>", evolve: "Noibat (Lvl 48)" },
+			{ id: "305", name: "Dreepy", img: "dreepy.gif", type1: "Dragon", type2: "Ghost", location: "South 5 <span class='emoji-highlight'>🪷</span> <span class='percent'>20%</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "306", name: "Drakloak", img: "drakloak.gif", type1: "Dragon", type2: "Ghost", location: "Casseroya Lake <span class='emoji-highlight'>⛵</span><span class='violet-highlight'>🟣only</span>", evolve: "Dreepy (Lvl 50)" },
+			{ id: "307", name: "Dragapult", img: "dragapult.gif", type1: "Dragon", type2: "Ghost", location: "Evolve or Trade", evolve: "Drakloak (Lvl 60)" },
+			{ id: "308", name: "Glimmet", img: "glimmet.gif", type1: "Rock", type2: "Poison", location: "Great Crater <span class='emoji-highlight'>🕳️</span>", evolve: "" },
+			{ id: "309", name: "Glimmora", img: "glimmora.gif", type1: "Rock", type2: "Poison", location: "Great Crater <span class='emoji-highlight'>🕳️</span>", evolve: "Glimmet (Lvl 35)" },
+			{ id: "310", name: "Rotom", img: "rotom.gif", type1: "Electric", type2: "Ghost", location: "East 2 <span class='emoji-highlight'>🏡</span> <span class='percent'>10%</span>", evolve: "" },
+			{ id: "311", name: "Greavard", img: "greavard.gif", type1: "Ghost", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>⛰️❄️🏛️</span>", evolve: "" },
+			{ id: "312", name: "Houndstone", img: "houndstone.gif", type1: "Ghost", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>⛰️❄️🏛️</span> <span class='percent'>10%</span>", evolve: "Greavard (Lvl 30 at night)" },
+			{ id: "313", name: "Oranguru", img: "oranguru.gif", type1: "Normal", type2: "Psychic", location: "North 2 <span class='emoji-highlight'>🌲🎋</span> <span class='percent'>15%</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "314", name: "Passimian", img: "passimian.gif", type1: "Fighting", type2: "", location: "North 2 <span class='emoji-highlight'>🌲🎋</span> <span class='percent'>15%</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "315", name: "Komala", img: "komala.gif", type1: "Normal", type2: "", location: "North 1 & 2 <span class='emoji-highlight'>🌲</span>", evolve: "" },
+			{ id: "316", name: "Larvitar", img: "larvitar.gif", type1: "Rock", type2: "Ground", location: "South 5 <span class='emoji-highlight'>⛰️</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "317", name: "Pupitar", img: "pupitar.gif", type1: "Rock", type2: "Ground", location: "South 6 <span class='emoji-highlight'>🦇</span><span class='scarlet-highlight'>🔴only</span>", evolve: "Larvitar (Lvl 30)" },
+			{ id: "318", name: "Tyranitar", img: "tyranitar.gif", type1: "Rock", type2: "Dark", location: "Evolve or Trade", evolve: "Pupitar (Lvl 55)" },
+			{ id: "319", name: "Stonjourner", img: "stonjourner.gif", type1: "Rock", type2: "", location: "Asado Desert <span class='emoji-highlight'>🏛️</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "320", name: "Eiscue", img: "eiscue.gif", type1: "Ice", type2: "", location: "North Paldean Sea <span class='emoji-highlight'>🌊🏖️</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "321", name: "Pincurchin", img: "pincurchin.gif", type1: "Electric", type2: "", location: "East 1 & 2 <span class='emoji-highlight'>🏖️</span> <span class='percent'>10%</span>", evolve: "" },
+			{ id: "322", name: "Sandygast", img: "sandygast.gif", type1: "Ghost", type2: "Ground", location: "East 1 & 2 <span class='emoji-highlight'>🏖️</span>", evolve: "" },
+			{ id: "323", name: "Palossand", img: "palossand.gif", type1: "Ghost", type2: "Ground", location: "West 2 <span class='emoji-highlight'>🏖️</span> <span class='percent'>20%</span>", evolve: "Sandygast (Lvl 42)" },
+			{ id: "324", name: "Slowpoke", img: "slowpoke.gif", type1: "Water", type2: "Psychic", location: "Casseroya Lake <span class='emoji-highlight'>⛵🎣🏖️</span>", evolve: "" },
+			{ id: "325", name: "Slowbro", img: "slowbro.gif", type1: "Water", type2: "Psychic", location: "Casseroya Lake <span class='emoji-highlight'>⛵🎣🏖️</span>", evolve: "Slowpoke (Lvl 37)" },
+			{ id: "326", name: "Slowking", img: "slowking.gif", type1: "Water", type2: "Psychic", location: "Evolve or Trade", evolve: "Slowpoke (Trade Holding King's Rock)" },
+			{ id: "327", name: "Shellos", img: "shellos.gif", type1: "Water", type2: "", location: "West 2 <span class='emoji-highlight'>🏖️</span>", evolve: "" },
+			{ id: "328", name: "Gastrodon", img: "gastrodon.gif", type1: "Water", type2: "Ground", location: "North 2 <span class='emoji-highlight'>🏖️</span> <span class='percent'>20%</span>", evolve: "" },
+			{ id: "329", name: "Shellder", img: "shellder.gif", type1: "Water", type2: "", location: "East 1 & 2 <span class='emoji-highlight'>🌊🏖️</span>", evolve: "" },
+			{ id: "330", name: "Cloyster", img: "cloyster.gif", type1: "Water", type2: "Ice", location: "North 1 & 3 <span class='emoji-highlight'>🌊</span> <span class='percent'>10%</span>", evolve: "Shellder (Water Stone)" },
+			{ id: "331", name: "Qwilfish", img: "qwilfish.gif", type1: "Water", type2: "Poison", location: "East Paldean Sea <span class='emoji-highlight'>🌊</span>", evolve: "" },
+			{ id: "332", name: "Luvdisc", img: "luvdisc.gif", type1: "Water", type2: "", location: "East Paldean Sea <span class='emoji-highlight'>🌊</span>", evolve: "" },
+			{ id: "333", name: "Finneon", img: "finneon.gif", type1: "Water", type2: "", location: "West Paldean Sea <span class='emoji-highlight'>🌊</span>", evolve: "" },
+			{ id: "334", name: "Lumineon", img: "lumineon.gif", type1: "Water", type2: "", location: "West Paldean Sea <span class='emoji-highlight'>🌊</span>", evolve: "Finneon (Lvl 31)" },
+			{ id: "335", name: "Bruxish", img: "bruxish.gif", type1: "Water", type2: "Psychic", location: "East Paldean Sea <span class='emoji-highlight'>🌊</span>", evolve: "" },
+			{ id: "336", name: "Alomomola", img: "alomomola.gif", type1: "Water", type2: "", location: "North Paldean Sea <span class='emoji-highlight'>🌊</span> <span class='percent'>10%</span>", evolve: "" },
+			{ id: "337", name: "Skrelp", img: "skrelp.gif", type1: "Poison", type2: "Water", location: "North Paldean Sea <span class='emoji-highlight'>🌊</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "338", name: "Dragalge", img: "dragalge.gif", type1: "Poison", type2: "Dragon", location: "North Paldean Sea <span class='emoji-highlight'>🌊</span> <span class='percent'>20%</span><span class='scarlet-highlight'>🔴only</span>", evolve: "Skrelp (Lvl 48)" },
+			{ id: "339", name: "Clauncher", img: "clauncher.gif", type1: "Water", type2: "", location: "West Paldean Sea <span class='emoji-highlight'>🌊</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "340", name: "Clawitzer", img: "clawitzer.gif", type1: "Water", type2: "", location: "North Paldean Sea <span class='emoji-highlight'>🌊</span> <span class='percent'>20%</span><span class='violet-highlight'>🟣only</span>", evolve: "Clauncher (Lvl 37)" },
+			{ id: "341", name: "Tynamo", img: "tynamo.gif", type1: "Electric", type2: "", location: "North Paldean Sea <span class='emoji-highlight'>🌊</span>", evolve: "" },
+			{ id: "342", name: "Eelektrik", img: "eelektrik.gif", type1: "Electric", type2: "", location: "North Paldean Sea <span class='emoji-highlight'>🎣🌊</span>", evolve: "Tynamo (Lvl 39)" },
+			{ id: "343", name: "Eelektross", img: "eelektross.gif", type1: "Electric", type2: "", location: "Evolve or Trade", evolve: "Elektrik (Thunder Stone)" },
+			{ id: "344", name: "Mareanie", img: "mareanie.gif", type1: "Poison", type2: "Water", location: "East Paldean Sea <span class='emoji-highlight'>🌊🏖️</span>", evolve: "" },
+			{ id: "345", name: "Toxapex", img: "toxapex.gif", type1: "Poison", type2: "Water", location: "East Paldean Sea <span class='emoji-highlight'>🌊🏖️</span> <span class='percent'>3%</span>", evolve: "Mareanie (Lvl 38)" },
+			{ id: "346", name: "Flamigo", img: "flamigo.gif", type1: "Flying", type2: "Fighting", location: "Casseroya Lake <span class='emoji-highlight'>⛵</span> <span class='percent'>10%</span>", evolve: "" },
+			{ id: "347", name: "Dratini", img: "dratini.gif", type1: "Dragon", type2: "", location: "Casseroya Lake <span class='emoji-highlight'>⛵</span>", evolve: "" },
+			{ id: "348", name: "Dragonair", img: "dragonair.gif", type1: "Dragon", type2: "", location: "Casseroya Lake <span class='emoji-highlight'>⛵</span> <span class='percent'>10%</span>", evolve: "Dratini (Lvl 30)" },
+			{ id: "349", name: "Dragonite", img: "dragonite.gif", type1: "Dragon", type2: "Flying", location: "Evolve or Trade", evolve: "Dragonair (Lvl 55)" },
+			{ id: "350", name: "Snom", img: "snom.gif", type1: "Ice", type2: "Bug", location: "Glaseado Mountain <span class='emoji-highlight'>⛰️❄️</span>", evolve: "" },
+			{ id: "351", name: "Frosmoth", img: "frosmoth.gif", type1: "Ice", type2: "Bug", location: "Great Crater <span class='emoji-highlight'>🌱</span> <span class='percent'>5%</span>", evolve: "Snom (High Friendship at Night)" },
+			{ id: "352", name: "Snover", img: "snover.gif", type1: "Grass", type2: "Ice", location: "Glaseado Mountain <span class='emoji-highlight'>🏡❄️</span>", evolve: "" },
+			{ id: "353", name: "Abomasnow", img: "abomasnow.gif", type1: "Grass", type2: "Ice", location: "Glaseado Mountain <span class='emoji-highlight'>❄️</span> <span class='percent'>20%</span>", evolve: "Snover (Lvl 40)" },
+			{ id: "354", name: "Delibird", img: "delibird.gif", type1: "Ice", type2: "Flying", location: "Glaseado Mountain <span class='emoji-highlight'>🏡❄️</span> <span class='percent'>10%</span>", evolve: "" },
+			{ id: "355", name: "Cubchoo", img: "cubchoo.gif", type1: "Ice", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>❄️</span>", evolve: "" },
+			{ id: "356", name: "Beartic", img: "beartic.gif", type1: "Ice", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>❄️</span> <span class='percent'>20%</span>", evolve: "Cubchoo (Lvl 37)" },
+			{ id: "357", name: "Snorunt", img: "snorunt.gif", type1: "Ice", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>❄️🦇</span>", evolve: "" },
+			{ id: "358", name: "Glalie", img: "glalie.gif", type1: "Ice", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>❄️</span> <span class='percent'>20%</span>", evolve: "Snorunt (Lvl 42)" },
+			{ id: "359", name: "Froslass", img: "froslass.gif", type1: "Ice", type2: "Ghost", location: "Glaseado Mountain <span class='emoji-highlight'>❄️</span> <span class='percent'>2%</span>", evolve: "Snorunt (Dawn Stone on Female)" },
+			{ id: "360", name: "Cryogonal", img: "cryogonal.gif", type1: "Ice", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>❄️</span> <span class='percent'>1%</span>", evolve: "" },
+			{ id: "361", name: "Cetoddle", img: "cetoddle.gif", type1: "Ice", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>⛰️❄️</span>", evolve: "" },
+			{ id: "362", name: "Cetitan", img: "cetitan.gif", type1: "Ice", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>❄️</span> <span class='percent'>10%</span>", evolve: "Cetoddle (Ice Stone)" },
+			{ id: "363", name: "Bergmite", img: "bergmite.gif", type1: "Ice", type2: "", location: "Glaseado Mountain <span class='emoji-highlight'>❄️🌊</span>", evolve: "" },
+			{ id: "364", name: "Avalugg", img: "avalugg.gif", type1: "Ice", type2: "", location: "Casseroya Lake <span class='emoji-highlight'>⛵</span>", evolve: "Bergmite (Lvl 37)" },
+			{ id: "365", name: "Rufflet", img: "rufflet.gif", type1: "Normal", type2: "Flying", location: "Asado Desert <span class='emoji-highlight'>🏜️</span>", evolve: "" },
+			{ id: "366", name: "Braviary", img: "braviary.gif", type1: "Normal", type2: "Flying", location: "North 1 & 2 <span class='emoji-highlight'>⛰️🪨</span> <span class='percent'>20%</span>", evolve: "Rufflet (Lvl 54)" },
+			{ id: "367", name: "Pawniard", img: "pawniard.gif", type1: "Dark", type2: "Steel", location: "East 3 <span class='emoji-highlight'>🎣🪨</span>", evolve: "" },
+			{ id: "368", name: "Bisharp", img: "bisharp.gif", type1: "Dark", type2: "Steel", location: "North 2 <span class='emoji-highlight'>🎣🪨🎋</span> <span class='percent'>10%</span>", evolve: "Pawniard (Lvl 52)" },
+			{ id: "369", name: "Kingambit", img: "kingambit.gif", type1: "Dark", type2: "Steel", location: "Evolve or Trade", evolve: "Bisharp (Look Up Instructions)" },
+			{ id: "370", name: "Deino", img: "deino.gif", type1: "Dark", type2: "Dragon", location: "Glaseado Mountain <span class='emoji-highlight'>🦇</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "371", name: "Zweilous", img: "zweilous.gif", type1: "Dark", type2: "Dragon", location: "Great Crater <span class='emoji-highlight'>🕳️</span> <span class='percent'>20%</span><span class='scarlet-highlight'>🔴only</span>", evolve: "Deino (Lvl 50)" },
+			{ id: "372", name: "Hydreigon", img: "hydreigon.gif", type1: "Dark", type2: "Dragon", location: "Evolve or Trade", evolve: "Zweilous (Lvl 64)" },
+			{ id: "373", name: "Veluza", img: "veluza.gif", type1: "Water", type2: "Psychic", location: "Casseroya Lake <span class='emoji-highlight'>⛵🌊</span>", evolve: "" },
+			{ id: "374", name: "Dondozo", img: "dondozo.gif", type1: "Water", type2: "", location: "Casseroya Lake <span class='emoji-highlight'>⛵</span>", evolve: "" },
+			{ id: "375", name: "Tatsugiri", img: "tatsugiri.gif", type1: "Dragon", type2: "Water", location: "Casseroya Lake <span class='emoji-highlight'>⛵</span> <span class='percent'>20%</span>", evolve: "" },
+			{ id: "376", name: "Great Tusk", img: "greattusk.gif", type1: "Ground", type2: "Fighting", location: "Great Crater <span class='emoji-highlight'>🕳️</span> <span class='percent'>10%</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "377", name: "Scream Tail", img: "screamtail.gif", type1: "Fairy", type2: "Psychic", location: "Great Crater <span class='emoji-highlight'>🌱🕳️</span> <span class='percent'>20%</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "378", name: "Brute Bonnet", img: "brutebonnet.gif", type1: "Grass", type2: "Dark", location: "Great Crater <span class='emoji-highlight'>🌱🕳️</span> <span class='percent'>10%</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "379", name: "Flutter Mane", img: "fluttermane.gif", type1: "Ghost", type2: "Fairy", location: "Great Crater <span class='emoji-highlight'>🦇</span> <span class='percent'>15%</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "380", name: "Slither Wing", img: "slitherwing.gif", type1: "Bug", type2: "Fighting", location: "Great Crater <span class='emoji-highlight'>🌱</span> <span class='percent'>15%</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "381", name: "Sandy Shocks", img: "sandyshocks.gif", type1: "Electric", type2: "Ground", location: "Great Crater <span class='emoji-highlight'>🪨</span> <span class='percent'>15%</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "382", name: "Iron Treads", img: "irontreads.gif", type1: "Ground", type2: "Steel", location: "Great Crater <span class='emoji-highlight'>🕳️</span> <span class='percent'>10%</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "383", name: "Iron Bundle", img: "ironbundle.gif", type1: "Ice", type2: "Water", location: "Great Crater <span class='emoji-highlight'>🌱🕳️</span> <span class='percent'>20%</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "384", name: "Iron Hands", img: "ironhands.gif", type1: "Fighting", type2: "Electric", location: "Great Crater <span class='emoji-highlight'>🌱🕳️</span> <span class='percent'>10%</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "385", name: "Iron Jugulis", img: "ironjugulis.gif", type1: "Dark", type2: "Flying", location: "Great Crater <span class='emoji-highlight'>🦇</span> <span class='percent'>15%</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "386", name: "Iron Moth", img: "ironmoth.gif", type1: "Fire", type2: "Poison", location: "Great Crater <span class='emoji-highlight'>🌱</span> <span class='percent'>15%</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "387", name: "Iron Thorns", img: "ironthorns.gif", type1: "Rock", type2: "Electric", location: "Great Crater <span class='emoji-highlight'>🪨</span> <span class='percent'>15%</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "388", name: "Frigibax", img: "frigibax.gif", type1: "Dragon", type2: "Ice", location: "Glaseado Mountain <span class='emoji-highlight'>❄️🦇</span> <span class='percent'>1%</span>", evolve: "" },
+			{ id: "389", name: "Arctibax", img: "arctibax.gif", type1: "Dragon", type2: "Ice", location: "North 3 <span class='emoji-highlight'>🦇</span>", evolve: "Frigibax (Lvl 35)" },
+			{ id: "390", name: "Baxcalibur", img: "baxcalibur.gif", type1: "Dragon", type2: "Ice", location: "Evolve or Trade", evolve: "Arctibax (Lvl 54)" },
+			{ id: "391", name: "Gimmighoul", img: "gimmighoul.gif", type1: "Ghost", type2: "", location: "17 Locations", evolve: "" },
+			{ id: "392", name: "Gholdengo", img: "gholdengo.gif", type1: "Steel", type2: "Ghost", location: "Evolve or Trade", evolve: "Gimmighoul (Collect 999 Coins)" },
+			{ id: "393", name: "Wo-Chien", img: "wochien.gif", type1: "Dark", type2: "Grass", location: "Purple Shrine", evolve: "" },
+			{ id: "394", name: "Chien-Pao", img: "chienpao.gif", type1: "Dark", type2: "Ice", location: "Yellow Shrine", evolve: "" },
+			{ id: "395", name: "Ting-Lu", img: "tinglu.gif", type1: "Dark", type2: "Ground", location: "Green Shrine", evolve: "" },
+			{ id: "396", name: "Chi-Yu", img: "chiyu.gif", type1: "Dark", type2: "Fire", location: "Blue Shrine", evolve: "" },
+			{ id: "397", name: "Roaring Moon", img: "roaringmoon.gif", type1: "Dragon", type2: "Dark", location: "Great Crater <span class='emoji-highlight'>🦇</span><span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "398", name: "Iron Valiant", img: "ironvaliant.gif", type1: "Fairy", type2: "Fighting", location: "Great Crater <span class='emoji-highlight'>🦇</span><span class='violet-highlight'>🟣only</span>", evolve: "" },
+			{ id: "399", name: "Koraidon", img: "koraidon.gif", type1: "Fighting", type2: "Dragon", location: "Starter <span class='scarlet-highlight'>🔴only</span>", evolve: "" },
+			{ id: "400", name: "Miraidon", img: "miraidon.gif", type1: "Electric", type2: "Dragon", location: "Starter <span class='violet-highlight'>🟣only</span>", evolve: "" }
+		];
+		const typeChart = {
+			"Grass": { weakTo: ["Fire", "Ice", "Poison", "Flying", "Bug"], resists: ["Water", "Electric", "Grass", "Ground"] },
+			"Fire": { weakTo: ["Water", "Ground", "Rock"], resists: ["Fire", "Grass", "Ice", "Bug", "Steel", "Fairy"] },
+			"Water": { weakTo: ["Electric", "Grass"], resists: ["Fire", "Water", "Ice", "Steel"] },
+			"Bug": { weakTo: ["Fire", "Flying", "Rock"], resists: ["Grass", "Fighting", "Ground"] },
+			"Normal": { weakTo: ["Fighting"], resists: [], immuneTo: ["Ghost"] },
+			"Flying": { weakTo: ["Electric", "Ice", "Rock"], resists: ["Grass", "Fighting", "Bug"], immuneTo: ["Ground"] },
+			"Dark": { weakTo: ["Fighting", "Bug", "Fairy"], resists: ["Ghost", "Dark"], immuneTo: ["Psychic"] },
+			"Electric": { weakTo: ["Ground"], resists: ["Electric", "Flying", "Steel"] },
+			"Ice": { weakTo: ["Fire", "Fighting", "Rock", "Steel"], resists: ["Ice"] },
+			"Ground": { weakTo: ["Water", "Grass", "Ice"], resists: ["Poison", "Rock"], immuneTo: ["Electric"] },
+			"Rock": { weakTo: ["Water", "Grass", "Fighting", "Ground", "Steel"], resists: ["Normal", "Fire", "Poison", "Flying"] },
+			"Psychic": { weakTo: ["Bug", "Ghost", "Dark"], resists: ["Fighting", "Psychic"] },
+			"Poison": { weakTo: ["Ground", "Psychic"], resists: ["Grass", "Fighting", "Poison", "Bug", "Fairy"] },
+			"Steel": { weakTo: ["Fire", "Fighting", "Ground"], resists: ["Normal", "Grass", "Ice", "Flying", "Psychic", "Bug", "Rock", "Dragon", "Steel", "Fairy"], immuneTo: ["Poison"] },
+			"Ghost": { weakTo: ["Ghost", "Dark"], resists: ["Poison", "Bug"], immuneTo: ["Normal", "Fighting"] },
+			"Fighting": { weakTo: ["Flying", "Psychic", "Fairy"], resists: ["Bug", "Rock", "Dark"] },
+			"Dragon": { weakTo: ["Ice", "Dragon", "Fairy"], resists: ["Fire", "Water", "Grass", "Electric"] },
+			"Fairy": { weakTo: ["Poison", "Steel"], resists: ["Fighting", "Bug", "Dark"], immuneTo: ["Dragon"] }
+		};
+		const POKEDEX_ID = 'pokedex_scarlet_tracker';
+        const grid = document.getElementById('main-grid');
+        const searchInput = document.getElementById('search-input');
+        const autoList = document.getElementById('autocomplete-list');
+        const caughtCountDisplay = document.getElementById('caught-count');
+        const isDesktop = () => window.innerWidth > 600;
+		const types = ["Normal", "Fire", "Water", "Grass", "Electric", "Ice", "Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug", "Rock", "Ghost", "Dark", "Steel", "Dragon", "Fairy"];
+		let clickedStates = {};
+		
+		try {
+			const saved = localStorage.getItem(POKEDEX_ID);
+			if (saved) { clickedStates = JSON.parse(saved); }
+		} catch (e) {
+			console.error("Failed to parse local storage data. Resetting to empty state.", e);
+			clickedStates = {};
+		}
+		
+		let activeFilters = { /*UPDATE THIS*/
+			status: null,
+			region: null,
+			types: []
+		};
+		
+        function calculateDetailedWeaknesses(t1, t2) {
+            const scores = {};
+            const allTypes = Object.keys(typeChart);
+            allTypes.forEach(attackType => {
+                let multiplier = 1;
+                const getEff = (pkmType) => {
+                    if (!pkmType || !typeChart[pkmType]) return 1;
+                    if (typeChart[pkmType].weakTo.includes(attackType)) return 2;
+                    if (typeChart[pkmType].resists.includes(attackType)) return 0.5;
+                    if (typeChart[pkmType].immuneTo && typeChart[pkmType].immuneTo.includes(attackType)) return 0;
+                    return 1;
+                };
+                multiplier *= getEff(t1);
+                if (t2) multiplier *= getEff(t2);
+                if (multiplier > 1) scores[attackType] = multiplier;
+            });
+            return Object.entries(scores).map(([type, mult]) => ({ type, mult })).sort((a, b) => b.mult - a.mult);
+        }
+
+		function updateProgress() {
+			const caughtCount = Object.values(clickedStates).filter(v => v === true).length;
+			const totalCount = pokedexData.length;
+			const percentage = (caughtCount / totalCount) * 100;
+		
+			document.getElementById('progress-bar').style.width = percentage + '%';
+			document.getElementById('caught-label').textContent = caughtCount;
+			document.getElementById('caught-label').style.left = percentage + '%';
+			document.getElementById('total-label').textContent = totalCount;
+			localStorage.setItem('sv_caught_count', caughtCount);
+		}
+		
+		function updateFilterProgressBar() {
+			const allActive = Array.from(document.querySelectorAll('.filter-btn.active'));
+			const activeTypes = allActive.filter(btn => btn.dataset.type === 'pokemon-type');
+			const activeRegions = allActive.filter(btn => btn.dataset.type === 'region');
+		
+			const filterLabel = document.getElementById('filter-progress-label');
+			const filterBar = document.getElementById('filter-progress-bar');
+			const caughtLabel = document.getElementById('filter-caught-label');
+			const totalLabel = document.getElementById('filter-total-label');
+		
+			const isSingleFilter = (activeTypes.length + activeRegions.length) === 1;
+		
+			if (isSingleFilter) {
+				const activeBtn = activeTypes[0] || activeRegions[0];
+				const filterValue = activeBtn.dataset.value;
+				const isRegion = activeBtn.dataset.type === 'region';
+				
+				filterLabel.textContent = `${filterValue} Types Caught`;
+
+				const relevantPokemon = pokedexData.filter(p => {
+					if (!isRegion) {
+						return p.type1 === filterValue || p.type2 === filterValue;
+					} else {
+						if (filterValue === 'Galar') return p.id.includes('g'); /*UPDATE THIS*/
+						return false;
+					}
+				});
+		
+				const caughtCount = relevantPokemon.filter(p => clickedStates[p.id] === true).length;
+				const totalCount = relevantPokemon.length;
+				const percentage = totalCount > 0 ? (caughtCount / totalCount) * 100 : 0;
+		
+				filterBar.style.width = percentage + '%';
+				
+				caughtLabel.textContent = caughtCount;
+				caughtLabel.style.left = percentage + '%';
+				caughtLabel.style.display = 'block';
+				
+				totalLabel.textContent = totalCount;
+				totalLabel.style.display = 'block';
+		
+				const typeColors = { /*UPDATE THIS*/
+					bug: '#91A119', dark: '#624D4E', dragon: '#5060E1', electric: '#FAC000',
+					fairy: '#EF70EF', fighting: '#FF8000', fire: '#E62829', flying: '#81B9EF',
+					ghost: '#704170', grass: '#3FA129', ground: '#915121', ice: '#3DCEF3',
+					normal: '#9FA19F', poison: '#9141CB', psychic: '#EF4179', rock: '#AFA981',
+					steel: '#60A1B8', water: '#2980EF', galar: '#7e57c2'
+				};
+				const barColor = typeColors[filterValue.toLowerCase()] || '#777';
+				filterBar.style.backgroundColor = barColor;
+				caughtLabel.style.color = barColor;
+		
+			} else {
+				filterLabel.textContent = "Click a single filter to see details";
+				filterBar.style.width = '0%';
+				caughtLabel.style.display = 'none';
+				totalLabel.style.display = 'none';
+			}
+		}
+		
+		function updateFilterUI() {
+			document.querySelectorAll('.filter-btn').forEach(btn => {
+				const category = btn.dataset.type;
+				const value = btn.dataset.value;
+				
+				let isActive = false;
+				if (category === 'status') isActive = activeFilters.status === value;
+				if (category === 'region') isActive = activeFilters.region === value;
+				if (category === 'pokemon-type') isActive = activeFilters.types.includes(value);
+				
+				btn.classList.toggle('active', isActive);
+		
+				if (category === 'pokemon-type' && activeFilters.types.length >= 2) {
+					btn.disabled = !activeFilters.types.includes(value);
+				} else {
+					btn.disabled = false;
+				}
+			});
+		}
+		
+		function renderTypes() {
+			const typeContainer = document.getElementById('type-filters');
+			types.forEach(type => {
+				const btn = document.createElement('button');
+				btn.className = `filter-btn type-${type.toLowerCase()}`;
+				btn.dataset.type = 'pokemon-type';
+				btn.dataset.value = type;
+			
+				const icon = `<img src="types/${type.toLowerCase()}.png" alt="">`;
+				btn.innerHTML = `${icon}${type}`;
+			
+				typeContainer.appendChild(btn);
+			});
+		}
+			
+		function renderGrid() {
+			const searchTerm = searchInput.value.toLowerCase();
+			const grid = document.getElementById('main-grid');
+		
+			const filteredData = pokedexData.filter(pokemon => {
+				const matchesSearch = pokemon.name.toLowerCase().includes(searchTerm);
+				const isCaught = clickedStates[pokemon.id] === true; 
+				let matchesStatus = true;
+				
+				if (activeFilters.status === 'caught') {
+					matchesStatus = isCaught;
+				} else if (activeFilters.status === 'uncaught') {
+					matchesStatus = !isCaught;
+				}
+				
+				const matchesRegion = !activeFilters.region ||  /*UPDATE THIS*/
+					pokemon.name.includes(activeFilters.region);
+				const matchesType = activeFilters.types.length === 0 || 
+					activeFilters.types.every(t => pokemon.type1 === t || pokemon.type2 === t);
+		
+				return matchesSearch && matchesStatus && matchesRegion && matchesType;
+			});
+			
+            grid.innerHTML = '';
+            const fragment = document.createDocumentFragment();
+            
+            filteredData.forEach(item => {
+                const container = document.createElement('div');
+				const isGalarian = item.name.includes("Galarian"); /*UPDATE THIS*/
+				const isClicked = clickedStates[item.id] ? 'clicked' : '';
+				
+				let regionalClass = '';
+				if (isGalarian) { /*UPDATE THIS*/
+					regionalClass = 'galarian-card';
+				}
+    
+				container.className = `container ${isClicked} ${regionalClass}`;
+				container.dataset.id = item.id;
+				container.id = `item-${item.id}`;
+                
+                const detailedWeaknesses = calculateDetailedWeaknesses(item.type1, item.type2);
+                const weaknessIcons = detailedWeaknesses.map(w => `
+                    <div class="weakness-item">
+                        <img src="types/${w.type.toLowerCase()}.png" alt="${w.type}">
+                       <span class="multiplier-badge ${w.mult === 4 ? 'multiplier-4x' : ''}">${w.mult}x</span>
+                    </div>
+                `).join('');
+
+                container.innerHTML = `
+                    <img src="icons/ball.png" class="card-ball-icon" alt="Caught">
+					<div class="item-number">#${item.id}</div>
+					<div class="image-center-wrapper">
+                        <img class="main-img" src="pokemon/${item.img}" alt="${item.name}">
+                        <div class="sub-icons-container">
+                            <img class="sub-icon" src="types/${item.type1.toLowerCase()}.png">
+                            ${item.type2 ? `<img class="sub-icon" src="types/${item.type2.toLowerCase()}.png">` : ''}
+                        </div>
+                    </div>
+                    <div class="item-title">${item.name}</div>
+                    <div class="weakness-row">
+                        <div class="weakness-label">Weak to:</div>
+                        <div class="weakness-icons">${weaknessIcons}</div>
+                    </div>
+                    <div class="info-row">
+                    	<span class="label">Location:</span>
+						<span>${item.location}</span>
+                    </div>
+                    <div class="info-row-2">
+                       <span class="label">Evolve:</span>
+                       <span class="evolve-text">${item.evolve || 'None'}</span>
+                    </div>
+                `;
+
+                fragment.appendChild(container);
+            });
+            
+            grid.appendChild(fragment);
+            updateProgress();
+            updateFilterProgressBar();
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+			if (isDesktop()) {
+				searchInput.focus();
+			}
+        }
+
+		/* Clicking the Clear All Button */
+        document.getElementById('clear-all-btn').addEventListener('click', () => {
+            if (confirm("Clear all caught Pokémon?")) {
+                clickedStates = {};
+                localStorage.setItem(POKEDEX_ID, JSON.stringify(clickedStates));
+                updateProgress();
+                updateFilterProgressBar();
+                renderGrid();
+				if (isDesktop()) {
+					searchInput.focus();
+				}
+            }
+        });
+
+		/* Clicking any Filter Button */
+		document.getElementById('filter-container').addEventListener('click', (e) => {
+			const btn = e.target.closest('.filter-btn');
+			if (!btn) return;
+		
+			const type = btn.dataset.type;
+			const value = btn.dataset.value;
+		
+			if (type === 'status') {
+				activeFilters.status = activeFilters.status === value ? null : value;
+			} else if (type === 'region') {
+				activeFilters.region = activeFilters.region === value ? null : value;
+			} else if (type === 'pokemon-type') {
+				const index = activeFilters.types.indexOf(value);
+				if (index > -1) {
+					activeFilters.types.splice(index, 1);
+				} else if (activeFilters.types.length < 2) {
+					activeFilters.types.push(value);
+				}
+			}
+		
+			updateFilterUI();
+			renderGrid();
+			if (isDesktop()) {
+				searchInput.focus();
+			}
+		});
+
+		/* Clicking any Card in the Grid */
+		document.getElementById('main-grid').addEventListener('click', (e) => {
+			const clickedCard = e.target.closest('.container');
+			if (clickedCard && document.getElementById('main-grid').contains(clickedCard)) {
+				const pokemonId = clickedCard.dataset.id;
+				if (pokemonId) {
+					clickedCard.classList.toggle('clicked');
+					clickedStates[pokemonId] = clickedCard.classList.contains('clicked');
+					localStorage.setItem(POKEDEX_ID, JSON.stringify(clickedStates));
+					updateProgress();
+					updateFilterProgressBar();
+					if (isDesktop()) {
+						searchInput.focus();
+					}
+				}
+			}
+		});
+		
+		/* Clicking anything from the Search Suggestions Box */
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            autoList.innerHTML = '';
+            if (!val) { autoList.style.display = 'none'; return; }
+            const matches = pokedexData.filter(d => d.name.toLowerCase().includes(val)).slice(0, 10);
+            matches.forEach(match => {
+				const div = document.createElement('div');
+				div.className = 'suggestion-item';
+				div.textContent = match.name;
+				div.onclick = () => {
+					const target = document.getElementById(`item-${match.id}`);
+					if (target) {
+						const headerHeight = document.getElementById('top-bar').offsetHeight;
+						const elementPosition = target.getBoundingClientRect().top + window.pageYOffset;
+						window.scrollTo({
+							top: elementPosition - headerHeight - 10,
+							behavior: 'smooth'
+						});
+			
+						target.classList.add('highlight-flash');
+						setTimeout(() => target.classList.remove('highlight-flash'), 2000);
+					}
+					autoList.style.display = 'none';
+					searchInput.value = '';
+					if (isDesktop()) {
+						searchInput.focus();
+					}
+				};
+				autoList.appendChild(div);
+			});
+            autoList.style.display = autoList.childElementCount > 0 ? 'block' : 'none';
+        });
+
+		/* Clicking the Search Bar */
+        document.addEventListener('click', (e) => {
+        	if (e.target !== searchInput) {
+        		autoList.style.display = 'none'; 
+			}
+		});
+
+		updateFilterUI();
+		updateFilterProgressBar();
+		renderTypes();
+        renderGrid();
+    </script>
+</body>
+</html>
