@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Scarlet Violet Tracker</title>
+	<link rel="icon" type="image/png" href="icons/ball.png">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #d0d0d0;
+            --selected-bg: #e8f4fd;
+            --selected-border: #2196f3;
+            --text-main: #333;
+            --text-muted: #777;
+            --link-color: #2196f3;
+        }
+
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+			background: 
+				repeating-linear-gradient(
+					135deg,
+					rgba(255, 255, 255, 0.5),
+					rgba(255, 255, 255, 0.5) 50px,
+					transparent 50px,
+					transparent 100px
+				),
+				linear-gradient(to bottom right, rgba(140, 23, 23, 0.5), rgba(236, 52, 249, 0.5));
+			background-attachment: fixed;
+			min-height: 100vh;
+			margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+		#top-bar {
+			position: sticky;
+			top: 0;
+			z-index: 2000;
+			width: 100%;
+			height: auto !important;
+			min-height: 120px;
+			background: var(--card-bg);
+			border-bottom: 1px solid var(--border-color);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin-top: -10px;
+			padding: 5px 20px 5px 0px;
+			box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+			box-sizing: border-box;
+			flex-direction: column;
+		}
+		
+		.header-main-row {
+			display: flex;
+			width: 100%;
+			justify-content: space-between;
+			align-items: center;
+		}
+		
+		.header-left {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: flex-start;
+			width: 300px;
+			margin-left: 20px;
+			gap: 15px;
+		}
+		
+		.logo-wrapper {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		
+		.back-btn {
+			padding: 8px 12px;
+			background: #f0f0f0;
+			border: 1px solid #ccc;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 12px;
+			font-weight: bold;
+			color: #333;
+			white-space: nowrap;
+		}
+		
+		.back-btn:hover {
+			background: #e0e0e0;
+		}
+		
+		.main-logo {
+			max-height: 90px;
+			width: auto;
+		}
+		
+		.logo-text {
+			font-size: 18px;
+			font-weight: bold;
+			color: var(--text-main);
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			line-height: 1;
+			margin-top: 2px;
+		}
+		
+		#search-container {
+			flex: 0 1 400px;
+			position: relative;
+			display: flex;
+			margin-bottom: 0;
+		}
+		
+		.header-right {
+			display: flex;
+			align-items: center;
+			gap: 20px;
+		}
+		
+		.ball-icon {
+			width: 60px;
+			height: 60px;
+			margin-bottom: 15px;
+		}
+		
+		.counter-group {
+			display: flex;
+			height: auto !important;
+			align-items: center;
+			gap: 15px;
+			width: 400px;
+			margin-top: 15px;
+			justify-content: flex-start;
+		}
+		
+		.counter-text-wrapper {
+			display: flex;
+			flex-direction: column;
+			line-height: 1.2;
+			min-width: 100px;
+			flex-grow: 1;
+
+		}
+		
+		.total-label {
+			font-size: 14px;
+			color: var(--text-muted);
+			font-weight: normal;
+		}
+		
+		.help-btn {
+			padding: 8px 12px;
+			background-color: #bfe1fc;
+            border: 1px solid #87c6f9;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 10pt;
+			font-weight: bold;
+			color: #333;
+			white-space: nowrap;
+		}
+		
+		.help-btn:hover {
+			background: #2196f3;
+			color: #fff;
+		}
+		
+		#help-modal {
+			display: none; 
+			position: fixed; 
+			z-index: 3000; 
+			left: 0; 
+			top: 0; 
+			width: 100%; 
+			height: 100%; 
+			overflow: auto; 
+			background-color: rgba(0,0,0,0.5);
+		}
+		
+		.modal-content {
+			background-color: #fefefe;
+			margin: 10% auto;
+			padding: 10px 20px 20px 20px;
+			border: 1px solid #888;
+			width: 80%;
+			max-width: 400px;
+			border-radius: 12px;
+			box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+		}
+		
+		.modal-header { display: flex; justify-content: space-between; align-items: center; }
+		.modal-header h3 { margin: 10px 0px 0px 0px; }
+		.modal-subheader { font-size: 16px; font-weight: bold; margin: 30px 0 10px 0; padding-bottom: 5px; border-bottom: 1px solid #ddd; color: #444; }
+		.close-btn { cursor: pointer; font-size: 20px; font-weight: bold; }
+		
+		.legend-item { display: flex; align-items: center; margin-bottom: 10px; font-size: 14px; }
+		.legend-emoji { font-size: 20px; margin-right: 10px; min-width: 30px; text-align: center; }
+		
+		.weather-grid {	display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;	}
+		.weather-grid .legend-item { margin-bottom: 0; }
+
+		.header-actions-row {
+			display: flex;
+			flex-direction: column !important;
+			align-items: center;
+			gap: 10px;
+		}
+		
+		#clear-all-btn {
+			padding: 8px 16px;
+			background: #ff4444;
+			color: white;
+			border: none;
+			border-radius: 8px;
+			font-size: 10pt;
+			border: 1px solid #a10000;
+			cursor: pointer;
+			font-weight: bold;
+		}
+		
+		#clear-all-btn:hover {
+			background: #cc0000;
+		}		
+		
+		.progress-container {
+			flex-grow: 1;
+			height: 12px;
+			background-color: #eee;
+			border-radius: 10px;
+			border: 1px solid var(--border-color);
+			position: relative;
+			margin: 0px 15px 25px 15px; 
+			overflow: visible;
+		}
+
+		.progress-label {
+			font-size: 11px;
+			font-weight: bold;
+			color: var(--text-muted);
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			margin-bottom: 4px;
+			text-align: left;
+		}
+		
+		#progress-bar {
+			height: 100%;
+			width: 0%;
+			background: linear-gradient(to right, rgb(140, 23, 23), rgb(236, 52, 249));
+			border-radius: 10px;
+			transition: width 0.3s ease;
+		}
+		
+		#caught-label {
+			position: absolute;
+			top: 16px;
+			z-index: 20;
+			color: #cc0000;
+			transform: translateX(-50%);
+			white-space: nowrap;
+		}
+		
+		#total-label {
+			position: absolute;
+			top: 16px;
+			right: 0; 
+			transform: translateX(50%);
+			z-index: 10;
+		}
+		
+		#filter-progress-bar {
+			height: 100%;
+			width: 0%;
+			background-color: #777;
+			border-radius: 10px;
+			transition: width 0.3s ease, background-color 0.3s ease;
+		}
+		
+		#filter-caught-label {
+			position: absolute;
+			top: 16px;
+			z-index: 20;
+			color: #000;
+			transform: translateX(-50%);
+			white-space: nowrap;
+		}
+		
+		#filter-total-label {
+			position: absolute;
+			top: 16px;
+			right: 0; 
+			transform: translateX(50%);
+			z-index: 10;
+		}
+		
+		#filter-container {
+			display: grid;
+			grid-template-columns: auto auto 1fr;
+			gap: 40px;
+			width: 75%;
+			margin-left: auto;
+			margin-right: auto;
+			padding: 10px 0;
+			border-top: 1px solid var(--border-color);
+			align-items: start;
+		}
+		
+		.filter-group {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+		
+		#type-filters {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 6px;
+			align-content: flex-start;
+		}
+		
+		.filter-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			padding: 6px 12px;
+			border-radius: 20px;
+			border: 2px solid #ccc;
+			background: white;
+			cursor: pointer;
+			font-size: 12px;
+			font-weight: 600;
+			transition: all 0.2s ease;
+			text-align: center;
+			white-space: nowrap;
+		}
+		
+		.filter-btn img {
+			width: 18px;
+			height: 18px;
+			object-fit: contain;
+		}
+		
+		.filter-btn:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		.type-bug { background: #DBE0B4; color: #5E6910; border-color: #5E6910; }
+		.type-dark { background: #CCC5C5; color: #403233; border-color: #403233; }
+		.type-dragon { background: #C6CBF5; color: #343E92; border-color: #343E92; }
+		.type-electric { background: #FDEAAC; color: #A37D00; border-color: #A37D00; }
+		.type-fairy { background: #FAD0FA; color: #9B499B; border-color: #9B499B; }
+		.type-fighting { background: #FFD5AC; color: #A65300; border-color: #A65300; }
+		.type-fire { background: #F7B9B9; color: #961A1B; border-color: #961A1B; }
+		.type-flying { background: #D6E8FA; color: #54789B; border-color: #54789B; }
+		.type-ghost { background: #D0C1D0; color: #492A49; border-color: #492A49; }
+		.type-grass { background: #C0E0B9; color: #29691B; border-color: #29691B; }
+		.type-ground { background: #DBC6B7; color: #5E3515; border-color: #5E3515; }
+		.type-ice { background: #C0EFFB; color: #28869E; border-color: #28869E; }
+		.type-normal { background: #E0E0E0; color: #676967; border-color: #676967; }
+		.type-poison { background: #DBC1EE; color: #5E2A84; border-color: #5E2A84; }
+		.type-psychic { background: #FAC1D3; color: #9B2A4F; border-color: #9B2A4F; }
+		.type-rock { background: #E5E3D6; color: #726E54; border-color: #726E54; }
+		.type-steel { background: #CBE0E8; color: #3E6978; border-color: #3E6978; }
+		.type-water { background: #B9D5FA; color: #1B539B; border-color: #1B539B; }
+
+		.type-caught { background: white; color: black; border-color: gray; }
+		.type-uncaught { background: white; color: black; border-color: gray; }
+		
+		.filter-btn.active.type-bug { background: #91A119; color: white; border-color: #5E6910; }
+		.filter-btn.active.type-dark { background: #624D4E; color: white; border-color: #403233; }
+		.filter-btn.active.type-dragon { background: #5060E1; color: white; border-color: #343E92; }
+		.filter-btn.active.type-electric { background: #FAC000; color: #333; border-color: #A37D00; }
+		.filter-btn.active.type-fairy { background: #EF70EF; color: white; border-color: #9B499B; }
+		.filter-btn.active.type-fighting { background: #FF8000; color: white; border-color: #A65300; }
+		.filter-btn.active.type-fire { background: #E62829; color: white; border-color: #961A1B; }
+		.filter-btn.active.type-flying { background: #81B9EF; color: white; border-color: #54789B; }
+		.filter-btn.active.type-ghost { background: #704170; color: white; border-color: #492A49; }
+		.filter-btn.active.type-grass { background: #3FA129; color: white; border-color: #29691B; }
+		.filter-btn.active.type-ground { background: #915121; color: white; border-color: #5E3515; }
+		.filter-btn.active.type-ice { background: #3DCEF3; color: #333; border-color: #28869E; }
+		.filter-btn.active.type-normal { background: #9FA19F; color: white; border-color: #676967; }
+		.filter-btn.active.type-poison { background: #9141CB; color: white; border-color: #5E2A84; }
+		.filter-btn.active.type-psychic { background: #EF4179; color: white; border-color: #9B2A4F; }
+		.filter-btn.active.type-rock { background: #AFA981; color: white; border-color: #726E54; }
+		.filter-btn.active.type-steel { background: #60A1B8; color: white; border-color: #3E6978; }
+		.filter-btn.active.type-water { background: #2980EF; color: white; border-color: #1B539B; }
+				
+		.filter-btn.active.type-caught { background: lightgray; color: black; border-color: gray; }
+		.filter-btn.active.type-uncaught { background: lightgray; color: black; border-color: gray; }
+
+        #search-container {
+            position: sticky;
+            top: 10px;
+            z-index: 1000;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 0px;
+        }
+
+        #search-input {
+            width: 100%;
+            box-sizing: border-box !important;
+            padding: 10px 15px 10px 15px;
+            border-radius: 20px;
+            font-size: 11pt;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            outline: none;
+        }
+
+        #autocomplete-list {
+            background: white;
+            border: 1px solid var(--border-color);
+            max-height: 250px;
+            font-size: 11pt;
+            overflow-y: auto;
+            display: none;
+            position: absolute;
+            box-sizing: border-box !important;
+            width: 100% !important;
+            border-radius: 12px;
+            margin-top: 45px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .suggestion-item:hover { background-color: #f8f9fa; }
+
+        #main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 200px); 
+            gap: 15px;
+            margin-top: 10px;
+            justify-content: center;
+            width: 100%;
+            max-width: 1320px; 
+        }
+
+        .container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 200px;
+            height: 325px; 
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-sizing: border-box;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .container.clicked {
+            background-color: var(--selected-bg);
+            border-color: var(--selected-border);
+            border-width: 2px;
+        }
+		
+        .item-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+		.card-ball-icon {
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			width: 50px;
+			height: 50px;
+			z-index: 10;
+			pointer-events: none;
+			display: none;
+		}
+		
+		.container.clicked .card-ball-icon {
+			display: block;
+		}
+
+        .image-center-wrapper {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            width: 120px;
+            height: 112px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .main-img {
+            margin-top: auto;
+            max-width: 120px;
+            max-height: 112px;
+            object-fit: contain;
+        }
+
+        .sub-icons-container {
+            position: absolute;
+            right: -18px; 
+            bottom: -20px; 
+            display: flex;
+            gap: 6px;
+        }
+
+        .sub-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+        }
+        
+        .sub-icon + .sub-icon {
+			margin-left: -10px;
+		}
+
+        .item-title {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: var(--text-main);
+            display: block;
+        }
+
+        .info-row,
+        .info-row-2 {
+            margin-top: 7px;
+            display: flex;
+            align-items: flex-start;
+            font-size: 12px;
+            color: #444;
+            line-height: 1.3;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-right: 5px;
+            white-space: nowrap;
+        }
+
+        .location-link {
+            color: var(--link-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .evolve-text {
+            color: #555;
+            word-wrap: break-word;
+            max-width: 140px;
+        }
+
+		.weakness-row {
+			margin-top: 4px; display: flex;
+			flex-direction: column; align-items: center;
+		}
+		
+		.weakness-label {
+			font-size: 11px; font-weight: bold;
+			color: var(--text-muted); margin-bottom: 4px;
+		}
+		
+		.weakness-icons {
+			display: flex; gap: 4px; justify-content: center;
+		}
+		
+		.weakness-icons img {
+			width: 24px; height: 24px; object-fit: contain;
+		}
+		
+		.weakness-item {
+			display: flex; flex-direction: column;
+			align-items: center; gap: 2px;
+		}
+		
+		.multiplier-badge {
+			font-size: 9px; font-weight: bold; background: #eee;
+			padding: 1px 4px; border-radius: 4px; color: #444;
+		}
+		
+		.multiplier-4x {
+			background: #ff4444; color: white;
+		}
+		
+		.emoji-highlight, .time-highlight,
+		.scarlet-highlight, .violet-highlight {
+			padding: 2px 5px; border-radius: 6px; margin-left: 4px;
+			display: inline-block; line-height: 1; font-weight: bold;
+		}
+			
+		.emoji-highlight { background-color: rgba(0, 0, 0, 0.25); }
+		.time-highlight { background-color: rgba(61,210,161,0.5); }
+		.scarlet-highlight { background-color: rgba(140, 23, 23, 0.5); } 
+		.violet-highlight { background-color: rgba(236, 52, 249, 0.5); }
+		.percent { color: #ff4444; font-weight: bold; }
+
+        .highlight-flash { animation: flash 1s ease-in-out 2; }
+        @keyframes flash { 50% { box-shadow: 0 0 20px var(--selected-border); transform: scale(1.02); } }
+        
+        /* --- MOBILE RESPONSIVE OVERHAUL --- */
+		@media (max-width: 600px) {
+
+			body { padding: 0; margin: 0; overflow-x: hidden; width: 100%; }
+		
+			#top-bar {
+				display: flex; flex-direction: column; justify-content: flex-start;
+				align-items: center; width: 100%; left: 0; right: 0; height: auto;
+				margin-left: 0; margin-right: 0; padding: 10px; box-sizing: border-box;
+			}
+			
+			.back-btn {
+				position: static; transform: none; margin-right: 20px;
+				font-size: 11px; padding: 10px 10px;
+			}
+			
+			.header-main-row, #top-bar > div:first-child {
+				display: flex; flex-direction: column; width: 100%; padding: 0 10px; 
+				align-items: center; max-width: 100%; box-sizing: border-box; gap: 0px;
+			}
+		
+			.main-logo { max-height: 75px; margin: 0 auto; display: block; }
+			.header-left { flex-direction: row; gap: 10px; margin: 0px 0px 5px -20px; }
+			.logo-text { font-size: 14px; width: 60px; text-align: left; line-height: 1.1; }
+		
+			#search-container {
+				width: 100%; max-width: 100%; margin: 5px 0px 10px 0px;
+				padding: 0; box-sizing: border-box; flex: none; 
+			}
+		
+			#search-input { width: 100%; box-sizing: border-box; }
+		
+			.header-right {
+				display: flex; flex-direction: column; width: 100%;
+				margin-top: -10px; gap: 0; align-items: center;
+			}
+		
+			.counter-group {
+				display: flex; width: 100%; flex-direction: row; align-items: center;
+				justify-content: center; height: auto; margin: 10px 0px 15px -20px;
+			}
+		
+			.ball-icon { margin: 0px -5px 0px 0px; width: 50px; height: 50px; }
+		
+			.counter-text-wrapper {
+				width: 70%; min-width: 0; flex-direction: column;
+				justify-content: center; margin: 0; display: flex;
+			}
+			
+			.progress-label { margin-bottom: -3px; }
+			.progress-container { width: 100%; margin: 10px 0 20px 0; display: block; }
+			#progress-bar { display: block; }
+		
+			.header-actions-row {
+				display: flex; flex-direction: row !important; justify-content: center;
+				align-items: center; gap: 10px; width: 100%; margin-top: 5px;
+			}
+
+			#clear-all-btn, 
+			#filter-toggle-btn,
+			#help-btn {
+				width: auto !important; margin: -10px 0px 5px 0px; height: 40px;
+				font-size: 10pt; font-weight: bold; white-space: nowrap; cursor: pointer;
+			}
+		
+			#filter-progress-section { display: none !important; }
+		
+			#filter-toggle-btn {
+				display: flex; align-items: center; justify-content: center;
+				gap: 8px; width: 50%; padding: 8px; background: #eee;
+				border: 1px solid var(--border-color); border-radius: 8px;
+			}
+
+			#filter-container {
+				display: none; flex-direction: column; width: 100%; padding: 15px;
+				box-sizing: border-box; background: #f9f9f9; border-top: 1px solid #ddd;
+				gap: 20px;
+			}
+			
+			#filter-container.active { display: flex !important; }
+			#type-filters { max-height: none !important; }
+			
+			.filter-group {
+				display: flex; flex-direction: row; flex-wrap: wrap;
+				justify-content: left; gap: 10px; margin-left: -5px;
+			}
+		
+			#type-filters .filter-btn {
+				display: inline-flex; align-items: center; justify-content: center;
+				padding: 0; font-size: 0; gap: 0; width: 44px; height: 44px;
+				border-radius: 50%; overflow: hidden;
+			}
+			
+			#type-filters .filter-btn img { margin: 0; width: 24px; height: 24px; }
+			
+			#caught-filters .filter-btn {
+				display: inline-flex; align-items: center; justify-content: center;
+				padding: 8px 12px; font-size: 10pt; width: auto; height: 40px;
+				border-radius: 20px; gap: 8px;
+			}
+			
+			#caught-filters .filter-btn img {
+				width: 20px; height: 20px; margin: 0;
+			}
+		
+			#main-grid {
+				grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+				gap: 12px; padding: 10px; padding-left: 5px; padding-right: 5px;
+				width: 100%; max-width: 100%; box-sizing: border-box;
+				justify-content: center;  column-gap: 10px; row-gap: 10px;
+			}
+			
+			.container { width: auto; height: 225px; padding: 5px; scroll-margin-top: 270px }
+		
+			.image-center-wrapper { width: 85px; height: 85px; margin-top: 5px; }
+			.main-img { max-width: 85px; max-height: 85px; }
+			.card-ball-icon { width: 40px; height: 40px; }
+			.item-title { margin: 5px 0px 4px 0px; font-size: 0.95em; }
+		
+			.sub-icons-container { right: -12px; bottom: -5px; }
+			.sub-icon { width: 26px; height: 26px; }
+			
+			.weakness-row { padding: 0px; margin: 0px 0px 0px 0px; }
+			.weakness-label { margin: 0px; }
+			.weakness-icons { gap: 0; }
+			
+			.info-row { margin: 7px; justify-content: center; text-align: center; }
+			.info-row-2, .label, .evolve-text { display: none !important; }
+		}
+		
+		@media (min-width: 601px) {
+			#filter-toggle-btn { display: none; }
+		}
+
+    </style>
+</head>
+<body>
+
+    <header id="top-bar">
+		<div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
+			<div class="header-left">
+				<button class="back-btn" onclick="window.location.href='index.html'">&lt; Back<br>to hub</button>
+				<div class="logo-wrapper">
+					<img src="logos/sv.png" alt="Logo" class="main-logo">
+					<div class="logo-text">Pokedex Tracker</div>
+				</div>
+			</div>
+			
+			<div id="search-container">
+				<input type="text" id="search-input" placeholder="Search Pokémon..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+				<div id="autocomplete-list" class="autocomplete-items"></div>
+			</div>
+			
+			<div class="header-right">
+				<div class="counter-group">
+					<img src="icons/ball.png" alt="Caught" class="ball-icon">
+					<div class="counter-text-wrapper">
+						<div class="progress-label">Pokémon caught</div> 
+						<div class="progress-container" style="overflow: visible; margin-bottom: 20px;">
+							<div id="progress-bar"></div>
+							<div id="caught-label" class="multiplier-badge">0</div>
+							<div id="total-label" class="multiplier-badge" style="right: 0;">422</div>
+						</div>
+						
+						<div id="filter-progress-section" style="display: block; margin-top: 10px;">
+							<div id="filter-progress-label" class="progress-label">Click a single filter to see details</div>
+							<div class="progress-container" style="overflow: visible;">
+								<div id="filter-progress-bar" style="height:100%; border-radius:10px; transition:width 0.3s ease; background-color: #eee;"></div>
+								<div id="filter-caught-label" class="multiplier-badge" style="position:absolute; top:16px; transform:translateX(-50%);">0</div>
+								<div id="filter-total-label" class="multiplier-badge" style="position:absolute; top:16px; right:0; transform:translateX(50%);">0</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="header-actions-row">
+					<button id="filter-toggle-btn" onclick="document.getElementById('filter-container').classList.toggle('active')">
+						<img src="icons/location.png" style="width:16px; height:16px;"> Filters
+					</button>
+					<button id="help-btn" class="help-btn" onclick="document.getElementById('help-modal').style.display='block'">Help</button>
+					<button id="clear-all-btn">Clear All</button>
+				</div>
+				<div id="help-modal">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h3>Icon Legend</h3>
+							<span class="close-btn" onclick="document.getElementById('help-modal').style.display='none'">&times;</span>
+						</div>
+						<div class="modal-subheader">Biome Types</div>
+						<div class="weather-grid">
+							<div class="legend-item"><span class="legend-emoji">🌱</span><span>Grass</span></div>
+							<div class="legend-item"><span class="legend-emoji">🌲</span><span>Forest</span></div>
+							<div class="legend-item"><span class="legend-emoji">🏡</span><span>Town</span></div>
+							<div class="legend-item"><span class="legend-emoji">🏜️</span><span>Desert</span></div>
+							<div class="legend-item"><span class="legend-emoji">⛰️</span><span>Mountain</span></div>
+							<div class="legend-item"><span class="legend-emoji">❄️</span><span>Snow</span></div>
+							<div class="legend-item"><span class="legend-emoji">🪷</span><span>Swamp</span></div>
+							<div class="legend-item"><span class="legend-emoji">⛵</span><span>Lake</span></div>
+							<div class="legend-item"><span class="legend-emoji">🎣</span><span>River</span></div>
+							<div class="legend-item"><span class="legend-emoji">🌊</span><span>Ocean</span></div>
+							<div class="legend-item"><span class="legend-emoji">🕳️</span><span>Underground</span></div>
+							<div class="legend-item"><span class="legend-emoji">🪨</span><span>Rocky</span></div>
+							<div class="legend-item"><span class="legend-emoji">🦇</span><span>Cave</span></div>
+							<div class="legend-item"><span class="legend-emoji">🏖️</span><span>Beach</span></div>
+							<div class="legend-item"><span class="legend-emoji">🌸</span><span>Flowers</span></div>
+							<div class="legend-item"><span class="legend-emoji">🎋</span><span>Bamboo</span></div>
+							<div class="legend-item"><span class="legend-emoji">💎</span><span>Mine</span></div>
+							<div class="legend-item"><span class="legend-emoji">🌿</span><span>Olive</span></div>
+							<div class="legend-item"><span class="legend-emoji">🏛️</span><span>Ruins</span></div>
+						</div>
+						<div class="modal-subheader">Encounter Times</div>
+						<div class="legend-item"><span class="legend-emoji">🌅</span><span>Morning</span></div>
+						<div class="legend-item"><span class="legend-emoji">🏙️</span><span>Noon</span></div>
+						<div class="legend-item"><span class="legend-emoji">🌇</span><span>Evening</span></div>
+						<div class="legend-item"><span class="legend-emoji">🌃</span><span>Night</span></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div id="filter-container">
+			<div class="filter-group" id="caught-filters">
+				<button class="filter-btn type-caught" data-type="status" data-value="caught">
+					<img src="icons/ball.png" alt="">Caught
+				</button>
+				<button class="filter-btn type-uncaught" data-type="status" data-value="uncaught">
+					<img src="icons/ball2.png" alt="">Not Caught
+				</button>
+			</div>
+			<div class="filter-group" id="type-filters">
+				</div>
+		</div>
+	</header>
+
+    <div id="main-grid"></div>
+
+	<!-- Sprite Directory 1: https://projectpokemon.org/home/docs/spriteindex_148/ -->
+	<!-- Sprite Directory 2: https://play.pokemonshowdown.com/sprites/ani/?view=dir -->
+	    
+	<script src="sv_data.js"></script>
+    <script>
+    
+		const pokedexData = SV_POKEDEX_DATA;
+		const typeChart = {
+			"Grass": { weakTo: ["Fire", "Ice", "Poison", "Flying", "Bug"], resists: ["Water", "Electric", "Grass", "Ground"] },
+			"Fire": { weakTo: ["Water", "Ground", "Rock"], resists: ["Fire", "Grass", "Ice", "Bug", "Steel", "Fairy"] },
+			"Water": { weakTo: ["Electric", "Grass"], resists: ["Fire", "Water", "Ice", "Steel"] },
+			"Bug": { weakTo: ["Fire", "Flying", "Rock"], resists: ["Grass", "Fighting", "Ground"] },
+			"Normal": { weakTo: ["Fighting"], resists: [], immuneTo: ["Ghost"] },
+			"Flying": { weakTo: ["Electric", "Ice", "Rock"], resists: ["Grass", "Fighting", "Bug"], immuneTo: ["Ground"] },
+			"Dark": { weakTo: ["Fighting", "Bug", "Fairy"], resists: ["Ghost", "Dark"], immuneTo: ["Psychic"] },
+			"Electric": { weakTo: ["Ground"], resists: ["Electric", "Flying", "Steel"] },
+			"Ice": { weakTo: ["Fire", "Fighting", "Rock", "Steel"], resists: ["Ice"] },
+			"Ground": { weakTo: ["Water", "Grass", "Ice"], resists: ["Poison", "Rock"], immuneTo: ["Electric"] },
+			"Rock": { weakTo: ["Water", "Grass", "Fighting", "Ground", "Steel"], resists: ["Normal", "Fire", "Poison", "Flying"] },
+			"Psychic": { weakTo: ["Bug", "Ghost", "Dark"], resists: ["Fighting", "Psychic"] },
+			"Poison": { weakTo: ["Ground", "Psychic"], resists: ["Grass", "Fighting", "Poison", "Bug", "Fairy"] },
+			"Steel": { weakTo: ["Fire", "Fighting", "Ground"], resists: ["Normal", "Grass", "Ice", "Flying", "Psychic", "Bug", "Rock", "Dragon", "Steel", "Fairy"], immuneTo: ["Poison"] },
+			"Ghost": { weakTo: ["Ghost", "Dark"], resists: ["Poison", "Bug"], immuneTo: ["Normal", "Fighting"] },
+			"Fighting": { weakTo: ["Flying", "Psychic", "Fairy"], resists: ["Bug", "Rock", "Dark"] },
+			"Dragon": { weakTo: ["Ice", "Dragon", "Fairy"], resists: ["Fire", "Water", "Grass", "Electric"] },
+			"Fairy": { weakTo: ["Poison", "Steel"], resists: ["Fighting", "Bug", "Dark"], immuneTo: ["Dragon"] }
+		};
+		const POKEDEX_ID = 'pokedex_scarlet_tracker';
+        const grid = document.getElementById('main-grid');
+        const searchInput = document.getElementById('search-input');
+        const autoList = document.getElementById('autocomplete-list');
+        const caughtCountDisplay = document.getElementById('caught-count');
+        const isDesktop = () => window.innerWidth > 600;
+		const types = ["Normal", "Fire", "Water", "Grass", "Electric", "Ice", "Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug", "Rock", "Ghost", "Dark", "Steel", "Dragon", "Fairy"];
+		let clickedStates = {};
+		
+		try {
+			const saved = localStorage.getItem(POKEDEX_ID);
+			if (saved) { clickedStates = JSON.parse(saved); }
+		} catch (e) {
+			console.error("Failed to parse local storage data. Resetting to empty state.", e);
+			clickedStates = {};
+		}
+		
+		let activeFilters = { /*UPDATE THIS*/
+			status: null,
+			types: []
+		};
+		
+        function calculateDetailedWeaknesses(t1, t2) {
+            const scores = {};
+            const allTypes = Object.keys(typeChart);
+            allTypes.forEach(attackType => {
+                let multiplier = 1;
+                const getEff = (pkmType) => {
+                    if (!pkmType || !typeChart[pkmType]) return 1;
+                    if (typeChart[pkmType].weakTo.includes(attackType)) return 2;
+                    if (typeChart[pkmType].resists.includes(attackType)) return 0.5;
+                    if (typeChart[pkmType].immuneTo && typeChart[pkmType].immuneTo.includes(attackType)) return 0;
+                    return 1;
+                };
+                multiplier *= getEff(t1);
+                if (t2) multiplier *= getEff(t2);
+                if (multiplier > 1) scores[attackType] = multiplier;
+            });
+            return Object.entries(scores).map(([type, mult]) => ({ type, mult })).sort((a, b) => b.mult - a.mult);
+        }
+
+		function updateProgress() {
+			const caughtCount = Object.values(clickedStates).filter(v => v === true).length;
+			const totalCount = pokedexData.length;
+			const percentage = (caughtCount / totalCount) * 100;
+		
+			document.getElementById('progress-bar').style.width = percentage + '%';
+			document.getElementById('caught-label').textContent = caughtCount;
+			document.getElementById('caught-label').style.left = percentage + '%';
+			document.getElementById('total-label').textContent = totalCount;
+			localStorage.setItem('sv_caught_count', caughtCount);
+		}
+		
+		function updateFilterProgressBar() {
+			const allActive = Array.from(document.querySelectorAll('.filter-btn.active'));
+			const activeTypes = allActive.filter(btn => btn.dataset.type === 'pokemon-type');
+		
+			const filterLabel = document.getElementById('filter-progress-label');
+			const filterBar = document.getElementById('filter-progress-bar');
+			const caughtLabel = document.getElementById('filter-caught-label');
+			const totalLabel = document.getElementById('filter-total-label');
+		
+			const isSingleFilter = activeTypes.length === 1;
+		
+			if (isSingleFilter) {
+				const activeBtn = activeTypes[0];
+				const filterValue = activeBtn.dataset.value;
+				
+				filterLabel.textContent = `${filterValue} Types Caught`;
+
+				const relevantPokemon = pokedexData.filter(p => {
+					return p.type1 === filterValue || p.type2 === filterValue;
+				});
+		
+				const caughtCount = relevantPokemon.filter(p => clickedStates[p.id] === true).length;
+				const totalCount = relevantPokemon.length;
+				const percentage = totalCount > 0 ? (caughtCount / totalCount) * 100 : 0;
+		
+				filterBar.style.width = percentage + '%';
+				
+				caughtLabel.textContent = caughtCount;
+				caughtLabel.style.left = percentage + '%';
+				caughtLabel.style.display = 'block';
+				
+				totalLabel.textContent = totalCount;
+				totalLabel.style.display = 'block';
+		
+				const typeColors = { /*UPDATE THIS*/
+					bug: '#91A119', dark: '#624D4E', dragon: '#5060E1', electric: '#FAC000',
+					fairy: '#EF70EF', fighting: '#FF8000', fire: '#E62829', flying: '#81B9EF',
+					ghost: '#704170', grass: '#3FA129', ground: '#915121', ice: '#3DCEF3',
+					normal: '#9FA19F', poison: '#9141CB', psychic: '#EF4179', rock: '#AFA981',
+					steel: '#60A1B8', water: '#2980EF'
+				};
+				const barColor = typeColors[filterValue.toLowerCase()] || '#777';
+				filterBar.style.backgroundColor = barColor;
+				caughtLabel.style.color = barColor;
+		
+			} else {
+				filterLabel.textContent = "Click a single filter to see details";
+				filterBar.style.width = '0%';
+				caughtLabel.style.display = 'none';
+				totalLabel.style.display = 'none';
+			}
+		}
+		
+		function updateFilterUI() {
+			document.querySelectorAll('.filter-btn').forEach(btn => {
+				const category = btn.dataset.type;
+				const value = btn.dataset.value;
+				
+				let isActive = false;
+				if (category === 'status') isActive = activeFilters.status === value;
+				if (category === 'pokemon-type') isActive = activeFilters.types.includes(value);
+				
+				btn.classList.toggle('active', isActive);
+		
+				if (category === 'pokemon-type' && activeFilters.types.length >= 2) {
+					btn.disabled = !activeFilters.types.includes(value);
+				} else {
+					btn.disabled = false;
+				}
+			});
+		}
+		
+		function renderTypes() {
+			const typeContainer = document.getElementById('type-filters');
+			types.forEach(type => {
+				const btn = document.createElement('button');
+				btn.className = `filter-btn type-${type.toLowerCase()}`;
+				btn.dataset.type = 'pokemon-type';
+				btn.dataset.value = type;
+			
+				const icon = `<img src="types/${type.toLowerCase()}.png" alt="">`;
+				btn.innerHTML = `${icon}${type}`;
+			
+				typeContainer.appendChild(btn);
+			});
+		}
+			
+		function renderGrid() {
+			const searchTerm = searchInput.value.toLowerCase();
+			const grid = document.getElementById('main-grid');
+		
+			const filteredData = pokedexData.filter(pokemon => {
+				const matchesSearch = pokemon.name.toLowerCase().includes(searchTerm);
+				const isCaught = clickedStates[pokemon.id] === true; 
+				let matchesStatus = true;
+				
+				if (activeFilters.status === 'caught') {
+					matchesStatus = isCaught;
+				} else if (activeFilters.status === 'uncaught') {
+					matchesStatus = !isCaught;
+				}
+				
+				const matchesType = activeFilters.types.length === 0 || 
+					activeFilters.types.every(t => pokemon.type1 === t || pokemon.type2 === t);
+		
+				return matchesSearch && matchesStatus && matchesType;
+			});
+			
+            grid.innerHTML = '';
+            const fragment = document.createDocumentFragment();
+            
+            filteredData.forEach(item => {
+                const container = document.createElement('div');
+				const isClicked = clickedStates[item.id] ? 'clicked' : '';
+				    
+				container.className = `container ${isClicked}`;
+				container.dataset.id = item.id;
+				container.id = `item-${item.id}`;
+                
+                const detailedWeaknesses = calculateDetailedWeaknesses(item.type1, item.type2);
+                const weaknessIcons = detailedWeaknesses.map(w => `
+                    <div class="weakness-item">
+                        <img src="types/${w.type.toLowerCase()}.png" alt="${w.type}">
+                       <span class="multiplier-badge ${w.mult === 4 ? 'multiplier-4x' : ''}">${w.mult}x</span>
+                    </div>
+                `).join('');
+
+                container.innerHTML = `
+                    <img src="icons/ball.png" class="card-ball-icon" alt="Caught">
+					<div class="item-number">#${item.id}</div>
+					<div class="image-center-wrapper">
+                        <img class="main-img" src="pokemon/${item.img}" alt="${item.name}">
+                        <div class="sub-icons-container">
+                            <img class="sub-icon" src="types/${item.type1.toLowerCase()}.png">
+                            ${item.type2 ? `<img class="sub-icon" src="types/${item.type2.toLowerCase()}.png">` : ''}
+                        </div>
+                    </div>
+                    <div class="item-title">${item.name}</div>
+                    <div class="weakness-row">
+                        <div class="weakness-label">Weak to:</div>
+                        <div class="weakness-icons">${weaknessIcons}</div>
+                    </div>
+                    <div class="info-row">
+                    	<span class="label">Location:</span>
+						<span>${item.location}</span>
+                    </div>
+                    <div class="info-row-2">
+                       <span class="label">Evolve:</span>
+                       <span class="evolve-text">${item.evolve || 'None'}</span>
+                    </div>
+                `;
+
+                fragment.appendChild(container);
+            });
+            
+            grid.appendChild(fragment);
+            updateProgress();
+            updateFilterProgressBar();
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+			if (isDesktop()) {
+				searchInput.focus();
+			}
+        }
+
+		/* Clicking the Clear All Button */
+        document.getElementById('clear-all-btn').addEventListener('click', () => {
+            if (confirm("Clear all caught Pokémon?")) {
+                clickedStates = {};
+                localStorage.setItem(POKEDEX_ID, JSON.stringify(clickedStates));
+                updateProgress();
+                updateFilterProgressBar();
+                renderGrid();
+				if (isDesktop()) {
+					searchInput.focus();
+				}
+            }
+        });
+
+		/* Clicking any Filter Button */
+		document.getElementById('filter-container').addEventListener('click', (e) => {
+			const btn = e.target.closest('.filter-btn');
+			if (!btn) return;
+		
+			const type = btn.dataset.type;
+			const value = btn.dataset.value;
+		
+			if (type === 'status') {
+				activeFilters.status = activeFilters.status === value ? null : value;
+			} else if (type === 'pokemon-type') {
+				const index = activeFilters.types.indexOf(value);
+				if (index > -1) {
+					activeFilters.types.splice(index, 1);
+				} else if (activeFilters.types.length < 2) {
+					activeFilters.types.push(value);
+				}
+			}
+		
+			updateFilterUI();
+			renderGrid();
+			if (isDesktop()) {
+				searchInput.focus();
+			}
+		});
+
+		/* Clicking any Card in the Grid */
+		document.getElementById('main-grid').addEventListener('click', (e) => {
+			const clickedCard = e.target.closest('.container');
+			if (clickedCard && document.getElementById('main-grid').contains(clickedCard)) {
+				const pokemonId = clickedCard.dataset.id;
+				if (pokemonId) {
+					clickedCard.classList.toggle('clicked');
+					clickedStates[pokemonId] = clickedCard.classList.contains('clicked');
+					localStorage.setItem(POKEDEX_ID, JSON.stringify(clickedStates));
+					updateProgress();
+					updateFilterProgressBar();
+					if (isDesktop()) {
+						searchInput.focus();
+					}
+				}
+			}
+		});
+		
+		/* Clicking anything from the Search Suggestions Box */
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            autoList.innerHTML = '';
+            if (!val) { autoList.style.display = 'none'; return; }
+            const matches = pokedexData.filter(d => d.name.toLowerCase().includes(val)).slice(0, 10);
+            matches.forEach(match => {
+				const div = document.createElement('div');
+				div.className = 'suggestion-item';
+				div.textContent = match.name;
+				div.onclick = () => {
+					const target = document.getElementById(`item-${match.id}`);
+					if (target) {
+						const headerHeight = document.getElementById('top-bar').offsetHeight;
+						const elementPosition = target.getBoundingClientRect().top + window.pageYOffset;
+						window.scrollTo({
+							top: elementPosition - headerHeight - 10,
+							behavior: 'smooth'
+						});
+			
+						target.classList.add('highlight-flash');
+						setTimeout(() => target.classList.remove('highlight-flash'), 2000);
+					}
+					autoList.style.display = 'none';
+					searchInput.value = '';
+					if (isDesktop()) {
+						searchInput.focus();
+					}
+				};
+				autoList.appendChild(div);
+			});
+            autoList.style.display = autoList.childElementCount > 0 ? 'block' : 'none';
+        });
+
+		/* Clicking the Search Bar */
+        document.addEventListener('click', (e) => {
+        	if (e.target !== searchInput) {
+        		autoList.style.display = 'none'; 
+			}
+		});
+
+		updateFilterUI();
+		updateFilterProgressBar();
+		renderTypes();
+        renderGrid();
+    </script>
+</body>
+</html>
