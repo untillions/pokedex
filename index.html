@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Pokédex Tracker Hub</title>
+    <style>
+        :root {
+            /* Styles imported from your existing tracker */
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #d0d0d0;
+            --selected-bg: #e8f4fd;
+            --selected-border: #2196f3;
+            --text-main: #333;
+            --text-muted: #777;
+        }
+
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+		.header-container {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 10px;
+			margin-top: 20px;
+		}
+		
+		.header-logo {
+			width: 45px;
+			height: 45px;
+			object-fit: contain;
+		}
+		
+        h1 {
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0px;
+            text-align: center;
+        }
+        
+        p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 11pt;
+            max-width: 650px;
+        }
+        
+        p2 {
+            color: var(--text-muted);
+            text-align: center;
+            font-size: 9pt;
+        }
+
+        .hub-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 1000px;
+        }
+        
+        #lgpe-bar { background: linear-gradient(to right, rgb(202, 156, 95), rgb(242, 226, 138)); }
+        #bdsp-bar { background: linear-gradient(to right, rgb(60, 60, 60), rgb(98, 181, 127)); }
+        #swsh-bar { background: linear-gradient(to right, rgb(83, 171, 223), rgb(194, 45, 94)); }
+        #sv-bar { background: linear-gradient(to right, rgb(140, 23, 23), rgb(236, 52, 249)); }
+        #za-bar { background: linear-gradient(to right, rgb(60, 60, 60), rgb(98, 181, 127)); }
+
+        @media (min-width: 900px) {
+            .hub-grid {
+                grid-template-columns: repeat(2, 450px);
+                justify-content: center;
+            }
+            
+        }
+
+        @media (max-width: 600px) {
+            .hub-grid { grid-template-columns: 1fr; }
+            .progress-row { gap: 8px; }
+            .header-logo { width: 30px; height: 30px; }
+			h1 { font-size: 14pt; }        
+            body { padding: 0px 10px; }
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--selected-border);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        .game-card {
+			background: var(--card-bg);
+			border: 1px solid var(--border-color);
+			border-radius: 15px;
+			width: 100%;
+			aspect-ratio: auto;
+			min-height: 130px;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+			position: relative;
+			text-decoration: none;
+			transition: transform 0.2s, box-shadow 0.2s;
+		}
+		
+		.visual-area {
+			position: relative;
+			flex-grow: 1;
+			display: flex;
+			align-items: flex-start;
+			padding: 5px;
+			overflow: hidden;
+			justify-content: flex-end;
+			min-height: 80px;
+			flex-grow: 1;
+		}
+		
+		.game-logo {
+			width: auto;
+			max-height: 100%;
+			height: auto;
+			object-fit: contain;
+			z-index: 10;
+			position: relative;
+		}
+		
+		.card-footer {
+			padding: 0 25px 5px 15px;
+			background: #fafafa;
+			border-top: 1px solid #eee;
+			flex-shrink: 0;
+		}
+		
+		.progress-row {
+			display: flex;
+			align-items: center;
+			gap: 15px;
+		}
+		
+		.progress-label {
+			font-size: 11px;
+			font-weight: bold;
+			color: var(--text-muted);
+			text-transform: uppercase;
+			white-space: nowrap;
+		}
+		
+		.progress-container {
+			flex-grow: 1;
+			height: 8px;
+			background: #e0e0e0;
+			border-radius: 4px;
+			position: relative;
+			margin: 8px 0px 18px 0px;
+		}
+		
+		.progress-fill {
+			height: 100%;
+			background: #cc0000;
+			border-radius: 4px;
+			width: 0%;
+			transition: width 0.3s ease;
+		}
+		
+		.multiplier-badge {
+			position: absolute;
+			top: 12px;
+			font-size: 9px;
+			font-weight: bold;
+			background: #eee;
+			padding: 1px 4px;
+			border-radius: 4px;
+			color: #444;
+		}
+
+        .game-logo {
+            max-width: 60%;
+            max-height: auto;
+            object-fit: contain;
+        }
+
+		.starter {
+			position: absolute;
+			width: 12%; 
+			height: auto;
+			transform: scale(var(--s, 1));
+			filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+			z-index: 5;	
+			transition: width 0.2s ease;
+		}
+		
+		.s1 { left: 5%; bottom: 15%; }
+        .s2 { left: 17%; top: 10%; }
+        .s3 { left: 29%; bottom: 8%; }
+
+        .blank-card {
+            background: #e0e0e0;
+            opacity: 0.6;
+            cursor: default;
+        }
+        
+        footer {
+			margin-top: 0px;
+			padding: 20px;
+			text-align: center;
+			color: var(--text-muted);
+			font-size: 10px;
+		}
+		
+		footer a:hover {
+			text-decoration: underline;
+		}
+
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+		<img src="icons/switch.png" alt="Switch Logo" class="header-logo">
+		<h1>Pokedex Tracker Hub</h1>
+	</div>
+    <p>Welcome to the hub! Track your progress on any of the game's pokedexes by clicking them below. This hub will update automatically on this device to track your progress in all five.</p>
+
+    <div class="hub-grid">
+        <a href="lgpe.html" class="game-card">
+			<div class="visual-area">
+				<img src="logos/lgpe.png" class="game-logo">
+				<img src="pokemon/pikachu.gif" class="starter s2" style="--s:1.3; left: 20%">
+				<img src="pokemon/eevee.gif" class="starter s1" style="--s:1.2;">
+            </div>
+            
+            <div class="card-footer">
+				<div class="progress-row">
+					<div class="progress-label">Caught</div>
+					<div class="progress-container">
+						<div id="lgpe-bar" class="progress-fill"></div>
+						<div id="lgpe-caught" class="multiplier-badge" style="transform: translateX(-50%); color: #cc0000; z-index: 20;">0</div>
+						<div id="lgpe-total" class="multiplier-badge" style="right: 0; transform: translateX(50%);">168</div>
+					</div>
+				</div>
+			</div>
+        </a>
+
+        <a href="swsh.html" class="game-card">
+			<div class="visual-area">
+				<img src="logos/swsh.png" class="game-logo">
+                <img src="pokemon/scorbunny.gif" class="starter s3" style="--s:1.04;">
+                <img src="pokemon/sobble.gif" class="starter s2" style="--s:0.85;">
+                <img src="pokemon/grookey.gif" class="starter s1" style="--s:0.98;">
+            </div>
+
+            <div class="card-footer">
+				<div class="progress-row">
+					<div class="progress-label">Caught</div>
+					<div class="progress-container">
+						<div id="swsh-bar" class="progress-fill"></div>
+						<div id="swsh-caught" class="multiplier-badge" style="transform: translateX(-50%); color: #cc0000; z-index: 20;">0</div>
+						<div id="swsh-total" class="multiplier-badge" style="right: 0; transform: translateX(50%);">403</div>
+					</div>
+				</div>
+			</div>
+        </a>
+
+        <a href="bdsp.html" class="game-card">
+			<div class="visual-area">
+				<img src="logos/bdsp.png" class="game-logo">
+                <img src="pokemon/turtwig.gif" class="starter s1" style="--s:0.87;">
+                <img src="pokemon/chimchar.gif" class="starter s3" style="--s:1.03;">
+                <img src="pokemon/piplup.gif" class="starter s2" style="--s:1.04;">
+            </div>
+
+            <div class="card-footer">
+				<div class="progress-row">
+					<div class="progress-label">Caught</div>
+					<div class="progress-container">
+						<div id="bdsp-bar" class="progress-fill"></div>
+						<div id="bdsp-caught" class="multiplier-badge" style="transform: translateX(-50%); color: #cc0000; z-index: 20;">0</div>
+						<div id="bdsp-total" class="multiplier-badge" style="right: 0; transform: translateX(50%);">493</div>
+					</div>
+				</div>
+			</div>
+        </a>
+
+        <a href="sv.html" class="game-card">
+			<div class="visual-area">
+				<img src="logos/sv.png" class="game-logo">
+                <img src="pokemon/sprigatito.gif" class="starter s2" style="--s:0.73;">
+                <img src="pokemon/fuecoco.gif" class="starter s1" style="--s:0.75;">
+                <img src="pokemon/quaxly.gif" class="starter s3" style="--s:0.83;">
+            </div>
+
+            <div class="card-footer">
+				<div class="progress-row">
+					<div class="progress-label">Caught</div>
+					<div class="progress-container">
+						<div id="sv-bar" class="progress-fill"></div>
+						<div id="sv-caught" class="multiplier-badge" style="transform: translateX(-50%); color: #cc0000; z-index: 20;">0</div>
+						<div id="sv-total" class="multiplier-badge" style="right: 0; transform: translateX(50%);">400</div>
+					</div>
+				</div>
+			</div>
+        </a>
+
+        <a href="za.html" class="game-card">
+			<div class="visual-area">
+				<img src="logos/za.png" class="game-logo">
+                <img src="pokemon/chikorita.gif" class="starter s3" style="--s:0.62;">
+                <img src="pokemon/tepig.gif" class="starter s2" style="--s:0.88;">
+                <img src="pokemon/totodile.gif" class="starter s1" style="--s:1;">
+            </div>
+
+            <div class="card-footer">
+				<div class="progress-row">
+					<div class="progress-label">Caught</div>
+					<div class="progress-container">
+						<div id="za-bar" class="progress-fill"></div>
+						<div id="za-caught" class="multiplier-badge" style="transform: translateX(-50%); color: #cc0000; z-index: 20;">0</div>
+						<div id="za-total" class="multiplier-badge" style="right: 0; transform: translateX(50%);">454</div>
+					</div>
+				</div>
+			</div>
+        </a>
+
+        <div class="game-card blank-card">
+            <div class="logo-section" style="color: var(--text-muted); font-weight: bold;"></div>
+            <div class="pokemon-section"></div>
+        </div>
+    </div>
+
+	<footer>
+		<p2>
+			© <span id="year">2026</span> Pokémon. © 1995–<span id="year2">2026</span> Nintendo / Creatures Inc. / GAME FREAK inc. <br>
+			Pokémon and Pokémon character names are trademarks of Nintendo. <br>
+			Pokémon sprites provided by <a href="https://play.pokemonshowdown.com/sprites/" target="_blank" style="color: var(--selected-border); text-decoration: none;">Pokémon Showdown</a>.<br>
+		</p2>
+		<p2>This is a fan-made website and is not affiliated with, endorsed by, or supported by Nintendo and The Pokémon Company in any way.</p2>
+	</footer>
+
+	<script>
+		function updateHub() {
+			const gameData = [
+				{ id: 'lgpe', total: 168 },
+				{ id: 'swsh', total: 403 },
+				{ id: 'bdsp', total: 493 },
+				{ id: 'sv',   total: 400 },
+				{ id: 'za',   total: 454 }
+			];
+	
+			gameData.forEach(game => {
+				const caught = parseInt(localStorage.getItem(`${game.id}_caught_count`)) || 0;
+				const percent = (caught / game.total) * 100;
+	
+				const caughtLabel = document.getElementById(`${game.id}-caught`);
+				if (caughtLabel) {
+					caughtLabel.textContent = caught;
+					caughtLabel.style.left = `${percent}%`;
+				}
+	
+				const bar = document.getElementById(`${game.id}-bar`);
+				if (bar) {
+					bar.style.width = `${percent}%`;
+				}
+			});
+		}
+	
+		document.addEventListener('DOMContentLoaded', updateHub);
+		window.addEventListener('storage', updateHub);
+		document.getElementById('year').textContent = new Date().getFullYear();
+		document.getElementById('year2').textContent = new Date().getFullYear();
+	</script>
+</body>
+</html>
