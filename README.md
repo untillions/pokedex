@@ -1,9 +1,16 @@
+<p align="center">
+    <img src="icons/ball.png" height="100">
+</p>
+
+<h1 align="center"><img src="icons/switch.png" height="40"/>Nintendo Switch</h1>
+
 # pokedex
 <img src="pokemon/bulbasaur.gif"/><img src="pokemon/charmander.gif"/><img src="pokemon/squirtle.gif"/><br>
 Welcome to the Pokedex Tracker Hub!
 
 This set of pokedex trackers is your go-to companion for 5 of the 6 Nintendo Switch games.
 
+Love this project? Show your love by dropping a <img src="pokemon/staryu.gif"/> on this repo
 
 ## Feature list
 
