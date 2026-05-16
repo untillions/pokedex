@@ -1,7 +1,6 @@
 # pokedex
-
-Welcome to the Pokedex Tracker Hub!
 <img src="pokemon/bulbasaur.gif"/><img src="pokemon/charmander.gif"/><img src="pokemon/squirtle.gif"/>
+Welcome to the Pokedex Tracker Hub!
 
 
 
