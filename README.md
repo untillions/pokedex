@@ -30,12 +30,12 @@ Love this project? Show your love by dropping a <img src="pokemon/staryu.gif"/> 
 - 7 encounter types 👣🎣🌊📍🎁🐝📡</blockquote>
 
 <strong>Scarlet🔴 Violet🟣</strong><br>
-<blockquote><img src="pokemon/sprigatito.gif"/>  <img src="pokemon/fuecoco.gif"/>  <img src="pokemon/quaxly.gif"/><br>
+<blockquote><img src="pokemon/sprigatito.gif"/>&nbsp;&nbsp;&nbsp;&nbsp;<img src="pokemon/fuecoco.gif"/>&nbsp;&nbsp;&nbsp;<img src="pokemon/quaxly.gif"/><br>
 - 400 trackable pokémon<br>
 - 19 biome types 🌱🌲🏡🏜️⛰️❄️🪷⛵🎣🌊🕳️🪨🦇🏖️🌸🎋💎🌿🏛️</blockquote>
 
 <strong>Legends Z-A</strong><br>
-<blockquote><img src="pokemon/chikorita.gif"/>  <img src="pokemon/tepig.gif"/>  <img src="pokemon/totodile.gif"/><br>
+<blockquote><img src="pokemon/chikorita.gif"/>&nbsp;&nbsp;&nbsp;<img src="pokemon/tepig.gif"/>&nbsp;&nbsp;&nbsp;<img src="pokemon/totodile.gif"/><br>
 - 454 trackable pokémon<br>
 - 4 encounter types ☀️🌑🎲📍</blockquote>
 
