@@ -8,29 +8,36 @@
 [![forks](https://img.shields.io/github/forks/untillions/pokedex)](https://github.com/untillions/pokedex/network/members)
 <br>Welcome to the Pokedex Tracker Hub!
 
-This set of pokedex trackers is your go-to companion for 5 of the 6 Nintendo Switch games.
-
+This set of pokedex trackers is your go-to companion for 5 of the 6 Nintendo Switch games.<br>
 Love this project? Show your love by dropping a <img src="pokemon/staryu.gif"/> on this repo.
 
 ## Games included
 <strong>Let's Go Pikachu⚡ Eevee🦊</strong><br>
-<img src="pokemon/pikachu.gif"/><img src="pokemon/eevee.gif"/><br>
-- 168 trackable pokémon
-- 18 alolan pokémon
+<blockquote><img src="pokemon/pikachu.gif"/><img src="pokemon/eevee.gif"/><br>
+- 168 trackable pokémon<br>
+- 18 alolan pokémon</blockquote>
 
 <strong>Sword🗡️ Shield🛡️</strong><br>
-<img src="pokemon/grookey.gif"/><img src="pokemon/scorbunny.gif"/><img src="pokemon/sobble.gif"/><br>
-- 403 trackable pokémon
-- 13 galarian pokémon
-- 6 encounter types 🌳🎣🌊👁️🔍📍
-- 9 weather types 🪟⛅☔⚡❄️🌧️☀️🌪️🌫️
+<blockquote><img src="pokemon/grookey.gif"/><img src="pokemon/scorbunny.gif"/><img src="pokemon/sobble.gif"/><br>
+- 403 trackable pokémon<br>
+- 13 galarian pokémon<br>
+- 6 encounter types 🌳🎣🌊👁️🔍📍<br>
+- 9 weather types 🪟⛅☔⚡❄️🌧️☀️🌪️🌫️</blockquote>
 
 <strong>Brilliant Diamond💎 Shining Pearl⚪</strong><br>
+<blockquote><img src="pokemon/turtwig.gif"/><img src="pokemon/chimchar.gif"/><img src="pokemon/piplup.gif"/><br>
+- 493 trackable pokémon<br>
+- 7 encounter types 👣🎣🌊📍🎁🐝📡</blockquote>
 
 <strong>Scarlet🔴 Violet🟣</strong><br>
+<blockquote><img src="pokemon/sprigatito.gif"/>  <img src="pokemon/fuecoco.gif"/>  <img src="pokemon/quaxly.gif"/><br>
+- 400 trackable pokémon<br>
+- 19 biome types 🌱🌲🏡🏜️⛰️❄️🪷⛵🎣🌊🕳️🪨🦇🏖️🌸🎋💎🌿🏛️</blockquote>
 
 <strong>Legends Z-A</strong><br>
-
+<blockquote><img src="pokemon/chikorita.gif"/>  <img src="pokemon/tepig.gif"/>  <img src="pokemon/totodile.gif"/><br>
+- 454 trackable pokémon<br>
+- 4 encounter types ☀️🌑🎲📍</blockquote>
 
 ## Feature list
 
