@@ -8,7 +8,7 @@
 [![forks](https://img.shields.io/github/forks/untillions/pokedex)](https://github.com/untillions/pokedex/network/members)
 <br>Welcome to the Pokedex Tracker Hub!
 
-This set of pokedex trackers is your go-to companion for 5 of the 6 Nintendo Switch games.<br>
+This set of pokedex trackers is your go-to companion for tracking the pokemon caught in 5 of the 6 Nintendo Switch games.<br>
 Love this project? Show your love by dropping a <img src="pokemon/staryu.gif"/> on this repo.
 
 ## Games included
@@ -42,7 +42,7 @@ Love this project? Show your love by dropping a <img src="pokemon/staryu.gif"/> 
 ## Feature list
 
 -   [x] Animated gifs of all pokemon
--   [x] Fully Base game pokedexes built out (no DLCS)
+-   [x] Fully built out base game pokedexes (no DLCs)
 -   [x] Best location information for each Pokémon
 -   [x] Evolution information for each Pokémon
 -   [x] Filtering by type, region, and caught status
