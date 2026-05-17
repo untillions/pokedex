@@ -6,7 +6,7 @@
 
 [![stargazers](https://img.shields.io/github/stars/untillions/pokedex)](https://github.com/untillions/pokedex/stargazers)
 [![forks](https://img.shields.io/github/forks/untillions/pokedex)](https://github.com/untillions/pokedex/network/members)
-Welcome to the Pokedex Tracker Hub!
+<br>Welcome to the Pokedex Tracker Hub!
 
 This set of pokedex trackers is your go-to companion for 5 of the 6 Nintendo Switch games.
 
